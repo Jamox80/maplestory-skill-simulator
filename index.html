@@ -4652,59 +4652,152 @@ skills: {
             ],
             "3轉 (暗殺者)": [
                 {
-                    id: "alchemist",
-                    name: "藥劑精通",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "增加恢復性道具的回復量及延長狀態道具的持續時間。但若是根據比例來恢復的道具則不適用，例如特殊藥水。",
-                    imageUrl: "images/alchemist.png",
-                    levels: Array(21).fill(null).map((_, i) => i === 0 ? null : {
-                        effect: `回復量: ${100 + i * 5}%, 持續時間: ${100 + i * 5}秒`,
-                        fullDescription: `增加恢復性道具的回復量及延長狀態道具的持續時間。等級${i}效果：回復量${100 + i * 5}%，持續時間${100 + i * 5}秒。`
-                    })
-                },
+    "id": "alchemist",
+    "name": "藥劑精通",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "增加恢復性道具的回復量及延長狀態道具的持續時間。但若是根據比例來恢復的道具則不適用，例如特殊藥水。",
+    "imageUrl": "images/alchemist.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let recoveryAmount, durationIncrease;
+        if (i === 0) return null;
+
+        // 回復量 和 適用時間增加 的規律
+        // 1-10級: 103% 106% ... 130% (每次加3%) => 100 + i * 3
+        // 11-20級: 132% 134% ... 150% (每次加2%) => 130 + (i-10)*2
+        if (i >= 1 && i <= 10) {
+            recoveryAmount = 100 + i * 3;
+            durationIncrease = 100 + i * 3;
+        } else if (i >= 11 && i <= 20) {
+            recoveryAmount = 130 + (i - 10) * 2;
+            durationIncrease = 130 + (i - 10) * 2;
+        }
+
+        return {
+            effect: `回復量: ${recoveryAmount}%, 適用時間增加: ${durationIncrease}%`,
+            fullDescription: `增加恢復性道具的回復量及延長狀態道具的持續時間。等級${i}效果：回復量${recoveryAmount}%，適用時間增加${durationIncrease}%。`
+        };
+    })
+},
+               {
+    "id": "luckyCharm",
+    "name": "幸運術",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "一定時間內，包括自己及周圍的隊友，在獵殺怪物時可獲得更多的楓幣。",
+    "imageUrl": "images/luckyCharm.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, duration, increaseRate;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        // 1-5級: 45
+        // 6-10級: 50
+        // 11-15級: 55
+        // 16-20級: 60
+        if (i >= 1 && i <= 5) {
+            mpCost = 45;
+        } else if (i >= 6 && i <= 10) {
+            mpCost = 50;
+        } else if (i >= 11 && i <= 15) {
+            mpCost = 55;
+        } else if (i >= 16 && i <= 20) {
+            mpCost = 60;
+        }
+
+        // 持續時間 的規律：
+        // 1-10級: 每級加10秒 (10, 20, ..., 100)
+        // 11-20級: 每級加20秒 (120, 140, ..., 300) - 這裡根據您提供的資料，從11級開始持續時間似乎是從120秒開始，之後每級加10或20秒，因此需要分段計算。
+        if (i >= 1 && i <= 10) {
+            duration = i * 10;
+        } else if (i >= 11 && i <= 20) {
+            // Level 11 is 120s, so it's 100 + (i-10)*20 for levels 11-15 (simplified)
+            // Level 16 is 220s, so it's 200 + (i-15)*20 for levels 16-20 (simplified)
+            // Let's use exact values provided:
+            const durationsRaw = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300];
+            duration = durationsRaw[i];
+        }
+
+        // 增加率 的規律：每級加3%
+        increaseRate = i * 3;
+
+        return {
+            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 增加率: ${increaseRate}%`,
+            fullDescription: `一定時間內，包括自己及周圍的隊友，在獵殺怪物時可獲得更多的楓幣。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，增加率${increaseRate}%。`
+        };
+    })
+},
                 {
-                    id: "luckyCharm", // 幸運術
-                    name: "幸運術",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "一定時間內，包括自己及周圍的隊友，在獵殺怪物時可獲得更多的楓幣。",
-                    imageUrl: "images/luckyCharm.png",
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, duration, bonusRate;
-                        if (i === 0) return null;
-                        mp = i <= 5 ? 45 : (i <= 10 ? 50 : (i <= 15 ? 55 : 60));
-                        duration = 20 + i * 5; // Simplified
-                        bonusRate = i * 3; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 持續時間: ${duration}秒, 增加率: ${bonusRate}%`,
-                            fullDescription: `一定時間內，包括自己及周圍的隊友，在獵殺怪物時可獲得更多的楓幣。等級${i}效果：消耗MP${mp}，持續時間${duration}秒，增加率${bonusRate}%。`
-                        };
-                    })
-                },
-                {
-                    id: "shadowClone",
-                    name: "影分身",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。",
-                    imageUrl: "images/shadowClone.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, duration, normalAttack, skillAttack;
-                        if (i === 0) return null;
-                        mp = 200 - i * 5; // Simplified
-                        duration = i <= 10 ? 60 : 120;
-                        normalAttack = 20 + i * 2; // Simplified
-                        skillAttack = 20 + i; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 持續時間: ${duration}秒, 普通攻擊: ${normalAttack}%, 技能攻擊: ${skillAttack}%`,
-                            fullDescription: `消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。等級${i}效果：消耗MP${mp}，持續時間${duration}秒，普通攻擊${normalAttack}%，技能攻擊${skillAttack}%。`
-                        };
-                    })
-                },
+    "id": "shadowClone",
+    "name": "影分身",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。",
+    "imageUrl": "images/shadowClone.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, duration, normalAttackPercent, skillAttackPercent;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律：線性遞減
+        // 200 -> 105 (減5) for level 1-20
+        // 100 -> 55 (減5) for level 21-30
+        if (i <= 20) {
+            mpCost = 205 - i * 5;
+        } else {
+            mpCost = 105 - (i - 20) * 5;
+        }
+        
+        // 持續時間 的規律：線性遞增
+        // 10 -> 200 (加10) for level 1-20
+        // 210 -> 300 (加10) for level 21-30
+        if (i <= 20) {
+            duration = i * 10;
+        } else {
+            duration = 200 + (i - 20) * 10;
+        }
+
+        // 普通攻擊 的規律：
+        // 20% -> 70% (加4%) for level 1-20
+        // 71% -> 80% (加1%或2%) for level 21-30
+        if (i <= 20) {
+            normalAttackPercent = 16 + i * 2; // Level 1 is 20%
+        } else {
+            // Complex pattern based on provided values, hardcode for accuracy
+            const normalAttacksRaw = [
+                null, 20, 24, 28, 32, 36, 40, 44, 46, 48, 50, // L1-10
+                52, 54, 56, 58, 60, 62, 64, 66, 68, 70, // L11-20
+                71, 72, 73, 74, 75, 76, 77, 78, 79, 80 // L21-30
+            ];
+            normalAttackPercent = normalAttacksRaw[i];
+        }
+
+        // 技能攻擊 的規律：
+        // 21% (固定) for level 1-7
+        // 22% -> 34% (加1%) for level 8-20
+        // 35% -> 50% (加1%或2%) for level 21-30
+        if (i <= 7) {
+            skillAttackPercent = 21;
+        } else if (i <= 20) {
+            skillAttackPercent = 20 + i; // Level 8 is 22%
+        } else {
+            // Complex pattern based on provided values, hardcode for accuracy
+            const skillAttacksRaw = [
+                null, 21, 21, 21, 21, 21, 21, 21, 22, 23, 24, // L1-10
+                25, 26, 27, 28, 29, 30, 31, 32, 33, 34, // L11-20
+                35, 36, 37, 38, 40, 42, 44, 46, 48, 50 // L21-30
+            ];
+            skillAttackPercent = skillAttacksRaw[i];
+        }
+
+        return {
+            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 普通攻擊: ${normalAttackPercent}%, 技能攻擊: ${skillAttackPercent}%`,
+            fullDescription: `消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，普通攻擊${normalAttackPercent}%，技能攻擊${skillAttackPercent}%。`
+        };
+    })
+},
                 {
                     id: "shadowWeb",
                     name: "影網術",
