@@ -3756,7 +3756,7 @@ skills: {
                         let mp, attack;
                         if (i === 0) return null;
                         mp = i <= 15 ? 14 : 28;
-                        attack = 62 + i * 4; // Simplified
+                        attack = 120 + i * 3; // Simplified
                         return {
                             effect: `消耗MP: ${mp}, 攻擊力: ${attack}%`,
                             fullDescription: `發射的弩箭可貫穿怪物，每當慣穿第一個怪物時，其殺傷力會減弱，最多能貫穿6個怪物。等級${i}效果：消耗MP${mp}，攻擊力${attack}%。`
@@ -3815,24 +3815,38 @@ skills: {
                     })
                 },
                 {
-                    id: "strafeCrossbow", // 為了區分弓箭手的四連箭，特別指明弩弓
-                    name: "四連箭",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "同時射出四發弓箭給予敵人四次傷害。只限裝備弩弓才可使用。增加BOSS傷害20%，增加爆擊率30%，最大爆擊傷害上限為150%，最大爆擊率上限為70%。",
-                    imageUrl: "images/strafeCrossbow.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack;
-                        if (i === 0) return null;
-                        mp = i <= 15 ? 26 : 32;
-                        attack = 50 + i * 2;
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%`,
-                            fullDescription: `同時射出四發弓箭給予敵人四次傷害。等級${i}效果：消耗MP${mp}，攻擊力${attack}%。增加BOSS傷害20%，增加爆擊率30%，最大爆擊傷害上限為150%，最大爆擊率上限為70%。`
-                        };
-                    })
-                },
+    "id": "strafeBow",
+    "name": "四連箭",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "同時射出四發弓箭給予敵人四次傷害。只限裝備弓箭才可使用。增加BOSS傷害20%，增加爆擊率30%，最大爆擊傷害上限為150%，最大爆擊率上限為70%。",
+    "imageUrl": "images/strafeBow.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, attack, bonusCritRate;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律：
+        // 1-15級: 26
+        // 16-30級: 32
+        if (i >= 1 && i <= 15) {
+            mpCost = 26;
+        } else if (i >= 16 && i <= 30) {
+            mpCost = 32;
+        }
+
+        // 攻擊力 的規律：71% 到 100% (每次加1%) => 70 + i
+        attack = 70 + i;
+
+        // 追加爆擊機率 的規律：1% 到 30% (每次加1%) => i
+        bonusCritRate = i;
+
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 追加爆擊機率: ${bonusCritRate}%`,
+            fullDescription: `同時射出四發弓箭給予敵人四次傷害。只限裝備弓箭才可使用。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，追加爆擊機率${bonusCritRate}%。增加BOSS傷害20%，增加爆擊率30%，最大爆擊傷害上限為150%，最大爆擊率上限為70%。`
+        };
+    })
+},
                 {
                     id: "blizzardCrossbow", // 寒冰箭對應冰屬性攻擊
                     name: "寒冰箭",
