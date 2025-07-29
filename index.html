@@ -1880,28 +1880,44 @@ skills: {
                     })
                 },
                 {
-                    id: "powerReflection",
-                    name: "反射之盾",
-                    maxLevel: 30,
-                    requiredLevel: 30,
-                    preRequisite: { }, // 假設激勵是前置技能
-                    description: "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
-                    imageUrl: "images/powerReflection.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, counterRate, duration;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30];
-                        const counterRates = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
-                        const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
-                        mp = mpCosts[i];
-                        counterRate = counterRates[i];
-                        duration = durations[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 反擊率: ${counterRate}%, 持續時間: ${duration}秒`,
-                            fullDescription: `將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。等級${i}效果：消耗MP${mp}，反擊率${counterRate}%，持續${duration}秒。`
-                        };
-                    })
-                }
+    "id": "powerReflection",
+    "name": "反射之盾",
+    "maxLevel": 30,
+    "requiredLevel": 30,
+    "preRequisite": {},
+    "description": "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
+    "imageUrl": "images/powerReflection.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, counterRate, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 15) {
+            mpCost = 15;
+        } else { // i >= 16
+            mpCost = 50;
+        }
+
+        // 反擊率 的規律：線性增加 (11% 到 40%) => 10 + i
+        counterRate = 10 + i;
+
+        // 持續時間 的規律：多段線性
+        if (i >= 1 && i <= 15) {
+            duration = i * 3;
+        } else if (i >= 16 && i <= 20) {
+            duration = 45 + (i - 15) * 3; // 從15級的45秒開始計算
+        } else if (i >= 21 && i <= 28) {
+            duration = 60 + (i - 20) * 30; // 20級是60秒，21級跳到90秒，每級加30秒
+        } else { // i >= 29
+            duration = 300; // 29和30級固定300秒
+        }
+
+        return {
+            effect: `消耗MP: ${mpCost}, 反擊率: ${counterRate}%, 持續時間: ${duration}秒`,
+            fullDescription: `將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。等級${i}效果：消耗MP${mpCost}，反擊率${counterRate}%，持續${duration}秒。`
+        };
+    })
+}
             ],
             "3轉 (十字軍)": [
                 {
@@ -2377,28 +2393,44 @@ skills: {
                     })
                 },
                 {
-                    id: "powerReflection2",
-                    name: "反射之盾",
-                    maxLevel: 30,
-                    requiredLevel: 30,
-                    preRequisite: { }, // 前置技能：降魔咒x3
-                    description: "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
-                    imageUrl: "images/powerReflection.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, counterRate, duration;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30];
-                        const counterRates = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
-                        const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
-                        mp = mpCosts[i];
-                        counterRate = counterRates[i];
-                        duration = durations[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 反擊率: ${counterRate}%, 持續時間: ${duration}秒`,
-                            fullDescription: `將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。等級${i}效果：消耗MP${mp}，反擊率${counterRate}%，持續${duration}秒。`
-                        };
-                    })
-                }
+    "id": "powerReflection",
+    "name": "反射之盾",
+    "maxLevel": 30,
+    "requiredLevel": 30,
+    "preRequisite": {},
+    "description": "將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。",
+    "imageUrl": "images/powerReflection.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, counterRate, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 15) {
+            mpCost = 15;
+        } else { // i >= 16
+            mpCost = 50;
+        }
+
+        // 反擊率 的規律：線性增加 (11% 到 40%) => 10 + i
+        counterRate = 10 + i;
+
+        // 持續時間 的規律：多段線性
+        if (i >= 1 && i <= 15) {
+            duration = i * 3;
+        } else if (i >= 16 && i <= 20) {
+            duration = 45 + (i - 15) * 3; // 從15級的45秒開始計算
+        } else if (i >= 21 && i <= 28) {
+            duration = 60 + (i - 20) * 30; // 20級是60秒，21級跳到90秒，每級加30秒
+        } else { // i >= 29
+            duration = 300; // 29和30級固定300秒
+        }
+
+        return {
+            effect: `消耗MP: ${mpCost}, 反擊率: ${counterRate}%, 持續時間: ${duration}秒`,
+            fullDescription: `將怪物對自身傷害的一定量回饋給怪物，但所能轉移給怪物的傷害，以怪物的最大HP10%為限度。等級${i}效果：消耗MP${mpCost}，反擊率${counterRate}%，持續${duration}秒。`
+        };
+    })
+}
             ],
             "3轉 (騎士)": [
                 {
@@ -3388,19 +3420,40 @@ skills: {
                         fullDescription: `提升移動速度。等級${i}效果：移動速度${10 + i}。`
                     })
                 },
-                {
-                    id: "mortalBlow",
-                    name: "致命箭",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。",
-                    imageUrl: "images/mortalBlow.png",
-                    levels: Array(21).fill(null).map((_, i) => i === 0 ? null : {
-                        effect: `無視防禦力: 4%, 傷害增加: ${i * 3}%`, // 數據表格中無視防禦力固定4%
-                        fullDescription: `無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。等級${i}效果：無視防禦力4%，傷害增加${i * 3}%。`
-                    })
-                },
+                 {
+    "id": "mortalBlow",
+    "name": "致命箭",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。",
+    "imageUrl": "images/mortalBlow.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let ignoreDef, dmgIncrease;
+        if (i === 0) return null;
+
+        // 無視防禦力 的規律
+        if (i >= 1 && i <= 5) {
+            ignoreDef = 1;
+        } else if (i >= 6 && i <= 10) {
+            ignoreDef = 2;
+        } else if (i >= 11 && i <= 15) {
+            ignoreDef = 3;
+        } else if (i >= 16 && i <= 19) {
+            ignoreDef = 4;
+        } else if (i === 20) {
+            ignoreDef = 5;
+        }
+
+        // 傷害增加 的規律：線性增加 (每次加3%) => i * 3
+        dmgIncrease = i * 3;
+
+        return {
+            effect: `無視防禦力: ${ignoreDef}%, 傷害增加: ${dmgIncrease}%`,
+            fullDescription: `無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。等級${i}效果：無視防禦力${ignoreDef}%，傷害增加${dmgIncrease}%。`
+        };
+    })
+},
                 {
                     id: "puppet",
                     name: "替身術",
@@ -3779,18 +3832,39 @@ skills: {
                     })
                 },
                 {
-                    id: "mortalBlow",
-                    name: "致命箭",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。",
-                    imageUrl: "images/mortalBlow.png",
-                    levels: Array(21).fill(null).map((_, i) => i === 0 ? null : {
-                        effect: `無視防禦力: 4%, 傷害增加: ${i * 3}%`,
-                        fullDescription: `無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。等級${i}效果：無視防禦力4%，傷害增加${i * 3}%。`
-                    })
-                },
+    "id": "mortalBlow",
+    "name": "致命箭",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。",
+    "imageUrl": "images/mortalBlow.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let ignoreDef, dmgIncrease;
+        if (i === 0) return null;
+
+        // 無視防禦力 的規律
+        if (i >= 1 && i <= 5) {
+            ignoreDef = 1;
+        } else if (i >= 6 && i <= 10) {
+            ignoreDef = 2;
+        } else if (i >= 11 && i <= 15) {
+            ignoreDef = 3;
+        } else if (i >= 16 && i <= 19) {
+            ignoreDef = 4;
+        } else if (i === 20) {
+            ignoreDef = 5;
+        }
+
+        // 傷害增加 的規律：線性增加 (每次加3%) => i * 3
+        dmgIncrease = i * 3;
+
+        return {
+            effect: `無視防禦力: ${ignoreDef}%, 傷害增加: ${dmgIncrease}%`,
+            fullDescription: `無視怪物5%物理防禦，同時增加昇龍弩跟箭雨傷害60%。等級${i}效果：無視防禦力${ignoreDef}%，傷害增加${dmgIncrease}%。`
+        };
+    })
+},
                 {
                     id: "puppet",
                     name: "替身術",
