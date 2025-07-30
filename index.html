@@ -1855,30 +1855,52 @@ skills: {
                     })
                 },
                 {
-                    id: "rage",
-                    name: "激勵",
-                    maxLevel: 20,
-                    requiredLevel: 30,
-                    preRequisite: {},
-                    description: "在一定時間內，提升周圍組員的物理攻擊力，但物理防禦力會相對下降。",
-                    imageUrl: "images/rage.png",
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, pAttack, pDef, duration;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
-                        const pAttacks = [null, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10];
-                        const pDefs = [null, -1, -1, -2, -2, -3, -3, -4, -4, -5, -5, -6, -6, -7, -7, -8, -8, -9, -9, -10, -10];
-                        const durations = [null, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160];
-                        mp = mpCosts[i];
-                        pAttack = pAttacks[i];
-                        pDef = pDefs[i];
-                        duration = durations[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 物理攻擊: ${pAttack}, 物理防禦: ${pDef}, 持續時間: ${duration}秒`,
-                            fullDescription: `在一定時間內，提升周圍組員的物理攻擊力，但物理防禦力會相對下降。等級${i}效果：消耗MP${mp}，物理攻擊${pAttack}，物理防禦${pDef}，持續${duration}秒。`
-                        };
-                    })
-                },
+    "id": "rage",
+    "name": "激勵",
+    "maxLevel": 20,
+    "requiredLevel": 30,
+    "preRequisite": {},
+    "description": "在一定時間內，提升周圍組員的物理攻擊力，但物理防禦力會相對下降。",
+    "imageUrl": "images/rage.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, pAttack, pDef, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        // 1-10級: 12
+        // 11-20級: 20
+        if (i >= 1 && i <= 10) {
+            mpCost = 12;
+        } else if (i >= 11 && i <= 20) {
+            mpCost = 20;
+        }
+
+        // 物理攻擊 和 物理防禦 的規律：
+        // 攻擊力從1到10，防禦力從-1到-10
+        // 1-10級: 攻擊力 i/2 (向下取整再根據數據調整), 防禦力 -i/2 (向下取整再根據數據調整)
+        // 11-20級: 攻擊力從6到10，防禦力從-6到-10 (根據數據)
+        // 這裡直接使用數據中觀察到的線性關係
+        pAttack = Math.floor((i + 1) / 2); // 攻擊力
+        if (i % 2 === 0) pAttack = Math.floor(i / 2); // 為了讓1,2級都為1，3,4級都為2，etc.
+        if (i >= 1 && i <= 10) {
+             pAttack = Math.ceil(i / 2); // 1,1,2,2,3,3,4,4,5,5
+        } else { // i >= 11
+             pAttack = Math.ceil((i - 10) / 2) + 5; // 從6開始
+        }
+        // 根據提供的數據硬編碼攻擊力和防禦力，以確保精確性
+        const pAttacksRaw = [null, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10];
+        pAttack = pAttacksRaw[i];
+        pDef = -pAttack; // 物理防禦是物理攻擊力的負數
+
+        // 持續時間 的規律：每級加10秒
+        duration = i * 10 + 100; // 等級1是110秒，所以是 (100 + 10)
+
+        return {
+            effect: `消耗MP: ${mpCost}, 物理攻擊: ${pAttack}, 物理防禦: ${pDef}, 持續時間: ${duration}秒`,
+            fullDescription: `在一定時間內，提升周圍組員的物理攻擊力，但物理防禦力會相對下降。等級${i}效果：消耗MP${mpCost}，物理攻擊${pAttack}，物理防禦${pDef}，持續時間${duration}秒。`
+        };
+    })
+},
                 {
     "id": "powerReflection",
     "name": "反射之盾",
