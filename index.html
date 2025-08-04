@@ -2482,164 +2482,259 @@ skills: {
                     })
                 },
                 {
-                    id: "elementalCharge",
-                    name: "屬性攻擊",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "利用賦予在武器的屬性，同時攻擊6個以下的多數敵人。該技能必須在賦予屬性的情況下使用。",
-                    imageUrl: "images/elementalCharge.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let hp, mp, attack;
-                        if (i === 0) return null;
-                        hp = i <= 10 ? 12 : (i <= 20 ? 19 : 26);
-                        mp = i <= 10 ? 15 : (i <= 20 ? 20 : 25);
-                        attack = 160 + i * 2; // Simplified
-                        return {
-                            effect: `消耗HP: ${hp}, 消耗MP: ${mp}, 攻擊力: ${attack}%`,
-                            fullDescription: `利用賦予在武器的屬性，同時攻擊6個以下的多數敵人。等級${i}效果：消耗HP${hp}，消耗MP${mp}，攻擊力${attack}%。`
-                        };
-                    })
-                },
+    "id": "elementalCharge",
+    "name": "屬性攻擊",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "利用賦予在武器的屬性，同時攻擊6個以下的多數敵人。該技能必須在賦予屬性的情況下使用。",
+    "imageUrl": "images/elementalCharge.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let hpCost, mpCost, attack;
+        if (i === 0) return null;
+
+        // 消耗HP 的規律
+        if (i >= 1 && i <= 10) {
+            hpCost = 12;
+        } else if (i >= 11 && i <= 20) {
+            hpCost = 19;
+        } else if (i >= 21 && i <= 30) {
+            hpCost = 26;
+        }
+
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 10) {
+            mpCost = 15;
+        } else if (i >= 11 && i <= 20) {
+            mpCost = 20;
+        } else if (i >= 21 && i <= 30) {
+            mpCost = 25;
+        }
+
+        // 攻擊力 的規律：分段線性
+        if (i >= 1 && i <= 20) {
+            attack = 160 + i * 2;
+        } else if (i >= 21 && i <= 30) {
+            attack = 210 + (i - 20) * 4;
+        }
+
+        return {
+            effect: `消耗HP: ${hpCost}, 消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
+            fullDescription: `利用賦予在武器的屬性，同時攻擊6個以下的多數敵人。等級${i}效果：消耗HP${hpCost}，消耗MP${mpCost}，攻擊力${attack}%。`
+        };
+    })
+},
                 {
-                    id: "flameChargeSword",
-                    name: "烈焰之劍",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "在配帶的劍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-                    imageUrl: "images/flameChargeSword.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, duration;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 25 : (i <= 20 ? 30 : 35);
-                        attack = 100 + i; // Simplified
-                        duration = 10 + Math.floor((i - 1) / 5) * 7; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
-                            fullDescription: `在配帶的劍類武器上賦予火屬性。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
-                        };
-                    })
-                },
+    "id": "flameChargeSword",
+    "name": "烈焰之劍",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "在配帶的劍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
+    "imageUrl": "images/flameChargeSword.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mp, attack, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        const mpCosts = [null, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
+        mp = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 102, 103, 104, 105, 106, 107, 108, 109, 109, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 119, 119, 120];
+        attack = attacks[i];
+
+        // 持續時間 的規律 (精確數值)
+        const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
+            fullDescription: `在配帶的劍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
+        };
+    })
+},
                 {
-                    id: "flameChargeBluntWeapon",
-                    name: "烈焰之棍",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "在配帶的棍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-                    imageUrl: "images/flameChargeBluntWeapon.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, duration;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 25 : (i <= 20 ? 30 : 35);
-                        attack = 100 + i; // Simplified
-                        duration = 10 + Math.floor((i - 1) / 5) * 7; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
-                            fullDescription: `在配帶的棍類武器上賦予火屬性。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
-                        };
-                    })
-                },
+    "id": "flameChargeBluntWeapon",
+    "name": "烈焰之棍",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "在配帶的棍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
+    "imageUrl": "images/flameChargeBluntWeapon.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mp, attack, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        const mpCosts = [null, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
+        mp = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 102, 103, 104, 105, 106, 107, 108, 109, 109, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 119, 119, 120];
+        attack = attacks[i];
+
+        // 持續時間 的規律 (精確數值)
+        const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
+            fullDescription: `在配帶的棍類武器上賦予火屬性。發動攻擊時，會對週遭敵人造成火焰殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
+        };
+    })
+},
                 {
-                    id: "iceChargeSword",
-                    name: "寒冰之劍",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "在配帶的劍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-                    imageUrl: "images/iceChargeSword.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, duration;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 25 : (i <= 20 ? 30 : 35);
-                        attack = 100 + i; // Simplified
-                        duration = 10 + Math.floor((i - 1) / 5) * 7; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
-                            fullDescription: `在配帶的劍類武器上賦予冰屬性。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
-                        };
-                    })
-                },
+    "id": "iceChargeSword",
+    "name": "寒冰之劍",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "在配帶的劍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
+    "imageUrl": "images/iceChargeSword.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mp, attack, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律：分段
+        const mpCosts = [null, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
+        mp = mpCosts[i];
+
+        // 攻擊力 的規律：有不規則跳變，精確列出
+        const attacks = [null, 102, 103, 104, 105, 106, 107, 108, 109, 109, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 119, 119, 120];
+        attack = attacks[i];
+
+        // 持續時間 的規律：有不規則跳變，精確列出
+        const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
+            fullDescription: `在配帶的劍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
+        };
+    })
+},
                 {
-                    id: "iceChargeBluntWeapon",
-                    name: "寒冰之棍",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "在配帶的棍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-                    imageUrl: "images/iceChargeBluntWeapon.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, duration;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 25 : (i <= 20 ? 30 : 35);
-                        attack = 100 + i; // Simplified
-                        duration = 10 + Math.floor((i - 1) / 5) * 7; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
-                            fullDescription: `在配帶的棍類武器上賦予冰屬性。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
-                        };
-                    })
-                },
+    "id": "iceChargeBluntWeapon",
+    "name": "寒冰之棍",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "在配帶的棍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
+    "imageUrl": "images/iceChargeBluntWeapon.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mp, attack, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        const mpCosts = [null, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
+        mp = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 102, 103, 104, 105, 106, 107, 108, 109, 109, 110, 110, 111, 111, 112, 112, 113, 113, 114, 114, 115, 115, 116, 116, 117, 117, 118, 118, 119, 119, 120];
+        attack = attacks[i];
+
+        // 持續時間 的規律 (精確數值)
+        const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
+            fullDescription: `在配帶的棍類武器上賦予冰屬性。發動攻擊時，敵人會在一定時間內維持冰凍狀態，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
+        };
+    })
+},
                 {
-                    id: "lightningChargeSword",
-                    name: "雷鳴之劍",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "在配帶的劍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
-                    imageUrl: "images/lightningChargeSword.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, duration;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 25 : (i <= 20 ? 30 : 35);
-                        attack = 100 + i; // Simplified
-                        duration = 10 + Math.floor((i - 1) / 5) * 7; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
-                            fullDescription: `在配帶的劍類武器上賦予雷屬性。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
-                        };
-                    })
-                },
+    "id": "lightningChargeSword",
+    "name": "雷鳴之劍",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "在配帶的劍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。",
+    "imageUrl": "images/lightningChargeSword.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mp, attack, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律：分段
+        const mpCosts = [null, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
+        mp = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 102, 104, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 117, 118, 118, 119, 119, 120, 120, 121, 121, 122, 122, 123, 123, 124, 124, 125];
+        attack = attacks[i];
+
+        // 持續時間 的規律 (精確數值)
+        const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
+            fullDescription: `在配帶的劍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會造成強大的傷害，並且此技能會消失。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
+        };
+    })
+},
+                JSON
+
+{
+    "id": "lightningChargeBluntWeapon",
+    "name": "雷鳴之棍",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "在配帶的棍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會產生強大的傷害，並且此技能會消失。",
+    "imageUrl": "images/lightningChargeBluntWeapon.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mp, attack, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律：分段
+        const mpCosts = [null, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
+        mp = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 102, 104, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 117, 118, 118, 119, 119, 120, 120, 121, 121, 122, 122, 123, 123, 124, 124, 125];
+        attack = attacks[i];
+
+        // 持續時間 的規律 (精確數值)
+        const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
+            fullDescription: `在配帶的棍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會產生強大的傷害，並且此技能會消失。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
+        };
+    })
+},
                 {
-                    id: "lightningChargeBluntWeapon",
-                    name: "雷鳴之棍",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "在配帶的棍類武器上賦予雷屬性。發動攻擊時，會對週遭敵人造成雷電殺傷力，若配合屬性攻擊則會產生強大的傷害，並且此技能會消失。",
-                    imageUrl: "images/lightningChargeBluntWeapon.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, duration;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 25 : (i <= 20 ? 30 : 35);
-                        attack = 100 + i; // Simplified
-                        duration = 10 + Math.floor((i - 1) / 5) * 7; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒`,
-                            fullDescription: `在配帶的棍類武器上賦予雷屬性。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，持續時間${duration}秒。`
-                        };
-                    })
-                },
-                {
-                    id: "magicCrash",
-                    name: "魔防消除",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "增加自身與隊友屬性攻擊傷害。（屬性充能增加10%，法師的屬性魔法傷害乘算110%）",
-                    imageUrl: "images/magicCrash.png",
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, attributeDmgIncrease;
-                        if (i === 0) return null;
-                        mp = 35 - i * 2; // Simplified
-                        attributeDmgIncrease = 0 + i * 0.5; // Starts at 0.5%
-                        return {
-                            effect: `消耗MP: ${mp}, 屬性傷害增加: ${attributeDmgIncrease}%`,
-                            fullDescription: `增加自身與隊友屬性攻擊傷害。等級${i}效果：消耗MP${mp}，屬性傷害增加${attributeDmgIncrease}%。`
-                        };
-                    })
-                }
+    "id": "magicCrash",
+    "name": "魔防消除",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "增加自身與隊友屬性攻擊傷害。（屬性充能增加10%，法師的屬性魔法傷害乘算110%）",
+    "imageUrl": "images/magicCrash.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, attributeDmgIncrease, duration;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律 (精確數值)
+        const mpCosts = [null, 35, 33, 31, 29, 27, 25, 23, 21, 19, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7];
+        mpCost = mpCosts[i];
+
+        // 屬性傷害增加 的規律：線性 (i * 0.5)
+        attributeDmgIncrease = i * 0.5;
+
+        // 持續時間 的規律 (精確數值)
+        const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300];
+        duration = durations[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 屬性傷害增加: ${attributeDmgIncrease}%, 持續時間: ${duration}秒`,
+            fullDescription: `增加自身與隊友屬性攻擊傷害。（屬性充能增加10%，法師的屬性魔法傷害乘算110%）等級${i}效果：消耗MP${mpCost}，屬性傷害增加${attributeDmgIncrease}%，持續時間${duration}秒。`
+        };
+    })
+}
             ],
             "4轉 (聖騎士)": [],
             "超技能": [],
@@ -5789,7 +5884,7 @@ skills: {
         }
 
         // --- 計算最大 SP ---
-        function calculateMaxSp(level) {
+       function calculateMaxSp(level) {
             let totalSp = 0;
             const { startingLevelForSp, jobAdvancementSpBonuses } = currentProfessionData;
 
@@ -5801,10 +5896,14 @@ skills: {
             // 2. 從起始等級開始，每級給3點SP
             totalSp += (level - startingLevelForSp) * 3;
 
-            // 3. 額外在轉職等級獲得1點SP
+            // 3. 額外在轉職等級獲得SP
             jobAdvancementSpBonuses.forEach(bonusLevel => {
                 if (level >= bonusLevel) {
-                    totalSp += 1;
+                    if (bonusLevel === 120) { // 特別處理120等轉職
+                        totalSp += 3; // 120等獲得3點
+                    } else {
+                        totalSp += 1; // 其他轉職等級獲得1點
+                    }
                 }
             });
 
