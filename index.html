@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="ui/favicon.ico">
     <title>Artale技能模擬器</title>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-13D7FF11WN"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -14,310 +14,393 @@
   gtag('config', 'G-13D7FF11WN');
 </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        h1 {
-            color: #0056b3;
-            text-align: center;
-        }
-        .controls {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .controls label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .controls select, .controls input[type="number"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 20px;
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .skill-tree {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 45%;
-        }
-        .skill-section {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-        }
-        .skill-section:last-child {
-            border-bottom: none;
-        }
-        h2 {
-            color: #d9534f;
-            border-bottom: 2px solid #d9534f;
-            padding-bottom: 5px;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-        .skill-item {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            cursor: pointer;
-            position: relative;
-        }
-        .skill-item:hover {
-            background-color: #e9e9e9;
-        }
-        .skill-header {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            min-height: 40px;
-        }
-        .skill-icon {
-            width: 32px;
-            height: 32px;
-            margin-right: 10px;
-            vertical-align: middle;
-            flex-shrink: 0;
-            object-fit: contain; /* 確保圖片不變形 */
-        }
-        .skill-name {
-            flex-grow: 1;
-            font-weight: bold;
-            color: #555;
-            padding-right: 10px;
-            display: flex;
-            align-items: center;
-        }
-        .skill-level-controls {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .skill-level-controls button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s;
-        }
-        .skill-level-controls button:hover:not(:disabled) {
-            background-color: #0056b3;
-        }
-        .skill-level-controls button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        /* 新增的點滿按鈕樣式 */
-        .skill-level-controls .max-button {
-            background-color: #28a745; /* 綠色 */
-            margin-left: 10px; /* 與 +/- 按鈕間距 */
-        }
-        .skill-level-controls .max-button:hover:not(:disabled) {
-            background-color: #218838;
-        }
-        .skill-current-level {
-            min-width: 30px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .summary {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 25%;
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-        .summary h2 {
-            color: #28a745;
-            border-bottom: 2px solid #28a745;
-        }
-        .reset-button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            margin-top: 20px;
-            transition: background-color 0.2s;
-        }
-        .reset-button:hover {
-            background-color: #c82333;
-        }
-          /* 新增：前置技能顯示區塊樣式 */
-        .skill-prerequisites {
-            width: 100%;
-            font-size: 0.8em;
-            color: #777;
-            margin-top: 5px; /* 與技能標題的間距 */
-            padding-left: 5px; /* 稍微縮排 */
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        .skill-prerequisites .prereq-met {
-            color: #28a745; /* 綠色，表示已滿足 */
-            font-weight: bold;
-        }
-        .skill-prerequisites .prereq-unmet {
-            color: #dc3545; /* 紅色，表示未滿足 */
-            font-weight: bold;
-        }
+        /* --- PC 網頁版通用樣式調整 (魔法書卷風格) --- */
 
-        /* 技能詳情內嵌區塊樣式 */
-        .skill-description-area {
-            width: 100%;
-            background-color: #e6e6e6;
-            border-top: 1px solid #ddd;
-            margin-top: 10px;
-            padding-top: 10px;
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .skill-description-area p {
-            margin: 0;
-            line-height: 1.4;
-            padding: 0 5px;
-        }
-        .skill-description-area .current-level-effect {
-            font-weight: bold;
-            color: #007bff;
-        }
-        .skill-description-area .full-description {
-            font-size: 0.85em;
-            color: #666;
-        }
-        #levelInput {
-            width: 80px;
-            padding: 5px;
-            margin-left: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+body {
+    /* 確保背景舒適且不過於花俏，如果還沒有羊皮紙紋理，可以考慮加入 */
+    background-color: #f0e6d6; /* 柔和的羊皮紙底色 */
+    background-image: url('ui/parchment_texture.png');
+    background-size: 100% 100%; /* 寬度固定為100%，高度拉伸以填滿整個內容區域 */
+    background-repeat: no-repeat; /* 背景不重複 */
+    background-attachment: scroll; /* PC版：背景隨頁面滾動 */
+    background-position: center top; /* PC版：背景置頂 */
+    font-family: 'Segoe UI', Arial, sans-serif; /* 常用且清晰的字體，或使用您喜歡的Google Fonts */
+    line-height: 1.6; /* 增加行高，提升閱讀舒適度 */
+    color: #333; /* 預設文字顏色 */
+    display: flex; /* 讓body成為flex容器 */
+    flex-direction: column; /* 垂直排列 */
+    align-items: center; /* 水平居中所有內容 */
+    min-height: 100vh; /* 確保內容至少佔據整個視窗高度 */
+}
+
+h1 {
+    font-family: 'Cinzel Decorative', serif; /* 更具裝飾性的標題字體 */
+    color: #4a2d1d; /* 深棕色，與書卷風格更搭 */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* 增加文字陰影，提升立體感 */
+    margin-top: 50px; /* 在標題上方增加間距，使其不會緊貼頂部 */
+    margin-bottom: 30px; /* 增加與控制區的間距 */
+    font-size: 2.5em; /* 調整標題大小 */
+    letter-spacing: 2px; /* 增加字元間距，更顯大氣 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-icon {
+    height: 3.5em; /* 讓圖示高度與文字大小協調 */
+    margin-right: 30px; /* 圖示與文字的間距 */
+    vertical-align: middle; /* 確保垂直對齊 */
+}
+
+.controls {
+    background-color: rgba(255, 255, 255, 0.5); /* 輕微透明背景 */
+    padding: 15px 30px; /* 增加內邊距 */
+    border-radius: 10px; /* 圓潤邊角 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 較明顯的陰影，提升層次感 */
+    margin-bottom: 25px; /* 與主內容區的間距 */
+    display: flex; /* 確保內部元素對齊 */
+    align-items: center;
+    justify-content: center;
+    gap: 30px; /* 控制元素之間更大間距 */
+}
+
+.controls label {
+    font-size: 1.1em; /* 調整標籤字體大小 */
+    color: #5d4037; /* 深棕色 */
+}
+
+.controls select,
+.controls input[type="number"] {
+    padding: 10px 15px; /* 增加輸入框和選單的內邊距 */
+    border: 2px solid #795548; /* 更明顯的邊框 */
+    border-radius: 8px; /* 圓角 */
+    background-color: #fefefe8c; /* 淺色背景 */
+    color: #4e342e; /* 深文字 */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.158); /* 內陰影，提升質感 */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* 鼠標懸停過渡 */
+}
+
+.controls select:focus,
+.controls input[type="number"]:focus {
+    border-color: #a1887f; /* 聚焦時的邊框顏色 */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(161, 136, 127, 0.5); /* 聚焦時的陰影 */
+    outline: none; /* 移除瀏覽器預設的聚焦外框 */
+}
+
+.reset-button, .share-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.reset-button { background-color: #d32f2f; }
+.reset-button:hover { background-color: #c62828; }
+.share-button { background-color: #1976d2; }
+.share-button:hover { background-color: #1565c0; }
+
+.container {
+    display: flex; /* 保持 flex 佈局，實現左右分欄 */
+    justify-content: center;
+    gap: 30px; /* 增加技能樹和總結區塊的間距 */
+    max-width: 1200px; /* 限制整體內容最大寬度，避免過寬 */
+    width: 90%; /* 佔據大部分可用寬度 */
+    margin-bottom: 40px; /* 增加與頁面底部的間距 */
+    flex-grow: 1; /* 讓主內容區塊擴展以填滿剩餘的垂直空間 */
+    align-items: flex-start; /* 讓技能樹和總結區塊從頂部對齊，解決空白問題 */
+}
+
+.skill-tree,
+.summary {
+    background-color: rgba(252, 242, 223, 0.5); /* 讓內容區塊有近乎不透明的紙張感 */
+    border: 3px solid #795548; /* 更粗的書卷邊框 */
+    border-radius: 12px; /* 更圓潤的邊角 */
+    padding: 40px; /* 增加內邊距，模擬書頁的寬廣邊緣 */
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.3), /* 顯著的下層陰影 */
+        inset 0 0 0 6px rgba(181, 158, 145, 0.4); /* 內邊框的陰影，模擬紙張厚度 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 平滑的懸停過渡 */
+    position: relative;
+    overflow: hidden;
+    /* 模擬輕微捲曲的效果 */
+    transform: perspective(1000px) rotateX(2deg) translateY(-8px); /* 輕微的3D旋轉和上移 */
+}
+
+.skill-tree:hover,
+.summary:hover {
+    transform: perspective(1000px) rotateX(0deg) translateY(0px); /* 鼠標懸停時稍微展開，增加互動感 */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4),
+                inset 0 0 0 6px rgba(181, 158, 145, 0.5);
+}
+
+.skill-tree {
+    width: 80%; /* 技能樹佔比更大 */
+}
+
+.summary {
+    width: 20%; /* 總結區塊佔比 */
+    position: sticky; /* 讓總結區塊在滾動時懸浮 */
+    top: 150px; /* 距離頂部 150px，讓它位置更低 */
+    height: fit-content; /* 高度自適應內容，避免不必要的拉伸 */
+}
+
+h2 {
+    font-family: 'Cinzel Decorative', cursive; /* 與H1風格一致 */
+    color: #795548; /* 深棕色 */
+    border-bottom: 3px solid #795548; /* 更粗的底線 */
+    padding-bottom: 8px;
+    margin-bottom: 25px;
+    text-align: center; /* 標題居中 */
+}
+
+/* 技能項目 (skill-item) 內部的微調 */
+.skill-item {
+    padding: 12px; /* 增加內邊距 */
+    margin-bottom: 15px; /* 增加間距 */
+    background-color: rgba(255, 255, 255, 0.65); /* 輕微透明，讓紋理透出 */
+    border: 1px solid #bcaaa4; /* 細緻邊框 */
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 輕微陰影 */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.skill-item:hover {
+    transform: translateY(-3px); /* 鼠標懸停時輕微上浮 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.skill-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.skill-icon {
+    width: 40px; /* 調整圖示大小，使其在PC上更顯眼 */
+    height: 40px;
+    margin-right: 15px;
+}
+
+.skill-name {
+    /* 這裡的修改：移除 flex-grow: 1; 並添加防止換行的屬性 */
+    /* flex-grow: 1; <-- 移除這行 */
+    flex-shrink: 1; /* 允許縮小 */
+    overflow: hidden; /* 隱藏溢出內容 */
+    text-overflow: ellipsis; /* 溢出時顯示省略號 */
+    white-space: nowrap; /* 強制文字不換行 */
+    font-size: 1.1em; /* 調整技能名稱字體 */
+    color: #4e342e; /* 與主題色協調 */
+    /* padding-right: 10px; 保持原本的間距 */
+    /* display: flex; align-items: center; 保持原本的flex對齊 */
+}
+
+.skill-level-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 保持按鈕間距 */
+    flex-shrink: 0; /* 阻止這個區塊縮小 */
+    white-space: nowrap; /* 阻止按鈕換行 */
+    margin-left: auto; /* 將控制按鈕推到右邊 */
+}
+.skill-level-controls button {
+    padding: 8px 15px; /* 按鈕更大，更易點擊 */
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: uppercase; /* 文字大寫，增加力量感 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 按鈕陰影 */
+    background-color: #a1887f; /* 淺棕色，與書卷風格協調 */
+    color: #f5f5f5; /* 淺色文字以確保可讀性 */
+    border: 1px solid #795548; /* 深棕色邊框 */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.skill-level-controls button:hover:not(:disabled) {
+    background-color: #8d6e63; /* 懸停時加深顏色 */
+}
+.skill-level-controls button:disabled {
+    background-color: #d7ccc8; /* 禁用時的顏色 */
+    color: #a1887f;
+    cursor: not-allowed;
+    border-color: #bcaaa4;
+}
+.skill-level-controls .max-button {
+    background-color: #4caf50; /* 點滿按鈕更亮的綠色 */
+}
+.skill-level-controls .max-button:hover:not(:disabled) {
+    background-color: #388e3c;
+}
+
+.skill-current-level {
+    font-size: 1.1em;
+    min-width: 40px; /* 確保顯示足夠空間 */
+    color: #6d4c41; /* 調整顏色 */
+}
+
+.skill-prerequisites {
+    font-size: 0.85em; /* 調整字體大小 */
+    color: #6d4c41; /* 更深的顏色 */
+    margin-top: 10px; /* 與上方內容間距 */
+    padding-top: 8px; /* 內邊距 */
+    border-top: 1px dashed #d7ccc8; /* 虛線分隔，更具書卷感 */
+}
+.skill-prerequisites .prereq-met {
+    color: #388e3c; /* 更深的綠色 */
+}
+.skill-prerequisites .prereq-unmet {
+    color: #d32f2f; /* 更深的紅色 */
+}
+
+.skill-description-area {
+    background-color: rgba(245, 245, 245, 0.9); /* 略淺的背景，與技能項目主體有層次 */
+    border-top: 1px solid #bcaaa4;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 6px;
+}
+.skill-description-area .current-level-effect {
+    color: #1976d2; /* 調整藍色 */
+}
+.skill-description-area .full-description {
+    color: #5d4037; /* 深棕色 */
+}
+
+/* 新增：垂直分隔線樣式 */
+.vertical-separator {
+    border-left: 1px solid #d7ccc8; /* 垂直線條，顏色與其他分隔線協調 */
+    margin: 0 15px; /* 左右間距 */
+    align-self: stretch; /* 讓分隔線自動延展高度 */
+}
  /* --- 手機版適應性調整 (Media Queries) --- */
         @media (max-width: 768px) {
+            /* 1. 整體與標題 */
             body {
-                margin: 10px; /* 縮小整體邊距 */
+                padding: 0 10px; /* 調整 body 邊距，避免內容緊貼螢幕邊緣 */
+                -webkit-text-size-adjust: 100%; /* 防止 iOS 橫向時自動放大字體 */
+                background-attachment: fixed; /* 手機版：背景固定 */
+                background-position: center center; /* 手機版：背景置中 */
+                background-size: cover; /* 手機版：覆蓋整個畫面，保持比例並裁切 */
             }
-
             h1 {
-                font-size: 1.5em; /* 縮小標題字體 */
+                font-size: 1.8em; /* 調整標題大小 */
+                margin: 25px 0; /* 調整標題上下間距 */
             }
 
+            /* 2. 控制區塊 */
             .controls {
                 flex-direction: column; /* 控制區塊垂直堆疊 */
-                align-items: center; /* 居中對齊 */
-                margin-right: 0; /* 移除右側間距 */
+                width: 100%;
+                padding: 15px;
+                gap: 15px; /* 縮小元素間距 */
+                box-sizing: border-box;
             }
-
             .controls label,
             .controls select,
-            .controls input[type="number"] {
-                width: calc(100% - 20px); /* 讓輸入框和下拉選單佔滿寬度，並預留一些邊距 */
-                margin-right: 0; /* 移除右側間距 */
-                margin-bottom: 10px; /* 增加垂直間距 */
+            .controls input[type="number"],
+            .controls .reset-button {
+                width: 100%;
+                margin: 0; /* 移除所有外邊距 */
+                box-sizing: border-box;
             }
-            .controls input[type="number"] {
-                margin-left: 0; /* 移除左側間距 */
+            .controls label {
+                text-align: left; /* 標籤文字靠左 */
+                margin-bottom: -5px; /* 縮小與輸入框的距離 */
             }
 
+            /* 3. 主內容容器 */
             .container {
                 flex-direction: column; /* 主內容區塊垂直堆疊 */
-                gap: 15px; /* 縮小內容區塊間距 */
+                width: 100%;
+                gap: 20px; /* 調整技能樹與總結區塊的間距 */
             }
 
+            /* 4. 技能樹與總結區塊 */
             .skill-tree,
             .summary {
-                width: 98%; /* 讓技能樹和總結區塊佔滿大部分寬度 */
-                margin-left: auto; /* 居中 */
-                margin-right: auto; /* 居中 */
+                width: 100%;
+                padding: 20px; /* 縮小內邊距 */
+                box-sizing: border-box;
+                transform: none; /* 移除 PC 版的 3D 傾斜效果 */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* 使用較柔和的陰影 */
             }
-
             .summary {
-                position: static; /* 手機版取消吸頂效果，讓它自然流動 */
-                margin-top: 15px; /* 與技能樹的間距 */
+                position: static; /* 取消吸頂效果 */
+                margin-top: 0;
+            }
+            .summary p {
+                margin: 0.7em 0; /* 調整總結區塊的行間距 */
+            }
+            h2 {
+                font-size: 1.5em; /* 縮小區塊標題 */
+                margin-bottom: 20px;
             }
 
+            /* 5. 技能項目 */
             .skill-item {
-                padding: 8px; /* 縮小技能項目內邊距 */
+                padding: 10px; /* 調整內邊距 */
+                margin-bottom: 10px;
             }
-
+            .skill-header {
+                flex-wrap: wrap; /* 允許換行 */
+                gap: 10px 0; /* 增加垂直間距 */
+            }
             .skill-icon {
-                width: 28px; /* 縮小技能圖示 */
-                height: 28px;
-                margin-right: 8px;
+                width: 32px; /* 縮小圖示 */
+                height: 32px;
+                margin-right: 10px;
             }
-
             .skill-name {
-                font-size: 0.95em; /* 縮小技能名稱字體 */
+                /* 讓技能名稱和圖示佔據一行，並推開控制按鈕 */
+                flex-grow: 1;
+                white-space: normal; /* 允許名稱換行 */
+                font-size: 1em;
             }
-
+            .skill-level-controls {
+                /* 讓控制按鈕佔據整行，並靠右對齊 */
+                flex-basis: 100%;
+                justify-content: flex-end;
+                gap: 8px;
+            }
             .skill-level-controls button {
-                padding: 4px 8px; /* 縮小按鈕內邊距 */
-                font-size: 0.9em; /* 縮小按鈕字體 */
+                padding: 6px 12px; /* 調整按鈕大小 */
+                font-size: 1em;
             }
 
             .skill-current-level {
-                min-width: 25px; /* 調整點數顯示寬度 */
+                font-size: 1em;
+                min-width: 30px;
             }
 
+            /* 6. 前置與描述 */
             .skill-prerequisites {
-                font-size: 0.75em; /* 縮小前置技能字體 */
-                padding-left: 0; /* 移除左側縮排 */
-                text-align: center; /* 前置技能文字居中 */
-                justify-content: center; /* 內部元素居中 */
-            }
-            .skill-prerequisites span {
-                white-space: nowrap; /* 防止單個前置技能名稱斷行 */
-            }
-
-            .skill-description-area {
-                padding-top: 8px; /* 縮小詳情區塊內邊距 */
-            }
-            .skill-description-area .current-level-effect {
-                font-size: 0.9em;
-            }
-            .skill-description-area .full-description {
                 font-size: 0.8em;
+                justify-content: flex-start; /* 文字靠左對齊 */
+                text-align: left;
+            }
+            .skill-description-area {
+                padding: 10px;
+            }
+            .skill-description-area .current-level-effect,
+            .skill-description-area .full-description {
+                font-size: 0.9em; /* 統一描述字體大小 */
             }
         }
     </style>
 </head>
 <body>
-    <h1>Artale技能模擬器</h1>
+    <h1><img src="ui/title-icon.png" alt="標題圖示" class="title-icon">Artale技能模擬器</h1>
 
     <div class="controls">
         <label for="professionSelect">選擇職業:</label>
         <select id="professionSelect" onchange="loadProfessionData(this.value)">
             </select>
         <label for="levelInput">當前等級:</label>
-        <input type="number" id="levelInput" value="1" min="1" max="300" oninput="updateLevelFromInput()">
+        <input type="number" id="levelInput" value="100" min="1" max="300" oninput="updateLevelFromInput()">
         <button class="reset-button" onclick="resetSimulator()">重置</button>
+        <button class="share-button" onclick="shareBuild()">分享配點</button>
     </div>
 
     <div class="container">
@@ -328,18 +411,18 @@
             <h2>點數總結</h2>
             <p>總已分配點數: <span id="spentSp">0</span></p>
             <p>剩餘點數: <span id="remainingSp">0</span></p>
-            <hr> <p>1轉已分配點數: <span id="spentSp_1stJob">0</span></p>
-            <p>2轉已分配點數: <span id="spentSp_2ndJob">0</span></p>
-            <p>3轉已分配點數: <span id="spentSp_3rdJob">0</span></p>
-            <p>4轉已分配點數: <span id="spentSp_4thJob">0</span></p>
+            <hr>
+            <p>1轉已分配/(2轉需求): <span id="spentSp_1stJob">0</span> / <span id="reqSp_2ndJob">0</span></p>
+            <p>2轉已分配/(3轉需求): <span id="spentSp_2ndJob_total">0</span> / <span id="reqSp_3rdJob">0</span></p>
+            <p>3轉已分配/(4轉需求): <span id="spentSp_3rdJob_total">0</span> / <span id="reqSp_4thJob">0</span></p>
             </div>
     </div>
 
     <script>
 
         // --- 所有職業的數據結構 ---
-        const allProfessionsData = {
-            "主教": {
+               const allProfessionsData = {
+            "主教 (Bishop)": {
                 startingLevelForSp: 8,
                 jobAdvancementSpBonuses: [8, 30, 70, 120],
                 jobStagesOrder: ["0轉 (新手)", "1轉 (魔法師)", "2轉 (僧侶)", "3轉 (祭司)", "4轉 (主教)", "超技能", "5轉技能", "共通技能"],
@@ -750,7 +833,7 @@
                     "共通技能": []
                 }
             },
-            "火毒大魔導": {
+            "火毒大魔導 (Arch Mage F/P)": {
                 startingLevelForSp: 8,
                 jobAdvancementSpBonuses: [8, 30, 70, 120], // 轉職額外SP的等級點
                 jobStagesOrder: ["0轉 (新手)", "1轉 (魔法師)", "2轉 (火毒巫師)", "3轉 (火毒魔導士)", "4轉 (烈焰巫師)", "超技能", "5轉技能", "共通技能"], // 定義轉職階段的順序
@@ -1194,7 +1277,7 @@
                     "共通技能": []
                 }
             },
-            "冰雷大魔導": {
+            "冰雷大魔導 (Arch Mage I/L)": {
         startingLevelForSp: 8,
         jobAdvancementSpBonuses: [8, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (魔法師)", "2轉 (冰雷巫師)", "3轉 (冰雷魔導士)", "4轉 (冰雷大魔導)", "超技能", "5轉技能", "共通技能"],
@@ -1604,7 +1687,7 @@
                     "共通技能": []
                 }
             },
-            "英雄": {
+            "英雄 (Hero)": {
         startingLevelForSp: 10, // 劍士系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (劍士)", "2轉 (狂戰士)", "3轉 (十字軍)", "4轉 (英雄)", "超技能", "5轉技能", "共通技能"],
@@ -2139,7 +2222,7 @@ skills: {
             "共通技能": []
         }
     },
-            "聖騎士": {
+            "聖騎士 (Paladin)": {
         startingLevelForSp: 10, // 劍士系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (劍士)", "2轉 (見習騎士)", "3轉 (騎士)", "4轉 (聖騎士)", "超技能", "5轉技能", "共通技能"],
@@ -2741,7 +2824,7 @@ skills: {
             "共通技能": []
         }
     },
-            "黑騎士": {
+            "黑騎士 (Dark Knight)": {
         startingLevelForSp: 10, // 劍士系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (劍士)", "2轉 (槍騎兵)", "3轉 (龍騎士)", "4轉 (黑騎士)", "超技能", "5轉技能", "共通技能"],
@@ -3163,7 +3246,7 @@ skills: {
                         if (i === 0) return null;
                         const mpCosts = [null, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18];
                         const attacks = [null, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350];
-                        const hpReductions = [null, 30, 29, 28, 27, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5];
+                        const hpReductions = [null, 30, 29, 28, 27, 18, 17, 17, 16, 16, 15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
                         mp = mpCosts[i];
                         attack = attacks[i];
                         hpReduction = hpReductions[i];
@@ -3260,7 +3343,7 @@ skills: {
             "共通技能": []
         }
     },
-            "箭神": {
+            "箭神 (Bowmaster)": {
         startingLevelForSp: 10, // 弓箭手系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (弓箭手)", "2轉 (獵人)", "3轉 (遊俠)", "4轉 (箭神)", "超技能", "5轉技能", "共通技能"],
@@ -3352,25 +3435,30 @@ skills: {
                     ].concat(Array(18).fill({ effect: "無此等級效果資料", fullDescription: "數據缺失或無法精確計算此等級效果。" }))
                 },
                 {
-                    id: "doubleShot",
-                    name: "二連箭",
-                    maxLevel: 20,
-                    requiredLevel: 10,
-                    preRequisite: { "arrowBlow": 1 },
-                    description: "一次射出兩枝箭，向怪物發動兩次攻擊。",
-                    imageUrl: "images/doubleShot.png",
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, attack;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 8, 8, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15];
-                        const attacks = [null, 76, 78, 80, 82, 86, 88, 90, 94, 96, 100, 102, 106, 108, 112, 114, 118, 120, 124, 126, 130];
-                        mp = mpCosts[i];
-                        attack = attacks[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%`,
-                            fullDescription: `一次射出兩枝箭，向怪物發動兩次攻擊。等級${i}效果：消耗MP${mp}，攻擊力${attack}%。`
-                        };
-                    })
+                        "id": "doubleShot",
+    "name": "二連箭",
+    "maxLevel": 20,
+    "requiredLevel": 10,
+    "preRequisite": { "arrowBlow": 1 },
+    "description": "一次射出兩枝箭，向怪物發動兩次攻擊。",
+    "imageUrl": "images/doubleShot.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, attack;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律 (精確數值)
+        const mpCosts = [null, 8, 8, 8, 8, 9, 9, 11, 12, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15];
+        mpCost = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130];
+        attack = attacks[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
+            fullDescription: `一次射出兩枝箭，向怪物發動兩次攻擊。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%。`
+        };
+    })
                 }
             ],
             "2轉 (獵人)": [
@@ -3646,23 +3734,35 @@ skills: {
                     })
                 },
                 {
-                    id: "arrowRain",
-                    name: "箭雨",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: { "mortalBlow": 5 },
-                    description: "從高空墜落箭雨攻擊周圍的敵人，最多攻擊6個怪物。只限裝備弓箭才能使用。",
-                    imageUrl: "images/arrowRain.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 18 : (i <= 20 ? 23 : 28);
-                        attack = 55 + i * 3.5; // Simplified
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%`,
-                            fullDescription: `從高空墜落箭雨攻擊周圍的敵人，最多攻擊6個怪物。等級${i}效果：消耗MP${mp}，攻擊力${attack}%。`
-                        };
-                    })
+                        "id": "arrowRain",
+    "name": "箭雨",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": { "mortalBlow": 5 },
+    "description": "從高空墜落箭雨攻擊周圍的敵人，最多攻擊6個怪物。只限裝備弓箭才能使用。",
+    "imageUrl": "images/arrowRain.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, attack;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 10) {
+            mpCost = 18;
+        } else if (i >= 11 && i <= 20) {
+            mpCost = 23;
+        } else if (i >= 21 && i <= 30) {
+            mpCost = 28;
+        }
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 80, 83, 86, 89, 92, 95, 98, 101, 104, 107, 110, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 154, 156, 158, 159, 160];
+        attack = attacks[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
+            fullDescription: `從高空墜落箭雨攻擊周圍的敵人，最多攻擊6個怪物。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%。`
+        };
+    })
                 },
                 {
                     id: "summonSilverHawk",
@@ -3692,7 +3792,7 @@ skills: {
             "共通技能": []
         }
     },
-            "神射手": {
+            "神射手 (Marksman)": {
         startingLevelForSp: 10, // 弓箭手系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (弓箭手)", "2轉 (弩弓手)", "3轉 (狙擊手)", "4轉 (神射手)", "超技能", "5轉技能", "共通技能"],
@@ -3783,25 +3883,30 @@ skills: {
                     ].concat(Array(18).fill({ effect: "無此等級效果資料", fullDescription: "數據缺失或無法精確計算此等級效果。" }))
                 },
                 {
-                    id: "doubleShot",
-                    name: "二連箭",
-                    maxLevel: 20,
-                    requiredLevel: 10,
-                    preRequisite: { "arrowBlow": 1 },
-                    description: "一次射出兩枝箭，向怪物發動兩次攻擊。",
-                    imageUrl: "images/doubleShot.png",
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, attack;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 8, 8, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15];
-                        const attacks = [null, 76, 78, 80, 82, 86, 88, 90, 94, 96, 100, 102, 106, 108, 112, 114, 118, 120, 124, 126, 130];
-                        mp = mpCosts[i];
-                        attack = attacks[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%`,
-                            fullDescription: `一次射出兩枝箭，向怪物發動兩次攻擊。等級${i}效果：消耗MP${mp}，攻擊力${attack}%。`
-                        };
-                    })
+                        "id": "doubleShot",
+    "name": "二連箭",
+    "maxLevel": 20,
+    "requiredLevel": 10,
+    "preRequisite": { "arrowBlow": 1 },
+    "description": "一次射出兩枝箭，向怪物發動兩次攻擊。",
+    "imageUrl": "images/doubleShot.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, attack;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律 (精確數值)
+        const mpCosts = [null, 8, 8, 8, 8, 9, 9, 11, 12, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15];
+        mpCost = mpCosts[i];
+
+        // 攻擊力 的規律 (精確數值)
+        const attacks = [null, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130];
+        attack = attacks[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
+            fullDescription: `一次射出兩枝箭，向怪物發動兩次攻擊。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%。`
+        };
+    })
                 }
             ],
             "2轉 (弩弓手)": [
@@ -4104,7 +4209,7 @@ skills: {
             "共通技能": []
         }
     },
-            "暗影神偷": {
+            "暗影神偷 (Shadower)": {
         startingLevelForSp: 10, // 盜賊系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (盜賊)", "2轉 (俠盜)", "3轉 (神偷)", "4轉 (暗影神偷)", "超技能", "5轉技能", "共通技能"],
@@ -4439,24 +4544,61 @@ skills: {
                     })
                 },
                 {
-                    id: "shadowPartner",
-                    name: "分身術",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "召喚分身對周圍多個敵人發動攻擊，最多可同時攻擊6個怪物。",
-                    imageUrl: "images/shadowPartner.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let mp, attack, cloneCount;
-                        if (i === 0) return null;
-                        mp = i <= 6 ? 10 : (i <= 12 ? 20 : (i <= 18 ? 30 : (i <= 24 ? 40 : 50)));
-                        attack = 100 + i * 5; // Simplified
-                        cloneCount = i <= 6 ? 1 : (i <= 12 ? 2 : (i <= 18 ? 3 : (i <= 24 ? 4 : 5)));
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 分身數: ${cloneCount}`,
-                            fullDescription: `召喚分身對周圍多個敵人發動攻擊，最多可同時攻擊6個怪物。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，分身數${cloneCount}。`
-                        };
-                    })
+                    "id": "shadowPartner",
+    "name": "分身術",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。",
+    "imageUrl": "images/shadowPartner.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, attack, numClones;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 6) {
+            mpCost = 10;
+        } else if (i >= 7 && i <= 12) {
+            mpCost = 20;
+        } else if (i >= 13 && i <= 18) {
+            mpCost = 30;
+        } else if (i >= 19 && i <= 24) {
+            mpCost = 40;
+        } else if (i >= 25 && i <= 30) {
+            mpCost = 50;
+        }
+
+        // 攻擊力 的規律：分段線性
+        if (i >= 1 && i <= 6) {
+            attack = 100 + i * 10;
+        } else if (i >= 7 && i <= 12) {
+            attack = 110 + (i - 6) * 10;
+        } else if (i >= 13 && i <= 18) {
+            attack = 120 + (i - 12) * 10;
+        } else if (i >= 19 && i <= 24) {
+            attack = 130 + (i - 18) * 10;
+        } else if (i >= 25 && i <= 30) {
+            attack = 150 + (i - 24) * 10;
+        }
+
+        // 分身數 的規律：分段
+        if (i >= 1 && i <= 6) {
+            numClones = 1;
+        } else if (i >= 7 && i <= 12) {
+            numClones = 2;
+        } else if (i >= 13 && i <= 18) {
+            numClones = 3;
+        } else if (i >= 19 && i <= 24) {
+            numClones = 4;
+        } else if (i >= 25 && i <= 30) {
+            numClones = 5;
+        }
+
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 分身數: ${numClones}`,
+            fullDescription: `召喚分身對周圍多個敵人發動攻擊，最多可同時攻擊6個怪物。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，分身數${numClones}。`
+        };
+    })
                 },
                 {
                     id: "mesoGuardShield",
@@ -4508,7 +4650,7 @@ skills: {
             "共通技能": []
         }
     },
-            "夜使者": {
+            "夜使者 (Night Lord)": {
         startingLevelForSp: 10, // 盜賊系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (盜賊)", "2轉 (刺客)", "3轉 (暗殺者)", "4轉 (夜使者)", "超技能", "5轉技能", "共通技能"],
@@ -4797,7 +4939,7 @@ skills: {
     })
 },
                {
-    "id": "luckyCharm",
+     "id": "luckyCharm",
     "name": "幸運術",
     "maxLevel": 20,
     "requiredLevel": 70,
@@ -4808,11 +4950,7 @@ skills: {
         let mpCost, duration, increaseRate;
         if (i === 0) return null;
 
-        // 消耗MP 的規律
-        // 1-5級: 45
-        // 6-10級: 50
-        // 11-15級: 55
-        // 16-20級: 60
+        // 消耗MP 的規律：分段
         if (i >= 1 && i <= 5) {
             mpCost = 45;
         } else if (i >= 6 && i <= 10) {
@@ -4823,22 +4961,20 @@ skills: {
             mpCost = 60;
         }
 
-        // 持續時間 的規律：
-        // 1-10級: 每級加10秒 (10, 20, ..., 100)
-        // 11-20級: 每級加20秒 (120, 140, ..., 300) - 這裡根據您提供的資料，從11級開始持續時間似乎是從120秒開始，之後每級加10或20秒，因此需要分段計算。
+        // 持續時間 的規律：分段線性
         if (i >= 1 && i <= 10) {
             duration = i * 10;
-        } else if (i >= 11 && i <= 20) {
-            // Level 11 is 120s, so it's 100 + (i-10)*20 for levels 11-15 (simplified)
-            // Level 16 is 220s, so it's 200 + (i-15)*20 for levels 16-20 (simplified)
-            // Let's use exact values provided:
-            const durationsRaw = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300];
-            duration = durationsRaw[i];
+        } else { // i >= 11 && i <= 20
+            duration = 100 + (i - 10) * 20;
         }
 
-        // 增加率 的規律：每級加3%
-        increaseRate = i * 3;
-
+        // 增加率 的規律：分段線性
+        if (i >= 1 && i <= 10) {
+            increaseRate = i * 3;
+        } else { // i >= 11 && i <= 20
+            increaseRate = 30 + (i - 10) * 2;
+        }
+        
         return {
             effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 增加率: ${increaseRate}%`,
             fullDescription: `一定時間內，包括自己及周圍的隊友，在獵殺怪物時可獲得更多的楓幣。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，增加率${increaseRate}%。`
@@ -4935,25 +5071,34 @@ skills: {
                     })
                 },
                 {
-                    id: "mesoAttack", // 楓幣攻擊
-                    name: "楓幣攻擊",
-                    maxLevel: 30,
-                    requiredLevel: 70,
-                    preRequisite: { "luckyCharm": 5 },
-                    description: "使用楓幣進行攻擊，根據投擲的楓幣數量，對敵人造成傷害。該技能將無視敵人物理防禦及魔法防禦的提升。強打率:一定機率多增加50%傷害",
-                    imageUrl: "images/mesoAttack.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        let minMeso, maxMeso, procRate, attack;
-                        if (i === 0) return null;
-                        minMeso = 50 + i * 10;
-                        maxMeso = 200 + i * 20;
-                        procRate = 1 + Math.floor((i - 1) / 5) * 1; // Simplified
-                        attack = 150; // Fixed at 150%
-                        return {
-                            effect: `最小消耗金幣: ${minMeso}, 最大消耗金幣: ${maxMeso}, 強打率: ${procRate}%, 攻擊力: ${attack}%`,
-                            fullDescription: `使用楓幣進行攻擊，根據投擲的楓幣數量，對敵人造成傷害。等級${i}效果：最小消耗金幣${minMeso}，最大消耗金幣${maxMeso}，強打率${procRate}%，攻擊力${attack}%。`
-                        };
-                    })
+                    "id": "mesoAttack",
+    "name": "楓幣攻擊",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": { "luckyCharm": 5 },
+    "description": "使用楓幣進行攻擊，根據投擲的楓幣數量，對敵人造成傷害。該技能將無視敵人物理防禦及魔法防禦的提升。強打率:一定機率多增加50%傷害",
+    "imageUrl": "images/mesoAttack.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let minMeso, maxMeso, procRate, attack;
+        if (i === 0) return null;
+
+        // 最小消耗金幣的規律：線性 (40 + i * 10)
+        minMeso = 40 + i * 10;
+        
+        // 最大消耗金幣的規律：線性 (200 + i * 20)
+        maxMeso = 200 + i * 20;
+
+        // 強打率 的規律：線性 (1% 到 30%)
+        procRate = i;
+
+        // 攻擊力 固定150%
+        attack = 150;
+
+        return {
+            effect: `最小消耗金幣: ${minMeso}, 最大消耗金幣: ${maxMeso}, 強打率: ${procRate}%, 攻擊力: ${attack}%`,
+            fullDescription: `使用楓幣進行攻擊，根據投擲的楓幣數量，對敵人造成傷害。等級${i}效果：最小消耗金幣${minMeso}，最大消耗金幣${maxMeso}，強打率${procRate}%，攻擊力${attack}%。`
+        };
+    })
                 },
                 {
                     id: "windDemonShuriken", // 風魔手裡劍
@@ -5000,7 +5145,7 @@ skills: {
             "共通技能": []
         }
     },
-            "拳霸": {
+            "拳霸 (Buccaneer)": {
         startingLevelForSp: 10, // 海盜系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (海盜)", "2轉 (打手)", "3轉 (格鬥家)", "4轉 (拳霸)", "超技能", "5轉技能", "共通技能"],
@@ -5422,7 +5567,7 @@ skills: {
             "共通技能": []
         }
     },
-            "槍神": {
+            "槍神 (Corsair)": {
         startingLevelForSp: 10, // 海盜系通常10等轉職
         jobAdvancementSpBonuses: [10, 30, 70, 120],
         jobStagesOrder: ["0轉 (新手)", "1轉 (海盜)", "2轉 (槍手)", "3轉 (神槍手)", "4轉 (槍神)", "超技能", "5轉技能", "共通技能"],
@@ -5829,25 +5974,56 @@ skills: {
         };
 
         // --- 全局變數 ---
-        let currentProfessionKey = "主教"; // 預設選中的職業
+        let currentProfessionKey = "主教 (Bishop)"; // 預設選中的職業
         let currentProfessionData = allProfessionsData[currentProfessionKey];
         let skillsData = currentProfessionData.skills; // 技能數據現在會根據所選職業動態變化
 
         let currentSkillLevels = {};
         let spentSp = 0;
         let remainingSp = 0;
-        let currentLevel = 1;
+        let currentLevel = 100;
 
         // --- 初始化模擬器 ---
         function initializeSimulator() {
-            populateProfessionDropdown(); // 填充職業下拉選單
-            loadProfessionData(currentProfessionKey); // 載入預設職業數據
+            populateProfessionDropdown();
 
-            // 綁定等級輸入框事件
-            const levelInput = document.getElementById('levelInput');
-            levelInput.value = currentLevel;
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedProf = urlParams.get('prof');
+            const sharedLvl = urlParams.get('lvl');
+            const sharedSkills = urlParams.get('skills');
+
+            // 如果網址包含有效的分享資訊，則載入它
+            if (sharedProf && sharedLvl && sharedSkills && allProfessionsData[sharedProf]) {
+                // 1. 在下拉選單中設定對應的職業
+                document.getElementById('professionSelect').value = sharedProf;
+                // 2. 載入該職業的基礎數據（這會重置為預設值）
+                loadProfessionData(sharedProf);
+
+                // 3. 用分享的數據覆蓋預設值
+                currentLevel = parseInt(sharedLvl, 10);
+                document.getElementById('levelInput').value = currentLevel;
+
+                // 4. 清空預設點數並應用分享的技能點數
+                spentSp = 0;
+                Object.keys(currentSkillLevels).forEach(id => currentSkillLevels[id] = 0);
+
+                sharedSkills.split(',').forEach(pair => {
+                    const [id, lvl] = pair.split(':');
+                    const skillLevel = parseInt(lvl, 10);
+                    if (id && !isNaN(skillLevel) && currentSkillLevels.hasOwnProperty(id)) {
+                        currentSkillLevels[id] = skillLevel;
+                        spentSp += skillLevel;
+                    }
+                });
+
+                // 5. 重新計算剩餘點數並更新整個UI
+                remainingSp = calculateMaxSp(currentLevel) - spentSp;
+                updateUI();
+            } else {
+                // 否則，載入預設職業
+                loadProfessionData(currentProfessionKey);
+            }
         }
-
         // --- 填充職業下拉選單 ---
         function populateProfessionDropdown() {
             const selectElement = document.getElementById('professionSelect');
@@ -5874,12 +6050,13 @@ skills: {
                 });
             }
             spentSp = 0;
-            currentLevel = 1; // 重置角色等級
-            document.getElementById('levelInput').value = 1; // 更新等級輸入框顯示
+            currentLevel = 100; // 重置角色等級
+            document.getElementById('levelInput').value = 100; // 更新等級輸入框顯示
             remainingSp = calculateMaxSp(currentLevel);
 
-            updateUI();
+            // 修正：先渲染技能樹的HTML結構，再更新UI內容
             renderSkillTree();
+            updateUI();
         }
 
         // --- 計算最大 SP ---
@@ -5967,8 +6144,9 @@ skills: {
                         descArea.className = 'skill-description-area';
                         descArea.id = `${skill.id}-description`;
                         descArea.innerHTML = `
-                            <p>當前等級效果: <span id="${skill.id}-current-effect" class="current-level-effect"></span></p>
-                            <p class="full-description" id="${skill.id}-full-description"></p>
+                            <p>等級 <span id="${skill.id}-level-in-desc">${currentSkillLevels[skill.id]}</span> 效果: <span id="${skill.id}-current-effect" class="current-level-effect"></span></p>
+                            <span class="vertical-separator"></span>
+                            <p class="full-description" id="${skill.id}-full-description">${skill.description || "無詳細描述。"}</p>
                         `;
 
                         if (currentSkillLevels[skill.id] > 1) {
@@ -5983,67 +6161,36 @@ skills: {
                     skillTreeDiv.appendChild(sectionDiv);
                 }
             });
-            updateSkillDetailsDisplay();
+            // updateUI(); // 渲染後更新一次UI狀態
         }
 
         // --- 更新 UI 顯示 ---
-         function updateUI() {
+        function updateUI() {
             document.getElementById('spentSp').textContent = spentSp;
             document.getElementById('remainingSp').textContent = remainingSp;
-            // 注意：'currentLevel' 的顯示現在直接在 'controls' 區塊由 'levelInput' 和其 'value' 處理，不再需要單獨更新span。
 
-            // --- 新增部分：顯示各轉職階段的已分配點數 ---
-            // 獲取當前職業的轉職階段順序
             const jobStagesOrder = currentProfessionData.jobStagesOrder;
 
-            // 確保所有顯示的span元素都存在，並更新其點數
-            // 由於jobStagesOrder的索引0通常是"0轉 (新手)"，我們從索引1開始（對應1轉）
-            const spentSp1stJob = getSpentSpInJobStage(jobStagesOrder[1]); // 獲取1轉點數
+            // --- 更新各轉職階段的點數顯示 (已配置 / 轉職需求) ---
+            const spentSp1stJob = getSpentSpInJobStage(jobStagesOrder[1] || "");
+            const reqSp2ndJob = currentProfessionData.spRequiredFor2ndJob || 0;
             document.getElementById('spentSp_1stJob').textContent = spentSp1stJob;
+            document.getElementById('reqSp_2ndJob').textContent = reqSp2ndJob;
 
-            // 2轉點數 (確保2轉的key存在)
-            if (jobStagesOrder.length > 2) {
-                const spentSp2ndJob = getSpentSpInJobStage(jobStagesOrder[2]);
-                document.getElementById('spentSp_2ndJob').textContent = spentSp2ndJob;
-            } else {
-                document.getElementById('spentSp_2ndJob').textContent = 0; // 如果該職業沒有2轉，顯示0
-            }
+            const spentSp2ndJob = getSpentSpInJobStage(jobStagesOrder[2] || "");
+            const spentSp2ndJobTotal = spentSp1stJob + spentSp2ndJob;
+            const reqSp3rdJob = currentProfessionData.spRequiredFor3rdJob || 0;
+            document.getElementById('spentSp_2ndJob_total').textContent = spentSp2ndJobTotal;
+            document.getElementById('reqSp_3rdJob').textContent = reqSp3rdJob;
 
-            // 3轉點數 (確保3轉的key存在)
-            if (jobStagesOrder.length > 3) {
-                const spentSp3rdJob = getSpentSpInJobStage(jobStagesOrder[3]);
-                document.getElementById('spentSp_3rdJob').textContent = spentSp3rdJob;
-            } else {
-                document.getElementById('spentSp_3rdJob').textContent = 0; // 如果該職業沒有3轉，顯示0
-            }
+            const spentSp3rdJob = getSpentSpInJobStage(jobStagesOrder[3] || "");
+            const spentSp3rdJobTotal = spentSp2ndJobTotal + spentSp3rdJob;
+            const reqSp4thJob = currentProfessionData.spRequiredFor4thJob || 0;
+            document.getElementById('spentSp_3rdJob_total').textContent = spentSp3rdJobTotal;
+            document.getElementById('reqSp_4thJob').textContent = reqSp4thJob;
 
-            // 4轉點數 (確保4轉的key存在)
-            if (jobStagesOrder.length > 4) {
-                const spentSp4thJob = getSpentSpInJobStage(jobStagesOrder[4]);
-                document.getElementById('spentSp_4thJob').textContent = spentSp4thJob;
-            } else {
-                document.getElementById('spentSp_4thJob').textContent = 0; // 如果該職業沒有4轉，顯示0
-            }
-            // 可以在此處繼續為更多轉職階段添加顯示邏輯
-
-            // --- 以下是原本就有的技能狀態更新邏輯，保持不變 ---
+            // --- 更新所有技能的按鈕狀態和詳情 ---
             currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
-                if (skillsData[jobStageKey]) {
-                    skillsData[jobStageKey].forEach(skill => {
-                        const levelSpan = document.getElementById(`${skill.id}-level`);
-                        if (levelSpan) {
-                            levelSpan.textContent = currentSkillLevels[skill.id];
-
-                            const increaseBtn = levelSpan.nextElementSibling;
-                            const decreaseBtn = levelSpan.previousElementSibling;
-
-                            const canIncrease =
-                                currentSkillLevels[skill.id] < skill.maxLevel &&
-                                remainingSp > 0 &&
-                                checkOverallSkillConditions(skill, jobStageKey);
-
-                            if (increaseBtn) increaseBtn.disabled = !canIncrease;
-currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
                 if (skillsData[jobStageKey]) {
                     skillsData[jobStageKey].forEach(skill => {
                         const levelSpan = document.getElementById(`${skill.id}-level`);
@@ -6063,7 +6210,7 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
                             if (increaseBtn) increaseBtn.disabled = !canIncrease;
                             if (decreaseBtn) decreaseBtn.disabled = currentSkillLevels[skill.id] === 0;
 
-                            // --- 新增部分：判斷點滿按鈕是否可點擊 ---
+                            // --- 判斷點滿按鈕是否可點擊 ---
                             const spNeededToMax = skill.maxLevel - currentSkillLevels[skill.id];
                             const canMaxSkill =
                                 spNeededToMax > 0 && // 還有點數可點
@@ -6072,7 +6219,7 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
 
                             if (maxBtn) maxBtn.disabled = !canMaxSkill; // 啟用或禁用點滿按鈕
 
-                            // --- 新增部分：更新前置技能顯示 ---
+                            // --- 更新前置技能顯示 ---
                             updateSkillPrerequisitesDisplay(skill.id); 
                             // ... (技能詳情顯示邏輯保持不變) ...
                             const descArea = document.getElementById(`${skill.id}-description`);
@@ -6094,29 +6241,7 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
                     });
                 }
             });
-                            if (decreaseBtn) decreaseBtn.disabled = currentSkillLevels[skill.id] === 0;
-
-                            const descArea = document.getElementById(`${skill.id}-description`);
-                            if (descArea) {
-                                if (currentSkillLevels[skill.id] > 1) {
-                                    descArea.style.display = 'flex';
-                                    descArea.removeAttribute('data-user-toggled');
-                                } else {
-                                    const userToggled = descArea.getAttribute('data-user-toggled');
-                                    if (userToggled === 'open') {
-                                        descArea.style.display = 'flex';
-                                    } else {
-                                        descArea.style.display = 'none';
-                                    }
-                                }
-                                updateSingleSkillDetail(skill.id);
-                            }
-                        }
-                    });
-                }
-            });
         }
-        // --- 檢查所有技能點數和等級的條件 ---
         // --- 檢查所有技能點數和等級的條件 ---
         function checkOverallSkillConditions(skillBeingChecked, jobStageKeyOfSkill) {
             // 1. 檢查角色等級是否符合技能要求
@@ -6181,23 +6306,26 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
             if (!skill) return;
 
             const currentLevelPointed = currentSkillLevels[skillId];
+            const levelInDescSpan = document.getElementById(`${skillId}-level-in-desc`); // 獲取顯示等級的 span
             const effectSpan = document.getElementById(`${skillId}-current-effect`);
             const fullDescP = document.getElementById(`${skillId}-full-description`);
 
-            let effectText = "（未學習或無效果）";
-            let descriptionText = skill.description || "無詳細描述。";
+            if (levelInDescSpan) { // 更新描述區塊中的等級數字
+                levelInDescSpan.textContent = currentLevelPointed;
+            }
+
+            let effectText = "（點擊技能名稱查看效果）"; // 預設效果文字
+            // 為了避免資訊重複，詳細描述區域始終顯示技能的基礎描述
+            const descriptionText = skill.description || "無詳細描述。";
 
             if (currentLevelPointed > 0 && skill.levels && skill.levels[currentLevelPointed]) {
                 const levelData = skill.levels[currentLevelPointed];
                 effectText = levelData.effect || "（無此等級效果描述）";
-                descriptionText = levelData.fullDescription || skill.description || "無詳細描述。";
-            } else if (currentLevelPointed === 0 && skill.levels && skill.levels[1]) {
-                descriptionText = skill.levels[1].fullDescription || skill.description || "無詳細描述。";
-                effectText = "（點擊名稱查看效果）";
+                // 不再從 levelData.fullDescription 讀取，因為它與 effect 重複
             }
 
             if (effectSpan) effectSpan.textContent = effectText;
-            if (fullDescP) fullDescP.textContent = descriptionText;
+            if (fullDescP) fullDescP.innerHTML = descriptionText; // 將詳細描述區域設定為基礎描述
         }
 
         // --- 增加技能點數 ---
@@ -6237,6 +6365,28 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
                 updateUI();
             }
         }
+
+        // --- 分享配點 ---
+        async function shareBuild() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            
+            const skillsToShare = [];
+            for (const skillId in currentSkillLevels) {
+                if (currentSkillLevels[skillId] > 0) {
+                    skillsToShare.push(`${skillId}:${currentSkillLevels[skillId]}`);
+                }
+            }
+            
+            const params = new URLSearchParams({
+                prof: currentProfessionKey,
+                lvl: currentLevel,
+                skills: skillsToShare.join(',')
+            });
+            
+            const shareUrl = `${baseUrl}?${params.toString()}`;
+            await navigator.clipboard.writeText(shareUrl);
+            alert('配點連結已複製到剪貼簿！\n現在可以將連結傳給朋友了。');
+        }
 // --- 點滿技能函式 ---
        function maxSkill(skillId) {
             let skill = null;
@@ -6252,7 +6402,7 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
 
             if (!skill) return;
 
-            const spNeeded = skill.maxLevel - currentSkillLevels[skillId];
+            const spNeeded = skill.maxLevel - currentSkillLevels[skill.id];
 
             // 檢查是否可以點滿
             const canMax =
@@ -6333,7 +6483,9 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
         }
         // --- 重置模擬器 (針對當前職業) ---
         function resetSimulator() {
-            loadProfessionData(currentProfessionKey); // 重新載入當前職業，達到重置效果
+            if (confirm("您確定要重置所有技能點數嗎？")) {
+                loadProfessionData(currentProfessionKey); // 重新載入當前職業，達到重置效果
+            }
         }
 
         // --- 玩家等級輸入處理 ---
@@ -6385,7 +6537,6 @@ currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
         // 初始載入
         initializeSimulator();
     </script>
-    <h2>created by JAMOX</h2>
+    <h1>created by JAMOX</h1>
 </body>
 </html>
-
