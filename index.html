@@ -414,7 +414,7 @@ h2 {
             <hr>
             <p>1轉/(2轉需求): <span id="spentSp_1stJob">0</span> / <span id="reqSp_2ndJob">0</span></p>
             <p>2轉/(3轉需求): <span id="spentSp_2ndJob_total">0</span> / <span id="reqSp_3rdJob">0</span></p>
-            <p>3轉: <span id="spentSp_3rdJob_total">0</span> / <span id="reqSp_4thJob">0</span></p>
+            <p>3轉: <span id="spentSp_3rdJob_total">0</span></p>
             </div>
     </div>
 
@@ -6187,7 +6187,7 @@ skills: {
             const spentSp3rdJobTotal = spentSp2ndJobTotal + spentSp3rdJob;
             const reqSp4thJob = currentProfessionData.spRequiredFor4thJob || 0;
             document.getElementById('spentSp_3rdJob_total').textContent = spentSp3rdJobTotal;
-            document.getElementById('reqSp_4thJob').textContent = reqSp4thJob;
+            /*document.getElementById('reqSp_4thJob').textContent = reqSp4thJob;*/
 
             // --- 更新所有技能的按鈕狀態和詳情 ---
             currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
@@ -6539,4 +6539,5 @@ skills: {
     </script>
     <h1>MADE BY JAMOX</h1>
 </body>
+
 </html>
