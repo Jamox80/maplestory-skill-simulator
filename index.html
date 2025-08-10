@@ -127,12 +127,12 @@ h1 {
     position: relative;
     overflow: hidden;
     /* 模擬輕微捲曲的效果 */
-    transform: perspective(1000px) rotateX(2deg) translateY(-8px); /* 輕微的3D旋轉和上移 */
+    transform: perspective(3000px) rotateX(2deg) translateY(-8px); /* 輕微的3D旋轉和上移 */
 }
 
 .skill-tree:hover,
 .summary:hover {
-    transform: perspective(1000px) rotateX(0deg) translateY(0px); /* 鼠標懸停時稍微展開，增加互動感 */
+    transform: perspective(500px) rotateX(0deg) translateY(0px); /* 鼠標懸停時稍微展開，增加互動感 */
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4),
                 inset 0 0 0 6px rgba(181, 158, 145, 0.5);
 }
@@ -165,11 +165,12 @@ h2 {
     border: 1px solid #bcaaa4; /* 細緻邊框 */
     border-radius: 6px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 輕微陰影 */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 調整過渡時間以匹配點數總結區塊 */
+    transform: perspective(800px) rotateX(2deg); /* 增加基礎的3D傾斜效果，類似點數總結區塊 */
 }
 .skill-item:hover {
-    transform: translateY(-3px); /* 鼠標懸停時輕微上浮 */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transform: perspective(800px) rotateX(0deg) translateY(-2px); /* 懸停時變平並輕微上浮，模擬點數總結區塊的效果 */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25); /* 懸停時加深陰影 */
 }
 
 .skill-header {
@@ -414,7 +415,7 @@ h2 {
             <hr>
             <p>1轉/(2轉需求): <span id="spentSp_1stJob">0</span> / <span id="reqSp_2ndJob">0</span></p>
             <p>2轉/(3轉需求): <span id="spentSp_2ndJob_total">0</span> / <span id="reqSp_3rdJob">0</span></p>
-            <p>3轉: <span id="spentSp_3rdJob_total">0</span></p>
+            <p>3轉: <span id="spentSp_3rdJob_total">0</span> </p>
             </div>
     </div>
 
@@ -6539,5 +6540,4 @@ skills: {
     </script>
     <h1>MADE BY JAMOX</h1>
 </body>
-
 </html>
