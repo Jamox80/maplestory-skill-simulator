@@ -787,19 +787,39 @@ h2 {
                             })
                         },
                         {
-                            id: "monsterTransformation",
-                            name: "喚化術",
-                            maxLevel: 30,
-                            requiredLevel: 70,
-                            preRequisite: {},
-                            description: "對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。最多可使6隻怪物受到詛咒。",
-                            imageUrl: "images/monsterTransformation.png",
-                            levels: [
-                                null,
-                                { effect: "消耗MP: 8, 持續時間: 10秒, 移動速度降低: -31, 魔法攻擊力降低: -15", fullDescription: "對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。等級1效果：消耗MP8，持續10秒，移動速度降低-31，魔法攻擊力降低-15。" }
-                                // 等級2-30，數據未提供，將顯示通用提示
-                            ].concat(Array(29).fill({ effect: "無此等級效果資料", fullDescription: "數據缺失或無法精確計算此等級效果。" }))
-                        },
+    "id": "monsterTransformation",
+    "name": "喚化術",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。最多可使6隻怪物受到詛咒。",
+    "imageUrl": "images/monsterTransformation.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, duration, moveSpeedReduction, magicAttackReduction;
+        if (i === 0) return null;
+
+        // 消耗MP 的精確數值
+        const mpCosts = [null, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
+        mpCost = mpCosts[i];
+
+        // 持續時間 的精確數值
+        const durations = [null, 10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 20];
+        duration = durations[i];
+
+        // 移動速度降低 的精確數值
+        const moveSpeedReductions = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
+        moveSpeedReduction = moveSpeedReductions[i];
+
+        // 魔法攻擊力降低 的精確數值
+        const magicAttackReductions = [null, 15, 15, 15, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 20, 20, 20, 21, 21, 21, 22, 22, 22, 23, 23, 24, 24, 24, 25];
+        magicAttackReduction = magicAttackReductions[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 移動速度降低: -${moveSpeedReduction}, 魔法攻擊力降低: -${magicAttackReduction}`,
+            fullDescription: `對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，移動速度降低-${moveSpeedReduction}，魔法攻擊力降低-${magicAttackReduction}。`
+        };
+    })
+},
                         {
                             id: "mysticDoor",
                             name: "時空門",
