@@ -78,6 +78,16 @@ h1 {
     align-items: center;
     justify-content: center;
 }
+hB {
+    font-family: 'Cinzel Decorative', serif; /* 更具裝飾性的標題字體 */
+    color: #4a2d1d; /* 深棕色，與書卷風格更搭 */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* 增加文字陰影，提升立體感 */
+    font-size: 2.5em; /* 調整標題大小 */
+    letter-spacing: 2px; /* 增加字元間距，更顯大氣 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .title-icon {
     height: 3.5em; /* 讓圖示高度與文字大小協調 */
@@ -428,6 +438,34 @@ h2 {
                 opacity: 0.3; /* 在手機上可以稍微明顯一點 */
             }
         }
+
+        /* --- 頁尾聯繫資訊 --- */
+        .page-footer {
+            text-align: center;
+            margin-top: 10px;
+            padding-bottom: 30px;
+            color: #4a2d1d; /* 深棕色，與標題協調 */
+            font-size: 1.1em;
+            width: 100%;
+        }
+
+        .page-footer p {
+            margin: 2px 0; /* 縮小段落的垂直間距，讓文字更緊湊 */
+            font-family: 'Cinzel Decorative', serif; /* 使用主題字體 */
+            letter-spacing: 1px;
+        }
+
+        .page-footer a {
+            color: rgb(78, 94, 240); /* 與頁尾文字顏色協調的深棕色 */
+            font-weight: bold;
+            text-decoration: underline; /* 預設加上底線，更像連結 */
+            transition: color 0.2s ease;
+        }
+
+        .page-footer a:hover {
+            color: #a9c4fd; /* 滑鼠懸停時變為淺棕色 */
+            text-decoration: none; /* 滑鼠懸停時移除底線 */
+        }
     </style>
 </head>
 <body>
@@ -458,8 +496,13 @@ h2 {
             </div>
     </div>
 
-    <script>
+    <footer class="page-footer">
+        <HB>MADE BY JAMOX</HB>
+        <p>若有任何回饋或資訊調整建議，歡迎<a href="https://discord.gg/mU52qFwY" target="_blank" rel="noopener noreferrer">點擊加入 Discord 伺服器</a></p>
+        
+    </footer>
 
+    <script>
         // --- 所有職業的數據結構 ---
                const allProfessionsData = {
             "主教 (Bishop)": {
@@ -9427,7 +9470,6 @@ skills: {
         // 初始載入
         initializeSimulator();
     </script>
-    <h1>MADE BY JAMOX</h1>
 </body>
 
 </html>
