@@ -1462,27 +1462,53 @@ h2 {
     ]
 },
                         {
-                            id: "firePoisonStrike",
-                            name: "火毒合擊",
-                            maxLevel: 30,
-                            requiredLevel: 70,
-                            preRequisite: {},
-                            description: "混合火、毒屬性的魔法，攻擊一個怪物。對火、毒屬性為弱點的怪物將可能造成致命性的傷害，並且有一定的機率會使怪物中毒。",
-                            imageUrl: "images/firePoisonStrike.png",
-                            levels: Array(31).fill(null).map((_, i) => {
-                                let mp, poisonRate, attack, duration, mastery;
-                                if (i === 0) return null;
-                                mp = i <= 10 ? 14 : (i <= 20 ? 18 : 22);
-                                poisonRate = 40 + i;
-                                attack = 79 + i;
-                                duration = 4 + Math.floor((i - 1) / 3) * 4;
-                                mastery = 15 + Math.floor((i - 1) / 3) * 5;
-                                return {
-                                    effect: `消耗MP: ${mp}, 中毒機率: ${poisonRate}%, 攻擊力: ${attack}, 持續時間: ${duration}秒, 熟練度: ${mastery}%`,
-                                    fullDescription: `混合火、毒屬性的魔法，攻擊一個怪物。等級${i}效果：消耗MP${mp}，中毒機率${poisonRate}%，攻擊力${attack}，持續時間${duration}秒，熟練度${mastery}%。`
-                                };
-                            })
-                        },
+    "id": "firePoisonStrike",
+    "name": "火毒合擊",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "混合火、毒屬性的魔法，攻擊一個怪物。對火、毒屬性為弱點的怪物將可能造成致命性的傷害，並且有一定的機率會使怪物中毒。",
+    "imageUrl": "images/firePoisonStrike.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, poisonRate, attack, duration, mastery;
+        if (i === 0) return null;
+
+        // 消耗MP 的精確數值
+        const mpCosts = [null, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22];
+        mpCost = mpCosts[i];
+
+        // 中毒機率 的規律 (精確數值)
+        const poisonRates = [null, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70];
+        poisonRate = poisonRates[i];
+
+        // 攻擊力 的精確數值
+        const attacks = [null, 80, 84, 88, 92, 95, 98, 101, 104, 107, 110, 113, 116, 119, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 147, 148, 149, 150];
+        attack = attacks[i];
+
+        // 持續時間 的規律
+        let durationRaw;
+        if (i <= 3) durationRaw = 4;
+        else if (i <= 6) durationRaw = 8;
+        else if (i <= 9) durationRaw = 12;
+        else if (i <= 12) durationRaw = 16;
+        else if (i <= 15) durationRaw = 20;
+        else if (i <= 18) durationRaw = 24;
+        else if (i <= 21) durationRaw = 28;
+        else if (i <= 24) durationRaw = 32;
+        else if (i <= 27) durationRaw = 36;
+        else durationRaw = 40;
+        duration = durationRaw;
+
+        // 熟練度 的規律 (精確數值)
+        const masteries = [null, 15, 15, 15, 20, 20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50, 50, 55, 55, 55, 60, 60, 60];
+        mastery = masteries[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 中毒機率: ${poisonRate}%, 攻擊力: ${attack}%, 持續時間: ${duration}秒, 熟練度: ${mastery}%`,
+            fullDescription: `混合火、毒屬性的魔法，攻擊一個怪物。等級${i}效果：消耗MP${mpCost}，中毒機率${poisonRate}%，攻擊力${attack}%，持續時間${duration}秒，熟練度${mastery}%。`
+        };
+    })
+},
                         {
                             id: "firePoisonResistance",
                             name: "火毒抵抗",
