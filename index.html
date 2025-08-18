@@ -104,7 +104,8 @@ hB {
     display: flex; /* 確保內部元素對齊 */
     align-items: center;
     justify-content: center;
-    gap: 30px; /* 控制元素之間更大間距 */
+    gap: 10px; /* 控制元素之間的間距 */
+    flex-wrap: wrap; /* 當空間不足時自動換行 */
 }
 
 .controls label {
@@ -130,7 +131,7 @@ hB {
     outline: none; /* 移除瀏覽器預設的聚焦外框 */
 }
 
-.reset-button, .share-button {
+.reset-button, .share-button, .contribute-button {
     padding: 10px 20px;
     border-radius: 8px;
     font-size: 1.1em;
@@ -145,6 +146,8 @@ hB {
 .reset-button:hover { background-color: #c62828; }
 .share-button { background-color: #1976d2; }
 .share-button:hover { background-color: #1565c0; }
+.contribute-button { background-color: #388e3c; }
+.contribute-button:hover { background-color: #2e7d32; }
 
 .container {
     display: flex; /* 保持 flex 佈局，實現左右分欄 */
@@ -316,6 +319,53 @@ h2 {
     margin: 0 15px; /* 左右間距 */
     align-self: stretch; /* 讓分隔線自動延展高度 */
 }
+
+/* --- 新增：推薦配點詳情區塊樣式 --- */
+.build-details-container {
+    width: 80%;
+    max-width: 900px;
+    background-color: rgba(253, 249, 241, 0.95);
+    border: 2px solid #795548;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.build-details-container h3 {
+    font-family: 'Cinzel Decorative', serif;
+    color: #4a2d1d;
+    text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 1.6em;
+}
+
+.build-details-container h4 {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #5d4037;
+    border-bottom: 1px solid #d7ccc8;
+    padding-bottom: 5px;
+    margin: 10px 0 5px 0;
+}
+
+.build-details-container p {
+    color: #4e342e;
+    line-height: 1.7;
+    white-space: pre-wrap; /* 讓換行符號 (\n) 生效 */
+    margin: 0;
+}
+
+.build-details-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
  /* --- 手機版適應性調整 (Media Queries) --- */
         @media (max-width: 768px) {
             /* 1. 整體與標題 */
@@ -338,19 +388,40 @@ h2 {
                 gap: 15px; /* 縮小元素間距 */
                 box-sizing: border-box;
             }
-            .controls label,
-            .controls select,
-            .controls input[type="number"],
-            .controls .reset-button {
+
+            /* 新增：用於包裹 label 和 input 的群組 */
+            .control-group {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                gap: 10px; /* label 和 input 之間的間距 */
+            }
+
+            /* 讓群組和按鈕容器佔滿整行 */
+            .controls .control-group,
+            .controls .action-buttons {
                 width: 100%;
                 margin: 0; /* 移除所有外邊距 */
                 box-sizing: border-box;
             }
-            .controls label {
-                text-align: left; /* 標籤文字靠左 */
-                margin-bottom: -5px; /* 縮小與輸入框的距離 */
+            .action-buttons {
+                display: flex;
+                gap: 10px;
+            }
+            .action-buttons button {
+                flex: 1; /* 讓按鈕平分寬度 */
             }
 
+            /* 調整群組內的 label 和 input/select */
+            .control-group label {
+                flex-shrink: 0; /* 防止標籤被壓縮 */
+                margin-bottom: 0; /* 移除舊的 margin */
+            }
+            .control-group select,
+            .control-group input[type="number"] {
+                flex-grow: 1; /* 讓輸入框填滿剩餘空間 */
+                width: auto; /* 讓 flexbox 自動計算寬度 */
+            }
             /* 3. 主內容容器 */
             .container {
                 flex-direction: column; /* 主內容區塊垂直堆疊 */
@@ -472,13 +543,39 @@ h2 {
     <h1><img src="ui/title-icon.png" alt="標題圖示" class="title-icon">Artale技能模擬器</h1>
 
     <div class="controls">
-        <label for="professionSelect">選擇職業:</label>
-        <select id="professionSelect" onchange="loadProfessionData(this.value)">
+        <div class="control-group">
+            <label for="professionSelect">選擇職業:</label>
+            <select id="professionSelect" onchange="loadProfessionData(this.value)">
+                </select>
+        </div>
+        <div class="control-group">
+            <label for="recommendedBuildSelect">推薦配點:</label>
+            <select id="recommendedBuildSelect" onchange="showBuildDetails(this.value)">
+                <option value="">— 選擇一個配點 —</option>
             </select>
-        <label for="levelInput">當前等級:</label>
-        <input type="number" id="levelInput" value="200" min="1" max="300" oninput="updateLevelFromInput()">
-        <button class="reset-button" onclick="resetSimulator()">重置</button>
-        <button class="share-button" onclick="shareBuild()">分享配點</button>
+        </div>
+        <div class="control-group">
+            <label for="levelInput">當前等級:</label>
+            <input type="number" id="levelInput" value="200" min="1" max="300" oninput="updateLevelFromInput()">
+        </div>
+        <div class="action-buttons">
+            <button class="reset-button" onclick="resetSimulator()">重置</button>
+            <button class="share-button" onclick="shareBuild()">分享</button>
+            <button class="contribute-button" onclick="openContributionForm()">寫推薦文</button>
+        </div>
+    </div>
+
+    <!-- 新增：推薦配點詳情區塊 -->
+    <div id="buildDetailsContainer" class="build-details-container" style="display: none;">
+        <h3 id="buildDetailName"></h3>
+        <h4>配點說明</h4>
+        <p id="buildDetailDescription"></p>
+        <h4>技能優先序</h4>
+        <p id="buildDetailPriority"></p>
+        <div class="build-details-actions">
+            <button id="loadBuildBtn" class="share-button">載入此配點</button>
+            <button onclick="closeBuildDetails()" class="reset-button">關閉</button>
+        </div>
     </div>
 
     <div class="container">
@@ -504,7 +601,7 @@ h2 {
 
     <script>
         // --- 所有職業的數據結構 ---
-               const allProfessionsData = {
+        const allProfessionsData = {
             "主教 (Bishop)": {
                 emblemUrl: 'emblems/bishop.png',
                 startingLevelForSp: 8,
@@ -3747,11 +3844,8 @@ skills: {
         }
 
         // 攻擊力 的規律：分段線性
-        if (i >= 1 && i <= 20) {
-            attack = 160 + i * 2;
-        } else if (i >= 21 && i <= 30) {
-            attack = 210 + (i - 20) * 4;
-        }
+        const attacks = [null, 162, 164, 166, 168, 170, 172, 174, 176, 178, 180, 183, 186, 189, 192, 195, 198, 201, 204, 207, 210, 214, 218, 222, 226, 230, 234, 238, 242, 246, 250];
+        attack = attacks[i];
 
         return {
             effect: `消耗HP: ${hpCost}, 消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
@@ -5022,20 +5116,31 @@ skills: {
                     })
                 },
                 {
-                    id: "arrowBlow",
-                    name: "斷魂箭",
-                    maxLevel: 20,
-                    requiredLevel: 10,
-                    preRequisite: {},
-                    description: "發射強力的箭矢，對敵人造成較大的殺傷力。",
-                    imageUrl: "images/arrowBlow.png", // 確保圖片檔案存在
-                    levels: [
-                        null,
-                        { effect: "消耗MP: 8, 攻擊力: 190%", fullDescription: "發射強力的箭矢，對敵人造成較大的殺傷力。等級1效果：消耗MP8，攻擊力190%。" },
-                        { effect: "消耗MP: 8, 攻擊力: 193%", fullDescription: "發射強力的箭矢，對敵人造成較大的殺傷力。等級2效果：消耗MP8，攻擊力193%。" }
-                        // 等級3-20無數據，將顯示通用提示
-                    ].concat(Array(18).fill({ effect: "無此等級效果資料", fullDescription: "數據缺失或無法精確計算此等級效果。" }))
-                },
+    "id": "arrowBlow",
+    "name": "斷魂箭",
+    "maxLevel": 20,
+    "requiredLevel": 10,
+    "preRequisite": {},
+    "description": "發射強力的箭矢，對敵人造成較大的殺傷力。",
+    "imageUrl": "images/arrowBlow.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, attack;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        const mpCosts = [null, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13];
+        mpCost = mpCosts[i];
+
+        // 攻擊力 的規律：分段線性
+        const attacks = [null, 190, 193, 196, 200, 203, 206, 210, 213, 216, 220, 223, 226, 230, 233, 236, 240, 243, 248, 253, 260];
+        attack = attacks[i];
+        
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
+            fullDescription: `發射強力的箭矢，對敵人造成較大的殺傷力。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%。`
+        };
+    })
+},
                 {
     "id": "doubleShot",
     "name": "二連箭",
@@ -5153,41 +5258,49 @@ skills: {
                     })
                 },
                 {
-    "id": "arrowPlatter1",
+    "id": "arrowPlatter",
     "name": "無形之箭",
     "maxLevel": 20,
     "requiredLevel": 30,
-    "preRequisite": { "bowBooster": 5 },
-    "description": "在一定時間內，攻擊附帶無視防禦效果。此技能必須是配帶弓或弩的情況下，才能發揮作用。",
+    "preRequisite": { "crossbowBooster": 5 },
+    "description": "在一定時間內，在不需消耗箭的情況下，也可進行攻擊。此技能必須是配帶弓或弩的情況下，才能發揮作用。",
     "imageUrl": "images/arrowPlatter.png",
     "levels": Array(21).fill(null).map((_, i) => {
         let mpCost, duration, ignoreDefense;
         if (i === 0) return null;
 
-        // 消耗MP 的規律：1-10級為15，11-19級為30，20級為20
-        if (i >= 1 && i <= 10) {
-            mpCost = 15;
-        } else if (i >= 11 && i <= 19) {
-            mpCost = 30;
-        } else if (i === 20) {
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 5) {
+            mpCost = 10;
+        } else if (i >= 6 && i <= 10) {
+            mpCost = 10;
+        } else if (i >= 11 && i <= 15) {
+            mpCost = 20;
+        } else if (i >= 16 && i <= 20) {
             mpCost = 20;
         }
-
-        // 持續時間 的規律：
-        // 1-10級: 10秒, 20秒, ..., 100秒 (每次加10秒)
-        // 11-20級: 120秒, 140秒, ..., 300秒 (每次加20秒)
-        if (i >= 1 && i <= 10) {
-            duration = i * 10;
-        } else if (i >= 11 && i <= 20) {
-            duration = 100 + (i - 10) * 20;
-        }
-
-        // 無視防禦力 固定為4%
-        ignoreDefense = 4;
+        
+        // 持續時間 的規律
+        duration = 100 + (i-10)*10;
+        if (i <= 5) { duration = 100 + (i-1)*10; }
+        if (i === 1) { duration = 110; }
+        // 根據提供的精確數值來生成
+        const durations = [null, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
+        duration = durations[i];
+        
+        // 無視防禦力 的規律
+        if (i >= 1 && i <= 5) { ignoreDefense = 1; }
+        else if (i >= 6 && i <= 10) { ignoreDefense = 2; }
+        else if (i >= 11 && i <= 15) { ignoreDefense = 3; }
+        else if (i >= 16 && i <= 20) { ignoreDefense = 4; }
+        if (i === 1) { ignoreDefense = 1; }
+        // 根據提供的精確數值來生成
+        const ignoreDefenses = [null, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4];
+        ignoreDefense = ignoreDefenses[i];
 
         return {
             effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 無視防禦力: ${ignoreDefense}%`,
-            fullDescription: `在一定時間內，攻擊附帶無視防禦效果。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，無視防禦力${ignoreDefense}%。此技能必須是配帶弓或弩的情況下，才能發揮作用。`
+            fullDescription: `在一定時間內，在不需消耗箭的情況下，也可進行攻擊。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，無視防禦力${ignoreDefense}%。此技能必須是配帶弓或弩的情況下，才能發揮作用。`
         };
     })
 },
@@ -5660,19 +5773,31 @@ skills: {
                     })
                 },
                 {
-                    id: "arrowBlow",
-                    name: "斷魂箭",
-                    maxLevel: 20,
-                    requiredLevel: 10,
-                    preRequisite: {},
-                    description: "發射強力的箭矢，對敵人造成較大的殺傷力。",
-                    imageUrl: "images/arrowBlow.png",
-                    levels: [
-                        null,
-                        { effect: "消耗MP: 8, 攻擊力: 190%", fullDescription: "發射強力的箭矢，對敵人造成較大的殺傷力。等級1效果：消耗MP8，攻擊力190%。" },
-                        { effect: "消耗MP: 8, 攻擊力: 193%", fullDescription: "發射強力的箭矢，對敵人造成較大的殺傷力。等級2效果：消耗MP8，攻擊力193%。" }
-                    ].concat(Array(18).fill({ effect: "無此等級效果資料", fullDescription: "數據缺失或無法精確計算此等級效果。" }))
-                },
+    "id": "arrowBlow",
+    "name": "斷魂箭",
+    "maxLevel": 20,
+    "requiredLevel": 10,
+    "preRequisite": {},
+    "description": "發射強力的箭矢，對敵人造成較大的殺傷力。",
+    "imageUrl": "images/arrowBlow.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, attack;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        const mpCosts = [null, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13];
+        mpCost = mpCosts[i];
+
+        // 攻擊力 的規律：分段線性
+        const attacks = [null, 190, 193, 196, 200, 203, 206, 210, 213, 216, 220, 223, 226, 230, 233, 236, 240, 243, 248, 253, 260];
+        attack = attacks[i];
+        
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
+            fullDescription: `發射強力的箭矢，對敵人造成較大的殺傷力。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%。`
+        };
+    })
+},
                 {
     "id": "doubleShot",
     "name": "二連箭",
@@ -5790,25 +5915,52 @@ skills: {
                     })
                 },
                 {
-                    id: "arrowPlatter2",
-                    name: "無形之箭",
-                    maxLevel: 20,
-                    requiredLevel: 30,
-                    preRequisite: { "crossbowBooster": 5 },
-                    description: "在一定時間內，在不需消耗箭的情況下，也可進行攻擊。此技能必須是配帶弓或弩的情況下，才能發揮作用。",
-                    imageUrl: "images/arrowPlatter.png",
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, duration, ignoreDef;
-                        if (i === 0) return null;
-                        mp = i <= 10 ? 15 : 30;
-                        duration = i * 30;
-                        ignoreDef = 4; // 固定4%
-                        return {
-                            effect: `消耗MP: ${mp}, 持續時間: ${duration}秒, 無視防禦力: ${ignoreDef}%`,
-                            fullDescription: `在一定時間內，在不需消耗箭的情況下，也可進行攻擊。等級${i}效果：消耗MP${mp}，持續時間${duration}秒，無視防禦力${ignoreDef}%。`
-                        };
-                    })
-                },
+    "id": "arrowPlatter",
+    "name": "無形之箭",
+    "maxLevel": 20,
+    "requiredLevel": 30,
+    "preRequisite": { "crossbowBooster": 5 },
+    "description": "在一定時間內，在不需消耗箭的情況下，也可進行攻擊。此技能必須是配帶弓或弩的情況下，才能發揮作用。",
+    "imageUrl": "images/arrowPlatter.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, duration, ignoreDefense;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        if (i >= 1 && i <= 5) {
+            mpCost = 10;
+        } else if (i >= 6 && i <= 10) {
+            mpCost = 10;
+        } else if (i >= 11 && i <= 15) {
+            mpCost = 20;
+        } else if (i >= 16 && i <= 20) {
+            mpCost = 20;
+        }
+        
+        // 持續時間 的規律
+        duration = 100 + (i-10)*10;
+        if (i <= 5) { duration = 100 + (i-1)*10; }
+        if (i === 1) { duration = 110; }
+        // 根據提供的精確數值來生成
+        const durations = [null, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
+        duration = durations[i];
+        
+        // 無視防禦力 的規律
+        if (i >= 1 && i <= 5) { ignoreDefense = 1; }
+        else if (i >= 6 && i <= 10) { ignoreDefense = 2; }
+        else if (i >= 11 && i <= 15) { ignoreDefense = 3; }
+        else if (i >= 16 && i <= 20) { ignoreDefense = 4; }
+        if (i === 1) { ignoreDefense = 1; }
+        // 根據提供的精確數值來生成
+        const ignoreDefenses = [null, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4];
+        ignoreDefense = ignoreDefenses[i];
+
+        return {
+            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 無視防禦力: ${ignoreDefense}%`,
+            fullDescription: `在一定時間內，在不需消耗箭的情況下，也可進行攻擊。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，無視防禦力${ignoreDefense}%。此技能必須是配帶弓或弩的情況下，才能發揮作用。`
+        };
+    })
+},
                 {
                     id: "piercingArrow",
                     name: "穿透之箭",
@@ -7723,75 +7875,137 @@ skills: {
                     })
                 },
                 {
-                    id: "oakBarrel",
-                    name: "偽裝術",
-                    maxLevel: 10,
-                    requiredLevel: 30,
-                    preRequisite: {},
-                    description: "套上能阻檔一次傷害的木桶。有幾率打穿而受到傷害。若成功擋下攻擊，將無法繼續阻擋傷害，除非再次使用技能",
-                    imageUrl: "images/oakBarrel.png", // 確保圖片檔案存在
-                    levels: Array(11).fill(null).map((_, i) => {
-                        let mp, missRate, cooldown;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 20, 20, 14, 14, 16, 16, 18, 18, 20, 20];
-                        const missRates = [null, 37, 34, 31, 28, 25, 22, 19, 16, 13, 10];
-                        const cooldowns = [null, 20, 20, 30, 30, 25, 25, 20, 20, 15, 15];
-                        mp = mpCosts[i];
-                        missRate = missRates[i];
-                        cooldown = cooldowns[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 未格檔機率: ${missRate}%, 冷卻時間: ${cooldown}秒`,
-                            fullDescription: `套上能阻檔一次傷害的木桶。等級${i}效果：消耗MP${mp}，未格檔機率${missRate}%，冷卻時間${cooldown}秒。`
-                        };
-                    })
-                }
+    "id": "oakBarrel",
+    "name": "偽裝術",
+    "maxLevel": 10,
+    "requiredLevel": 30,
+    "preRequisite": {},
+    "description": "套上能阻檔一次傷害的木桶。有幾率打穿而受到傷害。若成功擋下攻擊，將無法繼續阻擋傷害，除非再次使用技能",
+    "imageUrl": "images/oakBarrel.png",
+    "levels": Array(11).fill(null).map((_, i) => {
+        let mpCost, missRate, cooldown;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律：精確數值
+        const mpCosts = [null, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+        mpCost = mpCosts[i];
+
+        // 未格檔機率 的規律：線性遞減
+        missRate = 40 - i * 3;
+        
+        // 冷卻時間 的規律：固定20秒
+        cooldown = 20;
+
+        return {
+            effect: `消耗MP: ${mpCost}, 未格檔機率: ${missRate}%, 冷卻時間: ${cooldown}秒`,
+            fullDescription: `套上能阻檔一次傷害的木桶。等級${i}效果：消耗MP${mpCost}，未格檔機率${missRate}%，冷卻時間${cooldown}秒。`
+        };
+    })
+}
             ],
             "3轉 (格鬥家)": [
                 {
-                    id: "demolition",
-                    name: "致命暗襲",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "對暈眩狀態的敵人進行攻擊時，會以一定機率發動致命一擊。",
-                    imageUrl: "images/demolition.png", // 確保圖片檔案存在
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, attack;
-                        if (i === 0) return null;
-                        const mpCosts = [null, 14, 14, 14, 14, 14, 18, 18, 18, 18, 18, 22, 22, 22, 22, 22, 26, 26, 26, 26, 26];
-                        const attacks = [null, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260];
-                        mp = mpCosts[i];
-                        attack = attacks[i];
-                        return {
-                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%`,
-                            fullDescription: `對暈眩狀態的敵人進行攻擊時，會以一定機率發動致命一擊。等級${i}效果：消耗MP${mp}，攻擊力${attack}%。`
-                        };
-                    })
-                },
+    "id": "demolition",
+    "name": "致命暗襲",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "對暈眩狀態的敵人進行攻擊時，會以一定機率發動致命一擊。對BOSS會造成額外傷害。",
+    "imageUrl": "images/demolition.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let procRate, normalDmg, bossDmg;
+        if (i === 0) return null;
+
+        // 機率 的規律：線性
+        procRate = 20 + i * 2;
+
+        // 一般怪物額外傷害 的規律：線性
+        normalDmg = i * 3;
+
+        // BOSS額外傷害 的規律：線性
+        bossDmg = i * 0.5;
+
+        return {
+            effect: `機率: ${procRate}%, 一般怪物額外傷害: ${normalDmg}%, BOSS額外傷害: ${bossDmg}%`,
+            fullDescription: `對暈眩狀態的敵人進行攻擊時，會以一定機率發動致命一擊。等級${i}效果：機率${procRate}%，一般怪物額外傷害${normalDmg}%，BOSS額外傷害${bossDmg}%。`
+        };
+    })
+},
                 {
-                    id: "energyCharge",
-                    name: "蓄能激發",
-                    maxLevel: 40,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。",
-                    imageUrl: "images/energyCharge.png", // 確保圖片檔案存在
-                    levels: Array(41).fill(null).map((_, i) => {
-                        let attack, hitRate, avoidRate, duration;
-                        if (i === 0) return null;
-                        const attacks = [0, 0, 0, 0, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 20];
-                        const rates = [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20]; // 命中率和迴避率
-                        const durations = [0, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40, 40, 41, 41, 42, 42, 43, 43, 44, 44, 45, 45, 46, 46, 47, 47, 48, 48, 49, 49, 50, 50];
-                        attack = attacks[i];
-                        hitRate = rates[i];
-                        avoidRate = rates[i];
-                        duration = durations[i];
-                        return {
-                            effect: `攻擊力: ${attack}, 命中率: ${hitRate}, 回避率: ${avoidRate}, 持續時間: ${duration}秒`,
-                            fullDescription: `每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。等級${i}效果：攻擊力${attack}，命中率${hitRate}，回避率${avoidRate}，持續時間${duration}秒。`
-                        };
-                    })
-                },
+    "id": "energyCharge",
+    "name": "蓄能激發",
+    "maxLevel": 40,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。",
+    "imageUrl": "images/energyCharge.png",
+    "levels": Array(41).fill(null).map((_, i) => {
+        let attack, hitRate, avoidRate, duration;
+        if (i === 0) return null;
+
+        // 攻擊力 的規律
+        if (i >= 1 && i <= 3) { attack = 0; }
+        else if (i >= 4 && i <= 7) { attack = 11; }
+        else if (i >= 8 && i <= 11) { attack = 12; }
+        else if (i >= 12 && i <= 15) { attack = 13; }
+        else if (i >= 16 && i <= 19) { attack = 14; }
+        else if (i >= 20 && i <= 23) { attack = 15; }
+        else if (i >= 24 && i <= 27) { attack = 16; }
+        else if (i >= 28 && i <= 31) { attack = 17; }
+        else if (i >= 32 && i <= 35) { attack = 18; }
+        else if (i >= 36 && i <= 39) { attack = 19; }
+        else { attack = 20; }
+        
+        // 命中率和迴避率 的規律
+        if (i >= 1 && i <= 2) { hitRate = 1; avoidRate = 1; }
+        else if (i >= 3 && i <= 4) { hitRate = 2; avoidRate = 2; }
+        else if (i >= 5 && i <= 6) { hitRate = 3; avoidRate = 3; }
+        else if (i >= 7 && i <= 8) { hitRate = 4; avoidRate = 4; }
+        else if (i >= 9 && i <= 10) { hitRate = 5; avoidRate = 5; }
+        else if (i >= 11 && i <= 12) { hitRate = 6; avoidRate = 6; }
+        else if (i >= 13 && i <= 14) { hitRate = 7; avoidRate = 7; }
+        else if (i >= 15 && i <= 16) { hitRate = 8; avoidRate = 8; }
+        else if (i >= 17 && i <= 18) { hitRate = 9; avoidRate = 9; }
+        else if (i >= 19 && i <= 20) { hitRate = 10; avoidRate = 10; }
+        else if (i >= 21 && i <= 22) { hitRate = 11; avoidRate = 11; }
+        else if (i >= 23 && i <= 24) { hitRate = 12; avoidRate = 12; }
+        else if (i >= 25 && i <= 26) { hitRate = 13; avoidRate = 13; }
+        else if (i >= 27 && i <= 28) { hitRate = 14; avoidRate = 14; }
+        else if (i >= 29 && i <= 30) { hitRate = 15; avoidRate = 15; }
+        else if (i >= 31 && i <= 32) { hitRate = 16; avoidRate = 16; }
+        else if (i >= 33 && i <= 34) { hitRate = 17; avoidRate = 17; }
+        else if (i >= 35 && i <= 36) { hitRate = 18; avoidRate = 18; }
+        else if (i >= 37 && i <= 38) { hitRate = 19; avoidRate = 19; }
+        else { hitRate = 20; avoidRate = 20; }
+        
+        // 持續時間 的規律
+        if (i >= 1 && i <= 2) { duration = 31; }
+        else if (i >= 3 && i <= 4) { duration = 32; }
+        else if (i >= 5 && i <= 6) { duration = 33; }
+        else if (i >= 7 && i <= 8) { duration = 34; }
+        else if (i >= 9 && i <= 10) { duration = 35; }
+        else if (i >= 11 && i <= 12) { duration = 36; }
+        else if (i >= 13 && i <= 14) { duration = 37; }
+        else if (i >= 15 && i <= 16) { duration = 38; }
+        else if (i >= 17 && i <= 18) { duration = 39; }
+        else if (i >= 19 && i <= 20) { duration = 40; }
+        else if (i >= 21 && i <= 22) { duration = 41; }
+        else if (i >= 23 && i <= 24) { duration = 42; }
+        else if (i >= 25 && i <= 26) { duration = 43; }
+        else if (i >= 27 && i <= 28) { duration = 44; }
+        else if (i >= 29 && i <= 30) { duration = 45; }
+        else if (i >= 31 && i <= 32) { duration = 46; }
+        else if (i >= 33 && i <= 34) { duration = 47; }
+        else if (i >= 35 && i <= 36) { duration = 48; }
+        else if (i >= 37 && i <= 38) { duration = 49; }
+        else { duration = 50; }
+
+        return {
+            effect: `攻擊力: ${attack}, 命中率: ${hitRate}, 回避率: ${avoidRate}, 持續時間: ${duration}秒`,
+            fullDescription: `每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。等級${i}效果：攻擊力${attack}，命中率${hitRate}，迴避率${avoidRate}，持續時間${duration}秒。`
+        };
+    })
+},
                 {
                     id: "energyBlast",
                     name: "能量暴擊",
@@ -7835,26 +8049,34 @@ skills: {
                     })
                 },
                 {
-                    id: "transformation",
-                    name: "鬥神附體",
-                    maxLevel: 20,
-                    requiredLevel: 70,
-                    preRequisite: {},
-                    description: "120秒內可轉變為變身狀態。可使用技能：衝擊波、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換。",
-                    imageUrl: "images/transformation.png", // 確保圖片檔案存在
-                    levels: Array(21).fill(null).map((_, i) => {
-                        let mp, pDef, mDef, cooldown;
-                        if (i === 0) return null;
-                        mp = 20 + i * 2;
-                        pDef = i * 2;
-                        mDef = i * 2;
-                        cooldown = 880 - i * 40; // 860 - (i-1)*20
-                        return {
-                            effect: `消耗MP: ${mp}, 物理防禦力: ${pDef}, 魔法防禦力: ${mDef}, 冷卻時間: ${cooldown}秒`,
-                            fullDescription: `120秒內可轉變為變身狀態。等級${i}效果：消耗MP${mp}，物理防禦力${pDef}，魔法防禦力${mDef}，冷卻時間${cooldown}秒。`
-                        };
-                    })
-                },
+    "id": "transformation",
+    "name": "鬥神附體",
+    "maxLevel": 20,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "240秒內可轉變為變身狀態。可使用技能：衝擊波、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換。",
+    "imageUrl": "images/transformation.png",
+    "levels": Array(21).fill(null).map((_, i) => {
+        let mpCost, pDef, mDef, cooldown;
+        if (i === 0) return null;
+
+        // 消耗MP 的規律
+        mpCost = 20 + i * 2;
+
+        // 物理防禦力 和 魔法防禦力 的規律：線性
+        pDef = i * 2;
+        mDef = i * 2;
+        
+        // 冷卻時間 的規律
+        cooldown = 560 - i * 10;
+        if (i === 1) cooldown = 550;
+        
+        return {
+            effect: `消耗MP: ${mpCost}, 物理防禦力: ${pDef}, 魔法防禦力: ${mDef}, 冷卻時間: ${cooldown}秒`,
+            fullDescription: `240秒內可轉變為變身狀態。等級${i}效果：消耗MP${mpCost}，物理防禦力${pDef}，魔法防禦力${mDef}，冷卻時間${cooldown}秒。`
+        };
+    })
+},
                 {
                     id: "shockwave",
                     name: "衝擊波",
@@ -8013,7 +8235,7 @@ skills: {
         "maxLevel": 20,
         "requiredLevel": 70,
         "preRequisite": { "transformation": 20 },
-        "description": "120秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。",
+        "description": "240秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。",
         "imageUrl": "images/finalAttack.png",
         "levels": Array(21).fill(null).map((_, i) => {
             let mpCost, pDef, mDef, cooldown;
@@ -8028,7 +8250,7 @@ skills: {
 
             return {
                 effect: `消耗MP: ${mpCost}, 物理防禦力: ${pDef}, 魔法防禦力: ${mDef}, 冷卻時間(CD): ${cooldown}秒`,
-                fullDescription: `120秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。等級${i}效果：消耗MP${mpCost}，物理防禦力${pDef}，魔法防禦力${mDef}，冷卻時間(CD)${cooldown}秒。`
+                fullDescription: `240秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。等級${i}效果：消耗MP${mpCost}，物理防禦力${pDef}，魔法防禦力${mDef}，冷卻時間(CD)${cooldown}秒。`
             };
         })
     },
@@ -8971,6 +9193,140 @@ skills: {
             // ... 未來可以繼續添加其他職業
         };
 
+        // --- 新增：存放推薦配點的資料結構 ---
+        const recommendedBuilds = {
+            "主教 (Bishop)": [
+                {
+                    name: "標準輔助型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "此配點為全方位輔助型主教，最大化所有輔助技能，確保在任何團隊中都能發揮最大效益。適合喜歡組隊打王、幫助隊友的玩家。",
+                    priority: "1轉: 魔力淨化5>魔力擴展10>魔靈彈1>魔力爪20>魔力淨化16>魔心防禦20\n2轉: 瞬間移動1>群體治癒30>魔力吸收10>瞬間移動20>神聖之光5>天使祝福20>神聖之光20>魔力吸收20>自由分配\n3轉: 聖光1>淨化3>神聖祈禱30>魔法抵抗1>時空門1>聖光30>魔法抵抗20>聖龍召喚15>自由分配\n4轉: 天怒1----->4轉網路上比較少人分享，歡迎加入dc群自己建立推薦配點",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: "魔力淨化:16,魔力擴展:10,魔心防禦:20,魔力之盾:11,魔靈彈:1,魔力爪:20,魔力吸收:20,瞬間移動:20,神聖之光:20,天使祝福:20,群體治癒:30,聖龍召喚:15,魔法抵抗:20,淨化:3,時空門:1,神聖祈禱:30,聖光:30,天怒:1"
+                },
+            ],
+            "火毒大魔導 (Arch Mage F/P)": [
+                {
+                    name: "標準輔助型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: 魔力爪(1) > 魔力擴展(滿) > 魔力淨化(滿) > 魔心防禦(滿) > 魔力之盾(滿)\n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: "魔力淨化:16,魔力擴展:10,魔心防禦:20,魔力之盾:20,魔靈彈:1,魔力爪:20,魔力吸收:20,瞬間移動:20,"
+                }
+            ],
+            "冰雷大魔導 (Arch Mage I/L)": [
+                {
+                    name: "標準型 (Lv. 200) - by 滷蛋&DJ魚",
+                    level: 200,
+                    description: "整體平衡型配點，是最通用的成長路線選擇。\n1轉：魔心點5三轉血量達1600前，打煉獄獵犬可以藉此降低MP水錢的消耗魔力之盾可以等2轉精神強化20後，優先將其點滿\n魔心防禦等三轉中期血量超過1600後，使用技能重置卷將二轉冰錐術的點數挪過來點滿。\n3轉：冰風暴點29因為和30只差1MP消耗和4點基礎攻擊，剩下的那一點投資到極速詠唱的話，在84等可以點到11提升成二速\n4轉：若是水錢有充足準備開銷可以給暴風雪練的的話，則可以改成先點1魔力無限+暴風雪10，長期單練的話楓葉祝福也可以先點9\n*技能書-閃電連擊30目前國際服只在寒霜冰龍及困難拉圖斯身上產出，若價格過於昂貴可先暫時跳過。",
+                    priority: "1轉: 魔力淨化5>魔力擴展10>魔靈彈1>魔力爪20>魔力淨化16>魔心防禦5>魔力之盾15\n2轉: 瞬移1>魔力吸收1>電閃雷鳴30>瞬移20>魔力吸收20>精神強化20>魔力之盾20>冰錐術26 \n3轉: 魔力激發3>極速詠唱1>冰風暴29>極速詠唱11>冰風暴30>魔力激發30>冰雷合擊30>魔法封印20>冰雷抵抗20>落雷凝聚1\n4轉: 魔力無限1>暴風雪1>閃電連擊19>寒冰地獄5>召喚火炎神10>楓葉祝福9>暴風雪10>閃電連擊28>寒冰地獄7>召喚火炎神20>寒冰地獄19 ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: "魔力淨化:16,魔力擴展:10,魔心防禦:14,魔力之盾:20,魔靈彈:1,魔力爪:20,魔力吸收:20,瞬間移動:20,雷閃電鳴:30,精神強化:20,冰錐術:26,極速詠唱:11,冰風暴:30,魔力激發:30,冰雷合擊:30,魔法封印:20,冰雷抵抗:20,落雷凝聚:1,魔力無限:1,楓葉祝福:9,暴風雪:10,閃電連擊:28,寒冰地獄:19,召喚火炎神:20"
+            }
+                ],
+            "英雄 (Hero)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "聖騎士 (Paladin)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "黑騎士 (Dark Knight)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "箭神 (Bowmaster)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "神射手 (Marksman)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "暗影神偷 (Shadower)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "夜使者 (Night Lord)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "拳霸 (Buccaneer)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ],
+            "槍神 (Corsair)": [
+                // 之後可以在這裡添加英雄的推薦配點
+                {
+                    name: "標準型 (Lv. 200) - by Jamox",
+                    level: 200,
+                    description: "--",
+                    priority: "1轉: \n2轉: \n3轉: \n4轉: ",
+                    // --- 注意：這裡現在使用中文技能名稱 ---
+                    skills: ""
+                }
+            ]
+            // ... 其他職業
+        };
+
         // --- 全局變數 ---
         let currentProfessionKey = "主教 (Bishop)"; // 預設選中的職業
         let currentProfessionData = allProfessionsData[currentProfessionKey];
@@ -9061,6 +9417,7 @@ skills: {
             // 修正：先渲染技能樹的HTML結構，再更新UI內容
             renderSkillTree();
             updateUI();
+            updateRecommendedBuildsDropdown(); // 更新推薦配點下拉選單
         }
 
         // --- 計算最大 SP ---
@@ -9090,6 +9447,20 @@ skills: {
             return totalSp;
         }
 
+        // --- 更新推薦配點下拉選單 ---
+        function updateRecommendedBuildsDropdown() {
+            const select = document.getElementById('recommendedBuildSelect');
+            select.innerHTML = '<option value="">— 選擇一個配點 —</option>'; // 重置
+            closeBuildDetails(); // 切换職業時關閉詳情
+
+            const builds = recommendedBuilds[currentProfessionKey] || [];
+            builds.forEach((build, index) => {
+                const option = document.createElement('option');
+                option.value = index; // 使用索引作為 value
+                option.textContent = build.name;
+                select.appendChild(option);
+            });
+        }
         // --- 輔助函式：計算特定轉職階段的已分配SP ---
         function getSpentSpInJobStage(jobStageKey) {
             let sp = 0;
@@ -9426,6 +9797,22 @@ skills: {
                 console.log(`無法點滿技能 ${skill.name}: 點數不足、等級不足或前置條件未滿足。`);
             }
         }
+
+        // --- 新增：建立技能中文名到ID的映射表 ---
+        function createSkillNameMap(professionKey) {
+            const nameToIdMap = {};
+            const professionData = allProfessionsData[professionKey];
+            if (!professionData) return nameToIdMap;
+
+            // 遍歷該職業所有轉職階段的技能
+            for (const jobStageKey in professionData.skills) {
+                professionData.skills[jobStageKey].forEach(skill => {
+                    nameToIdMap[skill.name] = skill.id;
+                });
+            }
+            return nameToIdMap;
+        }
+
        // --- 輔助函式：根據技能ID獲取技能數據 ---
         function getSkillById(skillId) {
             // 遍歷所有職業的所有轉職階段來查找技能
@@ -9485,6 +9872,86 @@ skills: {
                 }
             }
         }
+
+        // --- 新增：顯示推薦配點詳情 ---
+        function showBuildDetails(buildIndex) {
+            const container = document.getElementById('buildDetailsContainer');
+            const select = document.getElementById('recommendedBuildSelect');
+
+            if (buildIndex === "") {
+                container.style.display = 'none';
+                return;
+            }
+
+            const build = recommendedBuilds[currentProfessionKey][parseInt(buildIndex, 10)];
+            if (!build) return;
+
+            // 填充詳情內容
+            document.getElementById('buildDetailName').textContent = build.name;
+            document.getElementById('buildDetailDescription').textContent = build.description;
+            document.getElementById('buildDetailPriority').textContent = build.priority;
+
+            // 顯示詳情區塊
+            container.style.display = 'flex';
+
+            // 處理 "載入此配點" 按鈕的點擊事件
+            const loadBtn = document.getElementById('loadBuildBtn');
+            // 複製並取代按鈕以移除舊的監聽器，避免重複觸發
+            const newLoadBtn = loadBtn.cloneNode(true);
+            loadBtn.parentNode.replaceChild(newLoadBtn, loadBtn);
+
+            newLoadBtn.onclick = () => {
+                // 建立當前職業的技能名稱映射表
+                const skillNameMap = createSkillNameMap(currentProfessionKey);
+
+                // 載入配點指定的等級
+                currentLevel = build.level;
+                document.getElementById('levelInput').value = currentLevel;
+
+                // 重置技能點數並應用新配點
+                Object.keys(currentSkillLevels).forEach(id => currentSkillLevels[id] = 0);
+                build.skills.split(',').forEach(pair => {
+                    const [name, lvl] = pair.split(':');
+                    const skillId = skillNameMap[name.trim()]; // 使用映射表找到ID
+
+                    if (skillId && lvl && currentSkillLevels.hasOwnProperty(skillId)) {
+                        currentSkillLevels[skillId] = parseInt(lvl, 10);
+                    } else {
+                        console.warn(`警告：在推薦配點 "${build.name}" 中找不到技能名稱 "${name}" 或其ID "${skillId}"。`);
+                    }
+                });
+
+                // 重新計算SP並更新UI
+                spentSp = Object.values(currentSkillLevels).reduce((a, b) => a + b, 0);
+                remainingSp = calculateMaxSp(currentLevel) - spentSp;
+                updateUI();
+                closeBuildDetails(); // 載入後關閉詳情
+            };
+        }
+
+        // --- 新增：關閉推薦配點詳情 ---
+        function closeBuildDetails() {
+            document.getElementById('buildDetailsContainer').style.display = 'none';
+            document.getElementById('recommendedBuildSelect').value = "";
+        }
+
+        // --- 新增：開啟貢獻配點表單 ---
+        function openContributionForm() {
+            const instructions = `感謝您願意分享配點！
+
+操作教學：
+1. 在模擬器中完成您的配點。
+2. 點擊「分享」按鈕，配點連結將會自動複製。
+3. 在接下來開啟的表單中，將連結貼到對應的欄位即可。
+
+準備好要分享了嗎？ (點擊 "確定" 將會開啟表單)`;
+
+            if (confirm(instructions)) {
+                const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdgOrzO3ywc5gwFq1Si9gken-Da9QKephcJu8HHjMZru-TDMA/viewform?usp=preview'; 
+                window.open(formUrl, '_blank');
+            }
+        }
+
         // --- 重置模擬器 (針對當前職業) ---
         function resetSimulator() {
             if (confirm("您確定要重置所有技能點數嗎？")) {
