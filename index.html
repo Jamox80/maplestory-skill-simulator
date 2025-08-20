@@ -4041,22 +4041,21 @@
                                 let hpCost, mpCost, attack;
                                 if (i === 0) return null;
 
-                                // 消耗HP 的規律
+                                 // 消耗hP 的規律
                                 if (i >= 1 && i <= 10) {
-                                    hpCost = 12;
+                                    hpCost = 15;
                                 } else if (i >= 11 && i <= 20) {
-                                    hpCost = 19;
+                                    hpCost = 20;
                                 } else if (i >= 21 && i <= 30) {
-                                    hpCost = 26;
+                                    hpCost = 25;
                                 }
-
-                                // 消耗MP 的規律
+                                // 消耗mP 的規律
                                 if (i >= 1 && i <= 10) {
-                                    mpCost = 15;
+                                    mpCost = 12;
                                 } else if (i >= 11 && i <= 20) {
-                                    mpCost = 20;
+                                    mpCost = 19;
                                 } else if (i >= 21 && i <= 30) {
-                                    mpCost = 25;
+                                    mpCost = 26;
                                 }
 
                                 // 攻擊力 的規律：分段線性
@@ -4090,7 +4089,7 @@
                                 attack = attacks[i];
 
                                 // 持續時間 的規律 (精確數值)
-                                const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
                                 duration = durations[i];
 
                                 return {
@@ -4120,7 +4119,7 @@
                                 attack = attacks[i];
 
                                 // 持續時間 的規律 (精確數值)
-                                const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
                                 duration = durations[i];
 
                                 return {
@@ -4150,7 +4149,7 @@
                                 attack = attacks[i];
 
                                 // 持續時間 的規律：有不規則跳變，精確列出
-                                const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
                                 duration = durations[i];
 
                                 return {
@@ -4180,7 +4179,7 @@
                                 attack = attacks[i];
 
                                 // 持續時間 的規律 (精確數值)
-                                const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
                                 duration = durations[i];
 
                                 return {
@@ -4210,7 +4209,7 @@
                                 attack = attacks[i];
 
                                 // 持續時間 的規律 (精確數值)
-                                const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
                                 duration = durations[i];
 
                                 return {
@@ -4219,7 +4218,6 @@
                                 };
                             })
                         },
-
                         {
                             "id": "lightningChargeBluntWeapon",
                             "name": "雷鳴之棍",
@@ -4241,7 +4239,7 @@
                                 attack = attacks[i];
 
                                 // 持續時間 的規律 (精確數值)
-                                const durations = [null, 12, 19, 26, 33, 40, 47, 54, 61, 68, 75, 82, 89, 96, 103, 110, 116, 122, 128, 134, 140, 146, 158, 158, 164, 170, 176, 182, 188, 194, 200];
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
                                 duration = durations[i];
 
                                 return {
@@ -9065,25 +9063,54 @@
                             })
                         },
                         {
-                            id: "targeting",
-                            name: "指定攻擊",
-                            maxLevel: 30,
-                            requiredLevel: 70,
-                            preRequisite: {},
-                            description: "派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。",
-                            imageUrl: "images/targeting.png", // 確保圖片檔案存在
-                            levels: Array(31).fill(null).map((_, i) => {
-                                let mp, attack, extraDmg;
-                                if (i === 0) return null;
-                                mp = i <= 20 ? 20 + Math.floor((i - 1) / 5) * 5 : 25 + Math.floor((i - 21) / 5) * 5; // Simplified
-                                attack = 147 + i * 6; // Simplified
-                                extraDmg = i === 1 ? "10秒內追加1％" : "--"; // Only level 1 has explicit extra damage
-                                return {
-                                    effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 追加傷害: ${extraDmg}`,
-                                    fullDescription: `派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。等級${i}效果：消耗MP${mp}，攻擊力${attack}%，追加傷害${extraDmg}。`
-                                };
-                            })
-                        }
+    "id": "targeting",
+    "name": "指定攻擊",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。",
+    "imageUrl": "images/targeting.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, attack, extraDmg;
+        if (i === 0) return null;
+
+        // 消耗MP 的精確數值
+        const mpCosts = [null, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30];
+        mpCost = mpCosts[i];
+
+        // 攻擊力 的精確數值
+        const attacks = [null, 148, 156, 164, 172, 180, 188, 196, 204, 212, 220, 228, 236, 244, 252, 260, 268, 276, 284, 292, 300, 308, 316, 324, 332, 340, 348, 356, 364, 372, 380];
+        attack = attacks[i];
+
+        // 追加傷害 的精確數值
+        if (i >= 1 && i <= 3) {
+            extraDmg = "10秒內追加1％";
+        } else if (i >= 4 && i <= 6) {
+            extraDmg = "10秒內追加2％";
+        } else if (i >= 7 && i <= 9) {
+            extraDmg = "10秒內追加3％";
+        } else if (i >= 10 && i <= 12) {
+            extraDmg = "10秒內追加4％";
+        } else if (i >= 13 && i <= 15) {
+            extraDmg = "10秒內追加5％";
+        } else if (i >= 16 && i <= 18) {
+            extraDmg = "15秒內追加6％";
+        } else if (i >= 19 && i <= 21) {
+            extraDmg = "15秒內追加7％";
+        } else if (i >= 22 && i <= 24) {
+            extraDmg = "15秒內追加8％";
+        } else if (i >= 25 && i <= 27) {
+            extraDmg = "15秒內追加9％";
+        } else if (i >= 28 && i <= 30) {
+            extraDmg = "15秒內追加10％";
+        }
+
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 追加傷害: ${extraDmg}`,
+            fullDescription: `派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，追加傷害${extraDmg}。`
+        };
+    })
+}
                     ],
                     "4轉 (槍神)": [
                         {
