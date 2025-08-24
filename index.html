@@ -435,6 +435,22 @@
             /* 調整顏色 */
         }
 
+        .skill-level-controls .skill-level-input {
+            font-size: 1.1em;
+            width: 45px;
+            color: #6d4c41;
+            text-align: center;
+            border: 1px solid #bcaaa4;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            -moz-appearance: textfield;
+        }
+        .skill-level-controls .skill-level-input::-webkit-outer-spin-button,
+        .skill-level-controls .skill-level-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
         .skill-prerequisites {
             font-size: 0.85em;
             /* 調整字體大小 */
@@ -1165,39 +1181,39 @@
                             })
                         },
                         {
-                            "id": "monsterTransformation",
-                            "name": "喚化術",
-                            "maxLevel": 30,
-                            "requiredLevel": 70,
-                            "preRequisite": {},
-                            "description": "對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。最多可使6隻怪物受到詛咒。",
-                            "imageUrl": "images/monsterTransformation.png",
-                            "levels": Array(31).fill(null).map((_, i) => {
-                                let mpCost, duration, moveSpeedReduction, magicAttackReduction;
-                                if (i === 0) return null;
+    "id": "monsterTransformation",
+    "name": "喚化術",
+    "maxLevel": 30,
+    "requiredLevel": 70,
+    "preRequisite": {},
+    "description": "對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。最多可使6隻怪物受到詛咒。",
+    "imageUrl": "images/monsterTransformation.png",
+    "levels": Array(31).fill(null).map((_, i) => {
+        let mpCost, duration, moveSpeedReduction, magicAttackReduction;
+        if (i === 0) return null;
 
-                                // 消耗MP 的精確數值
-                                const mpCosts = [null, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
-                                mpCost = mpCosts[i];
+        // 消耗MP 的精確數值
+        const mpCosts = [null, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
+        mpCost = mpCosts[i];
 
-                                // 持續時間 的精確數值
-                                const durations = [null, 10, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 20];
-                                duration = durations[i];
+        // 持續時間 的精確數值
+        const durations = [null, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+        duration = durations[i];
 
-                                // 移動速度降低 的精確數值
-                                const moveSpeedReductions = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
-                                moveSpeedReduction = moveSpeedReductions[i];
+        // 移動速度降低 的精確數值
+        const moveSpeedReductions = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
+        moveSpeedReduction = moveSpeedReductions[i];
 
-                                // 魔法攻擊力降低 的精確數值
-                                const magicAttackReductions = [null, 15, 15, 15, 16, 16, 16, 17, 17, 17, 18, 18, 18, 19, 19, 19, 20, 20, 20, 21, 21, 21, 22, 22, 22, 23, 23, 24, 24, 24, 25];
-                                magicAttackReduction = magicAttackReductions[i];
+        // 魔法攻擊力降低 的精確數值
+        const magicAttackReductions = [null, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25];
+        magicAttackReduction = magicAttackReductions[i];
 
-                                return {
-                                    effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 移動速度降低: -${moveSpeedReduction}, 魔法攻擊力降低: -${magicAttackReduction}`,
-                                    fullDescription: `對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，移動速度降低-${moveSpeedReduction}，魔法攻擊力降低-${magicAttackReduction}。`
-                                };
-                            })
-                        },
+        return {
+            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 移動速度降低: -${moveSpeedReduction}, 魔法攻擊力降低: -${magicAttackReduction}`,
+            fullDescription: `對多名敵方施加蝸牛詛咒，降低其魔法攻擊力及移動速度，BOSS無效。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，移動速度降低-${moveSpeedReduction}，魔法攻擊力降低-${magicAttackReduction}。`
+        };
+    })
+},
                         {
                             id: "mysticDoor",
                             name: "時空門",
@@ -4041,7 +4057,7 @@
                                 let hpCost, mpCost, attack;
                                 if (i === 0) return null;
 
-                                 // 消耗hP 的規律
+                                // 消耗hP 的規律
                                 if (i >= 1 && i <= 10) {
                                     hpCost = 15;
                                 } else if (i >= 11 && i <= 20) {
@@ -6593,28 +6609,40 @@
                             description: "增加暗器系武器的射程距離",
                             imageUrl: "images/keenEyes.png", // 確保圖片檔案存在
                             levels: Array(9).fill(null).map((_, i) => {
-                                const rangePercent = 25 * i;
+                                const rangePercent = 15 * i;
                                 return i === 0 ? null : {
-                                    effect: `射程: ${rangePercent}%`,
+                                    effect: `射程: ${rangePercent}`,
                                     fullDescription: `增加暗器系武器的射程距離。等級${i}效果：射程${rangePercent}%。`
                                 };
                             })
                         },
                         {
-                            id: "curse",
-                            name: "詛咒術",
-                            maxLevel: 20,
-                            requiredLevel: 10,
-                            preRequisite: {},
-                            description: "可於一定時間降低怪物的物理防禦力。（適用於BOSS）",
-                            imageUrl: "images/curse.png", // 確保圖片檔案存在
-                            levels: Array(21).fill(null).map((_, i) => {
-                                const mp = i <= 10 ? 5 : 10;
-                                const defReduction = i * 0.5;
-                                const duration = i * 3;
-                                return i === 0 ? null : {
-                                    effect: `消耗MP: ${mp}, 物理防禦: -${defReduction}%, 持續時間: ${duration}秒`,
-                                    fullDescription: `可於一定時間降低怪物的物理防禦力。（適用於BOSS）等級${i}效果：消耗MP${mp}，物理防禦-${defReduction}%，持續${duration}秒。`
+                            "id": "curse",
+                            "name": "詛咒術",
+                            "maxLevel": 20,
+                            "requiredLevel": 10,
+                            "preRequisite": {},
+                            "description": "可於一定時間降低怪物的物理防禦力。（適用於BOSS）",
+                            "imageUrl": "images/curse.png",
+                            "levels": Array(21).fill(null).map((_, i) => {
+                                let mpCost, pAttackReduction, pDefReduction, duration;
+                                if (i === 0) return null;
+
+                                // 消耗MP 的精確數值
+                                mpCost = 5;
+
+                                // 物理攻擊降低 的規律
+                                pAttackReduction = i;
+
+                                // 物理防禦降低 的規律：線性
+                                pDefReduction = 0.5 * i;
+
+                                // 持續時間 的規律：線性
+                                duration = 5 + i * 2;
+
+                                return {
+                                    effect: `消耗MP: ${mpCost}, 物理攻擊: -${pAttackReduction}, 物理防禦: -${pDefReduction}%, 持續時間: ${duration}秒`,
+                                    fullDescription: `可於一定時間降低怪物的物理防禦力。（適用於BOSS）等級${i}效果：消耗MP${mpCost}，物理攻擊-${pAttackReduction}，物理防禦-${pDefReduction}%，持續時間${duration}秒。`
                                 };
                             })
                         },
@@ -6624,19 +6652,19 @@
                             maxLevel: 20,
                             requiredLevel: 10,
                             preRequisite: {},
-                            description: "一定時間內消耗MP而隱身於影子之中。不會受怪物攻擊但會受環境影響如地震、毒氣、會損血的環境，無法攻擊怪物，無法喝水撿取物品，但其他行動則會正常，使用普通攻擊可以解除隱身。",
+                            description: "一定時間內消耗MP而隱身於影子之中。不會受怪物碰撞傷害但會受環境影響如地震、毒氣、會損血的環境，無法攻擊怪物，可喝水，但其他行動則會正常，使用普通攻擊與技能可以解除隱身。",
                             imageUrl: "images/darkSight.png", // 確保圖片檔案存在
                             levels: Array(21).fill(null).map((_, i) => {
                                 let mp, moveSpeed, duration;
                                 if (i === 0) return null;
                                 const mpCosts = [null, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5];
-                                const moveSpeeds = [null, -30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -7, -6, -5, -4, -3, -2, -1, 0];
+                                const moveSpeeds = [null, -30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -7, -6, -5, -4, -3, -2, -1, -0];
                                 const durations = Array(21).fill(10); // 持續時間固定10秒
                                 mp = mpCosts[i];
                                 moveSpeed = moveSpeeds[i];
                                 duration = durations[i];
                                 return {
-                                    effect: `消耗MP: ${mp}, 移動速度: ${moveSpeed}, 持續時間: ${duration}秒`,
+                                    effect: `消耗MP: ${mp}, 減少移動速度: ${moveSpeed}, 持續時間: ${duration}秒`,
                                     fullDescription: `一定時間內消耗MP而隱身於影子之中。等級${i}效果：消耗MP${mp}，移動速度${moveSpeed}，持續${duration}秒。`
                                 };
                             })
@@ -6686,25 +6714,26 @@
                     ],
                     "2轉 (俠盜)": [
                         {
-                            id: "recovery",
-                            name: "恢復術",
-                            maxLevel: 20,
-                            requiredLevel: 30,
-                            preRequisite: {},
-                            description: "提高恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。",
-                            imageUrl: "images/recovery.png", // 確保圖片檔案存在
-                            levels: Array(21).fill(null).map((_, i) => {
-                                let recoveryTime, hpAdd, mpAdd;
+                            "id": "recovery",
+                            "name": "恢復術",
+                            "maxLevel": 20,
+                            "requiredLevel": 30,
+                            "preRequisite": {},
+                            "description": "增加恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。",
+                            "imageUrl": "images/recovery.png",
+                            "levels": Array(21).fill(null).map((_, i) => {
+                                let hpAdd, mpAdd;
                                 if (i === 0) return null;
-                                const recoveryTimes = [null, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10];
-                                const hpAdds = [null, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60];
-                                const mpAdds = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-                                recoveryTime = recoveryTimes[i];
-                                hpAdd = hpAdds[i];
-                                mpAdd = mpAdds[i];
+
+                                // HP追加回復量 的規律：線性
+                                hpAdd = i * 3;
+
+                                // MP追加回復量 的規律：線性
+                                mpAdd = i;
+
                                 return {
-                                    effect: `回復時間: ${recoveryTime}秒, HP追加回復量: ${hpAdd}, MP追加回復量: ${mpAdd}`,
-                                    fullDescription: `提高恢復HP/ MP。等級${i}效果：回復時間${recoveryTime}秒，HP追加回復量${hpAdd}，MP追加回復量${mpAdd}。`
+                                    effect: `HP追加回復量: ${hpAdd}, MP追加回復量: ${mpAdd}`,
+                                    fullDescription: `增加恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。等級${i}效果：HP追加回復量${hpAdd}，MP追加回復量${mpAdd}。`
                                 };
                             })
                         },
@@ -7209,28 +7238,40 @@
                             description: "增加暗器系武器的射程距離",
                             imageUrl: "images/keenEyes.png",
                             levels: Array(9).fill(null).map((_, i) => {
-                                const rangePercent = 25 * i;
+                                const rangePercent = 15 * i;
                                 return i === 0 ? null : {
-                                    effect: `射程: ${rangePercent}%`,
+                                    effect: `射程: ${rangePercent}`,
                                     fullDescription: `增加暗器系武器的射程距離。等級${i}效果：射程${rangePercent}%。`
                                 };
                             })
                         },
                         {
-                            id: "curse",
-                            name: "詛咒術",
-                            maxLevel: 20,
-                            requiredLevel: 10,
-                            preRequisite: {},
-                            description: "可於一定時間降低怪物的物理防禦力。（適用於BOSS）",
-                            imageUrl: "images/curse.png",
-                            levels: Array(21).fill(null).map((_, i) => {
-                                const mp = i <= 10 ? 5 : 10;
-                                const defReduction = i * 0.5;
-                                const duration = i * 3;
-                                return i === 0 ? null : {
-                                    effect: `消耗MP: ${mp}, 物理防禦: -${defReduction}%, 持續時間: ${duration}秒`,
-                                    fullDescription: `可於一定時間降低怪物的物理防禦力。（適用於BOSS）等級${i}效果：消耗MP${mp}，物理防禦-${defReduction}%，持續${duration}秒。`
+                            "id": "curse",
+                            "name": "詛咒術",
+                            "maxLevel": 20,
+                            "requiredLevel": 10,
+                            "preRequisite": {},
+                            "description": "可於一定時間降低怪物的物理防禦力。（適用於BOSS）",
+                            "imageUrl": "images/curse.png",
+                            "levels": Array(21).fill(null).map((_, i) => {
+                                let mpCost, pAttackReduction, pDefReduction, duration;
+                                if (i === 0) return null;
+
+                                // 消耗MP 的精確數值
+                                mpCost = 5;
+
+                                // 物理攻擊降低 的規律
+                                pAttackReduction = i;
+
+                                // 物理防禦降低 的規律：線性
+                                pDefReduction = 0.5 * i;
+
+                                // 持續時間 的規律：線性
+                                duration = 5 + i * 2;
+
+                                return {
+                                    effect: `消耗MP: ${mpCost}, 物理攻擊: -${pAttackReduction}, 物理防禦: -${pDefReduction}%, 持續時間: ${duration}秒`,
+                                    fullDescription: `可於一定時間降低怪物的物理防禦力。（適用於BOSS）等級${i}效果：消耗MP${mpCost}，物理攻擊-${pAttackReduction}，物理防禦-${pDefReduction}%，持續時間${duration}秒。`
                                 };
                             })
                         },
@@ -7240,19 +7281,19 @@
                             maxLevel: 20,
                             requiredLevel: 10,
                             preRequisite: {},
-                            description: "一定時間內消耗MP而隱身於影子之中。不會受怪物攻擊但會受環境影響如地震、毒氣、會損血的環境，無法攻擊怪物，無法喝水撿取物品，但其他行動則會正常，使用普通攻擊可以解除隱身。",
+                            description: "一定時間內消耗MP而隱身於影子之中。不會受怪物碰撞傷害但會受環境影響如地震、毒氣、會損血的環境，無法攻擊怪物，可喝水，但其他行動則會正常，使用普通攻擊與技能可以解除隱身。",
                             imageUrl: "images/darkSight.png",
                             levels: Array(21).fill(null).map((_, i) => {
                                 let mp, moveSpeed, duration;
                                 if (i === 0) return null;
                                 const mpCosts = [null, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5];
-                                const moveSpeeds = [null, -30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -7, -6, -5, -4, -3, -2, -1, 0];
+                                const moveSpeeds = [null, -30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -7, -6, -5, -4, -3, -2, -1, -0];
                                 const durations = Array(21).fill(10); // 持續時間固定10秒
                                 mp = mpCosts[i];
                                 moveSpeed = moveSpeeds[i];
                                 duration = durations[i];
                                 return {
-                                    effect: `消耗MP: ${mp}, 移動速度: ${moveSpeed}, 持續時間: ${duration}秒`,
+                                    effect: `消耗MP: ${mp}, 減少移動速度: ${moveSpeed}, 持續時間: ${duration}秒`,
                                     fullDescription: `一定時間內消耗MP而隱身於影子之中。等級${i}效果：消耗MP${mp}，移動速度${moveSpeed}，持續${duration}秒。`
                                 };
                             })
@@ -7302,25 +7343,26 @@
                     ],
                     "2轉 (刺客)": [
                         {
-                            id: "recovery",
-                            name: "恢復術",
-                            maxLevel: 20,
-                            requiredLevel: 30,
-                            preRequisite: {},
-                            description: "當角色在梯子或繩索上，也能恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。",
-                            imageUrl: "images/recovery.png",
-                            levels: Array(21).fill(null).map((_, i) => {
-                                let recoveryTime, hpAdd, mpAdd;
+                            "id": "recovery",
+                            "name": "恢復術",
+                            "maxLevel": 20,
+                            "requiredLevel": 30,
+                            "preRequisite": {},
+                            "description": "增加恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。",
+                            "imageUrl": "images/recovery.png",
+                            "levels": Array(21).fill(null).map((_, i) => {
+                                let hpAdd, mpAdd;
                                 if (i === 0) return null;
-                                const recoveryTimes = [null, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10];
-                                const hpAdds = [null, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60];
-                                const mpAdds = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-                                recoveryTime = recoveryTimes[i];
-                                hpAdd = hpAdds[i];
-                                mpAdd = mpAdds[i];
+
+                                // HP追加回復量 的規律：線性
+                                hpAdd = i * 3;
+
+                                // MP追加回復量 的規律：線性
+                                mpAdd = i;
+
                                 return {
-                                    effect: `回復時間: ${recoveryTime}秒, HP追加回復量: ${hpAdd}, MP追加回復量: ${mpAdd}`,
-                                    fullDescription: `當角色在梯子或繩索上，也能恢復HP/ MP。等級${i}效果：回復時間${recoveryTime}秒，HP追加回復量${hpAdd}，MP追加回復量${mpAdd}。`
+                                    effect: `HP追加回復量: ${hpAdd}, MP追加回復量: ${mpAdd}`,
+                                    fullDescription: `增加恢復HP/ MP。當等級提高，恢復速度會愈快，所能恢復量也會變多。等級${i}效果：HP追加回復量${hpAdd}，MP追加回復量${mpAdd}。`
                                 };
                             })
                         },
@@ -7415,22 +7457,31 @@
                             })
                         },
                         {
-                            id: "drain",
-                            name: "吸血術",
-                            maxLevel: 30,
-                            requiredLevel: 30,
-                            preRequisite: {},
-                            description: "吸收怪物所收到的傷害值，並按照一定比例，恢復角色自身的HP。所吸收的能量，不大於角色最大HP的50%，亦不大於怪獸最大HP。",
-                            imageUrl: "images/drain.png",
-                            levels: Array(31).fill(null).map((_, i) => {
-                                let mp, attack, absorbRate;
+                            "id": "drain",
+                            "name": "吸血術",
+                            "maxLevel": 30,
+                            "requiredLevel": 30,
+                            "preRequisite": {},
+                            "description": "吸收怪物所收到的傷害值，並按照一定比例，恢復角色自身的HP。所吸收的能量，不大於角色最大HP的50%，亦不大於怪獸最大HP。",
+                            "imageUrl": "images/drain.png",
+                            "levels": Array(31).fill(null).map((_, i) => {
+                                let mpCost, attack, absorbRate;
                                 if (i === 0) return null;
-                                mp = i <= 15 ? 12 : 24;
-                                attack = 100 + i * 2;
+
+                                // 消耗MP 的精確數值
+                                const mpCosts = [null, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24];
+                                mpCost = mpCosts[i];
+
+                                // 攻擊力 的精確數值
+                                const attacks = [null, 98, 101, 104, 107, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160];
+                                attack = attacks[i];
+
+                                // 吸收率 的規律：線性
                                 absorbRate = 15 + i;
+
                                 return {
-                                    effect: `消耗MP: ${mp}, 攻擊力: ${attack}, 吸收率: ${absorbRate}%`,
-                                    fullDescription: `吸收怪物所收到的傷害值，並按照一定比例，恢復角色自身的HP。等級${i}效果：消耗MP${mp}，攻擊力${attack}，吸收率${absorbRate}%。`
+                                    effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}, 吸收率: ${absorbRate}%`,
+                                    fullDescription: `吸收怪物所收到的傷害值，並按照一定比例，恢復角色自身的HP。所吸收的能量，不大於角色最大HP的50%，亦不大於怪獸最大HP。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}，吸收率${absorbRate}%。`
                                 };
                             })
                         }
@@ -7497,9 +7548,9 @@
 
                                 // 增加率 的規律：分段線性
                                 if (i >= 1 && i <= 10) {
-                                    increaseRate = i * 3;
+                                    increaseRate = 10 + i * 3;
                                 } else { // i >= 11 && i <= 20
-                                    increaseRate = 30 + (i - 10) * 2;
+                                    increaseRate = 40 + (i - 10) * 2;
                                 }
 
                                 return {
@@ -7517,63 +7568,25 @@
                             "description": "消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。",
                             "imageUrl": "images/shadowClone.png",
                             "levels": Array(31).fill(null).map((_, i) => {
-                                let mpCost, duration, normalAttackPercent, skillAttackPercent;
+                                let mpCost, duration, cloneDamage;
                                 if (i === 0) return null;
 
-                                // 消耗MP 的規律：線性遞減
-                                // 200 -> 105 (減5) for level 1-20
-                                // 100 -> 55 (減5) for level 21-30
-                                if (i <= 20) {
-                                    mpCost = 205 - i * 5;
-                                } else {
-                                    mpCost = 105 - (i - 20) * 5;
-                                }
+                                // 消耗MP 的精確數值
+                                const mpCosts = [null, 200, 195, 190, 185, 180, 175, 170, 165, 160, 155, 150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55];
+                                mpCost = mpCosts[i];
 
-                                // 持續時間 的規律：線性遞增
-                                // 10 -> 200 (加10) for level 1-20
-                                // 210 -> 300 (加10) for level 21-30
-                                if (i <= 20) {
-                                    duration = i * 10;
-                                } else {
-                                    duration = 200 + (i - 20) * 10;
-                                }
+                                // 持續時間 的精確數值
+                                const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
+                                duration = durations[i];
 
-                                // 普通攻擊 的規律：
-                                // 20% -> 70% (加4%) for level 1-20
-                                // 71% -> 80% (加1%或2%) for level 21-30
-                                if (i <= 20) {
-                                    normalAttackPercent = 16 + i * 2; // Level 1 is 20%
-                                } else {
-                                    // Complex pattern based on provided values, hardcode for accuracy
-                                    const normalAttacksRaw = [
-                                        null, 20, 24, 28, 32, 36, 40, 44, 46, 48, 50, // L1-10
-                                        52, 54, 56, 58, 60, 62, 64, 66, 68, 70, // L11-20
-                                        71, 72, 73, 74, 75, 76, 77, 78, 79, 80 // L21-30
-                                    ];
-                                    normalAttackPercent = normalAttacksRaw[i];
-                                }
-
-                                // 技能攻擊 的規律：
-                                // 21% (固定) for level 1-7
-                                // 22% -> 34% (加1%) for level 8-20
-                                // 35% -> 50% (加1%或2%) for level 21-30
-                                if (i <= 7) {
-                                    skillAttackPercent = 21;
-                                } else if (i <= 20) {
-                                    skillAttackPercent = 20 + i; // Level 8 is 22%
-                                } else {
-                                    // Complex pattern based on provided values, hardcode for accuracy
-                                    const skillAttacksRaw = [
-                                        null, 21, 21, 21, 21, 21, 21, 21, 22, 23, 24, // L1-10
-                                        25, 26, 27, 28, 29, 30, 31, 32, 33, 34, // L11-20
-                                        35, 36, 37, 38, 40, 42, 44, 46, 48, 50 // L21-30
-                                    ];
-                                    skillAttackPercent = skillAttacksRaw[i];
-                                }
+                                // 分身傷害 的精確數值 (普通攻擊、技能攻擊合併為單一數值)
+                                // 攻擊力 的精確數值
+                                const cloneDamages = [null, 21, 21, 21, 21, 21, 21, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 42, 44, 46, 48, 50];
+                                cloneDamage = cloneDamages[i];
 
                                 return {
-                                    effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 普通攻擊: ${normalAttackPercent}%, 技能攻擊: ${skillAttackPercent}%`,
-                                    fullDescription: `消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，普通攻擊${normalAttackPercent}%，技能攻擊${skillAttackPercent}%。`
+                                    effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 分身傷害: ${cloneDamage}%`,
+                                    fullDescription: `消費召喚石於一定時間內召喚出分身，分身會模仿主人做出相同的動作或攻擊。影分身並沒有HP，當超過時效時便會自動消失。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，分身傷害${cloneDamage}%。`
                                 };
                             })
                         },
@@ -9063,54 +9076,54 @@
                             })
                         },
                         {
-    "id": "targeting",
-    "name": "指定攻擊",
-    "maxLevel": 30,
-    "requiredLevel": 70,
-    "preRequisite": {},
-    "description": "派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。",
-    "imageUrl": "images/targeting.png",
-    "levels": Array(31).fill(null).map((_, i) => {
-        let mpCost, attack, extraDmg;
-        if (i === 0) return null;
+                            "id": "targeting",
+                            "name": "指定攻擊",
+                            "maxLevel": 30,
+                            "requiredLevel": 70,
+                            "preRequisite": {},
+                            "description": "派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。",
+                            "imageUrl": "images/targeting.png",
+                            "levels": Array(31).fill(null).map((_, i) => {
+                                let mpCost, attack, extraDmg;
+                                if (i === 0) return null;
 
-        // 消耗MP 的精確數值
-        const mpCosts = [null, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30];
-        mpCost = mpCosts[i];
+                                // 消耗MP 的精確數值
+                                const mpCosts = [null, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30];
+                                mpCost = mpCosts[i];
 
-        // 攻擊力 的精確數值
-        const attacks = [null, 148, 156, 164, 172, 180, 188, 196, 204, 212, 220, 228, 236, 244, 252, 260, 268, 276, 284, 292, 300, 308, 316, 324, 332, 340, 348, 356, 364, 372, 380];
-        attack = attacks[i];
+                                // 攻擊力 的精確數值
+                                const attacks = [null, 148, 156, 164, 172, 180, 188, 196, 204, 212, 220, 228, 236, 244, 252, 260, 268, 276, 284, 292, 300, 308, 316, 324, 332, 340, 348, 356, 364, 372, 380];
+                                attack = attacks[i];
 
-        // 追加傷害 的精確數值
-        if (i >= 1 && i <= 3) {
-            extraDmg = "10秒內追加1％";
-        } else if (i >= 4 && i <= 6) {
-            extraDmg = "10秒內追加2％";
-        } else if (i >= 7 && i <= 9) {
-            extraDmg = "10秒內追加3％";
-        } else if (i >= 10 && i <= 12) {
-            extraDmg = "10秒內追加4％";
-        } else if (i >= 13 && i <= 15) {
-            extraDmg = "10秒內追加5％";
-        } else if (i >= 16 && i <= 18) {
-            extraDmg = "15秒內追加6％";
-        } else if (i >= 19 && i <= 21) {
-            extraDmg = "15秒內追加7％";
-        } else if (i >= 22 && i <= 24) {
-            extraDmg = "15秒內追加8％";
-        } else if (i >= 25 && i <= 27) {
-            extraDmg = "15秒內追加9％";
-        } else if (i >= 28 && i <= 30) {
-            extraDmg = "15秒內追加10％";
-        }
+                                // 追加傷害 的精確數值
+                                if (i >= 1 && i <= 3) {
+                                    extraDmg = "10秒內追加1％";
+                                } else if (i >= 4 && i <= 6) {
+                                    extraDmg = "10秒內追加2％";
+                                } else if (i >= 7 && i <= 9) {
+                                    extraDmg = "10秒內追加3％";
+                                } else if (i >= 10 && i <= 12) {
+                                    extraDmg = "10秒內追加4％";
+                                } else if (i >= 13 && i <= 15) {
+                                    extraDmg = "10秒內追加5％";
+                                } else if (i >= 16 && i <= 18) {
+                                    extraDmg = "15秒內追加6％";
+                                } else if (i >= 19 && i <= 21) {
+                                    extraDmg = "15秒內追加7％";
+                                } else if (i >= 22 && i <= 24) {
+                                    extraDmg = "15秒內追加8％";
+                                } else if (i >= 25 && i <= 27) {
+                                    extraDmg = "15秒內追加9％";
+                                } else if (i >= 28 && i <= 30) {
+                                    extraDmg = "15秒內追加10％";
+                                }
 
-        return {
-            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 追加傷害: ${extraDmg}`,
-            fullDescription: `派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，追加傷害${extraDmg}。`
-        };
-    })
-}
+                                return {
+                                    effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 追加傷害: ${extraDmg}`,
+                                    fullDescription: `派出鸚鵡為敵方標記，攻擊被鸚鵡標記得敵方時，會造成額外傷害。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，追加傷害${extraDmg}。`
+                                };
+                            })
+                        }
                     ],
                     "4轉 (槍神)": [
                         {
@@ -9745,9 +9758,9 @@
                             ${skill.imageUrl ? `<img src="${skill.imageUrl}" alt="${skill.name}" class="skill-icon" onerror="this.onerror=null;this.src='images/default.png';">` : ''}
                             <div class="skill-name">${skill.name}</div>
                             <div class="skill-level-controls">
-                            <button onclick="decreaseSkill('${skill.id}')" ${currentSkillLevels[skill.id] === 0 ? 'disabled' : ''}>-</button>
-                            <span class="skill-current-level" id="${skill.id}-level">${currentSkillLevels[skill.id]}</span>
-                            <button onclick="increaseSkill('${skill.id}')" ${currentSkillLevels[skill.id] >= skill.maxLevel ? 'disabled' : ''}>+</button>
+                            <button onclick="decreaseSkill('${skill.id}')">-</button>
+                            <input type="number" class="skill-level-input" id="${skill.id}-level" value="${currentSkillLevels[skill.id]}" min="0" max="${skill.maxLevel}" onchange="setSkillLevel('${skill.id}', this)">
+                            <button onclick="increaseSkill('${skill.id}')">+</button>
                             <span>/${skill.maxLevel}</span>
                             <button onclick="maxSkill('${skill.id}')" class="max-button" id="${skill.id}-max-btn">點滿</button>
                         </div>
@@ -9818,12 +9831,12 @@
             currentProfessionData.jobStagesOrder.forEach(jobStageKey => {
                 if (skillsData[jobStageKey]) {
                     skillsData[jobStageKey].forEach(skill => {
-                        const levelSpan = document.getElementById(`${skill.id}-level`);
-                        if (levelSpan) {
-                            levelSpan.textContent = currentSkillLevels[skill.id];
+                        const levelInput = document.getElementById(`${skill.id}-level`);
+                        if (levelInput) {
+                            levelInput.value = currentSkillLevels[skill.id];
 
-                            const increaseBtn = levelSpan.nextElementSibling;
-                            const decreaseBtn = levelSpan.previousElementSibling;
+                            const increaseBtn = levelInput.nextElementSibling;
+                            const decreaseBtn = levelInput.previousElementSibling;
                             const maxBtn = document.getElementById(`${skill.id}-max-btn`); // 獲取點滿按鈕
 
                             // 檢查是否可增加點數 (原有的canIncrease邏輯)
@@ -10013,6 +10026,261 @@
             alert('配點連結已複製到剪貼簿！\n現在可以將連結傳給朋友了。');
         }
         // --- 點滿技能函式 ---
+        function maxSkill(skillId) {
+            let skill = null;
+            let jobStageKey = null;
+            for (const stageKey in currentProfessionData.skills) {
+                const foundSkill = currentProfessionData.skills[stageKey].find(s => s.id === skillId);
+                if (foundSkill) {
+                    skill = foundSkill;
+                    jobStageKey = stageKey;
+                    break;
+                }
+            }
+
+            if (!skill) return;
+
+            const spNeeded = skill.maxLevel - currentSkillLevels[skill.id];
+
+            // 檢查是否可以點滿
+            const canMax =
+                spNeeded > 0 && // 還有點數可點
+                remainingSp >= spNeeded && // 剩餘SP足夠
+                currentLevel >= skill.requiredLevel && // 角色等級符合
+                checkOverallSkillConditions(skill, jobStageKey); // 其他條件也符合 (前置技能，轉職總SP等)
+
+            if (canMax) {
+                currentSkillLevels[skillId] = skill.maxLevel;
+                spentSp += spNeeded;
+                remainingSp -= spNeeded;
+                updateUI(); // 更新UI
+            } else {
+                // 如果不能點滿，可以在這裡添加一些提示（例如：點數不足、等級不足、前置技能未滿等）
+                // 為了簡潔，這裡暫時不顯示具體提示
+                console.log(`無法點滿技能 ${skill.name}: 點數不足、等級不足或前置條件未滿足。`);
+            }
+        }
+
+        // --- 新增：建立技能中文名到ID的映射表 ---
+        function createSkillNameMap(professionKey) {
+            const nameToIdMap = {};
+            const professionData = allProfessionsData[professionKey];
+            if (!professionData) return nameToIdMap;
+
+            // 遍歷該職業所有轉職階段的技能
+            for (const jobStageKey in professionData.skills) {
+                professionData.skills[jobStageKey].forEach(skill => {
+                    nameToIdMap[skill.name] = skill.id;
+                });
+            }
+            return nameToIdMap;
+        }
+
+       // --- 輔助函式：根據技能ID獲取技能數據 ---
+        function getSkillById(skillId) {
+            // 遍歷所有職業的所有轉職階段來查找技能
+            for (const professionKey in allProfessionsData) {
+                const professionSkills = allProfessionsData[professionKey].skills;
+                for (const jobStageKey in professionSkills) {
+                    const foundSkill = professionSkills[jobStageKey].find(s => s.id === skillId);
+                    if (foundSkill) {
+                        return foundSkill; // 找到技能即返回
+                    }
+                }
+            }
+            return null; // 未找到
+        }
+
+        // --- 輔助函式：更新單一技能的前置技能顯示 ---
+        function updateSkillPrerequisitesDisplay(skillId) {
+            const skill = getSkillById(skillId);
+            const preReqsDiv = document.getElementById(`${skillId}-prereqs`);
+
+            if (!skill || !preReqsDiv) return;
+
+            // 如果沒有前置技能，清空並隱藏區塊
+            if (!skill.preRequisite || Object.keys(skill.preRequisite).length === 0) {
+                preReqsDiv.innerHTML = '';
+                preReqsDiv.style.display = 'none'; // 隱藏沒有前置技能的區塊
+                return;
+            }
+
+            let preReqsHtml = '前置: ';
+            let allMet = true; // 追蹤所有前置技能是否都已滿足
+
+            for (const preReqSkillId in skill.preRequisite) {
+                const requiredLevel = skill.preRequisite[preReqSkillId];
+                const currentLevel = currentSkillLevels[preReqSkillId] || 0; // 確保有值，沒有點是0
+                const preReqSkillData = getSkillById(preReqSkillId);
+                const preReqName = preReqSkillData ? preReqSkillData.name : preReqSkillId; // 顯示技能名稱或ID
+
+                const isMet = currentLevel >= requiredLevel;
+                if (!isMet) allMet = false; // 只要有一個不滿足，就設為false
+
+                preReqsHtml += `<span class="${isMet ? 'prereq-met' : 'prereq-unmet'}">${preReqName} (${currentLevel}/${requiredLevel})</span> `;
+            }
+
+            preReqsDiv.innerHTML = preReqsHtml;
+            preReqsDiv.style.display = 'flex'; // 有前置技能時顯示
+        }
+
+        // --- 新增：顯示推薦配點詳情 ---
+        function showBuildDetails(buildIndex) {
+            const container = document.getElementById('buildDetailsContainer');
+            const select = document.getElementById('recommendedBuildSelect');
+
+            if (buildIndex === "") {
+                container.style.display = 'none';
+                return;
+            }
+
+            const build = recommendedBuilds[currentProfessionKey][parseInt(buildIndex, 10)];
+            if (!build) return;
+
+            // 填充詳情內容
+            document.getElementById('buildDetailName').textContent = build.name;
+            document.getElementById('buildDetailDescription').textContent = build.description;
+            document.getElementById('buildDetailPriority').textContent = build.priority;
+
+            // 顯示詳情區塊
+            container.style.display = 'flex';
+
+            // 處理 "載入此配點" 按鈕的點擊事件
+            const loadBtn = document.getElementById('loadBuildBtn');
+            // 複製並取代按鈕以移除舊的監聽器，避免重複觸發
+            const newLoadBtn = loadBtn.cloneNode(true);
+            loadBtn.parentNode.replaceChild(newLoadBtn, loadBtn);
+
+            newLoadBtn.onclick = () => {
+                // 建立當前職業的技能名稱映射表
+                const skillNameMap = createSkillNameMap(currentProfessionKey);
+
+                // 載入配點指定的等級
+                currentLevel = build.level;
+                document.getElementById('levelInput').value = currentLevel;
+
+                // 重置技能點數並應用新配點
+                Object.keys(currentSkillLevels).forEach(id => currentSkillLevels[id] = 0);
+                build.skills.split(',').forEach(pair => {
+                    const [name, lvl] = pair.split(':');
+                    const skillId = skillNameMap[name.trim()]; // 使用映射表找到ID
+
+                    if (skillId && lvl && currentSkillLevels.hasOwnProperty(skillId)) {
+                        currentSkillLevels[skillId] = parseInt(lvl, 10);
+                    } else {
+                        console.warn(`警告：在推薦配點 "${build.name}" 中找不到技能名稱 "${name}" 或其ID "${skillId}"。`);
+                    }
+                });
+
+                // 重新計算SP並更新UI
+                spentSp = Object.values(currentSkillLevels).reduce((a, b) => a + b, 0);
+                remainingSp = calculateMaxSp(currentLevel) - spentSp;
+                updateUI();
+                closeBuildDetails(); // 載入後關閉詳情
+            };
+        }
+
+        // --- 新增：關閉推薦配點詳情 ---
+        function closeBuildDetails() {
+            document.getElementById('buildDetailsContainer').style.display = 'none';
+            document.getElementById('recommendedBuildSelect').value = "";
+        }
+
+        // --- 新增：開啟貢獻配點表單 ---
+        function openContributionForm() {
+            const instructions = `感謝您願意分享配點！
+
+操作教學：
+1. 在模擬器中完成您的配點。
+2. 點擊「分享」按鈕，配點連結將會自動複製。
+3. 在接下來開啟的表單中，將連結貼到對應的欄位即可。
+
+準備好要分享了嗎？ (點擊 "確定" 將會開啟表單)`;
+
+            if (confirm(instructions)) {
+                const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdgOrzO3ywc5gwFq1Si9gken-Da9QKephcJu8HHjMZru-TDMA/viewform?usp=preview';
+                window.open(formUrl, '_blank');
+            }
+        }
+
+        // --- 新增：處理技能等級手動輸入 ---
+        function getJobStageKeyForSkill(skillId) {
+            for (const stageKey in currentProfessionData.skills) {
+                if (currentProfessionData.skills[stageKey].some(s => s.id === skillId)) {
+                    return stageKey;
+                }
+            }
+            return null;
+        }
+
+        function setSkillLevel(skillId, inputElement) {
+            let newLevel = parseInt(inputElement.value, 10);
+
+            const skill = getSkillById(skillId);
+            if (!skill) {
+                inputElement.value = currentSkillLevels[skillId]; // Revert
+                return;
+            }
+
+            const oldLevel = currentSkillLevels[skillId];
+
+            // 1. 驗證並限制輸入值
+            if (isNaN(newLevel)) { newLevel = oldLevel; }
+            if (newLevel < 0) { newLevel = 0; }
+            if (newLevel > skill.maxLevel) { newLevel = skill.maxLevel; }
+            if (newLevel !== parseInt(inputElement.value, 10)) {
+                inputElement.value = newLevel;
+            }
+
+            const spChange = newLevel - oldLevel;
+            if (spChange === 0) { return; }
+
+            // 2. 檢查變更是否可行
+            if (spChange > 0) { // 增加點數
+                if (remainingSp < spChange) {
+                    alert("剩餘點數不足！");
+                    inputElement.value = oldLevel; // 還原
+                    return;
+                }
+                const jobStageKey = getJobStageKeyForSkill(skillId);
+                if (!checkOverallSkillConditions(skill, jobStageKey)) {
+                    alert("未滿足前置條件或等級需求！");
+                    inputElement.value = oldLevel; // 還原
+                    return;
+                }
+            } else { // 減少點數
+                // 暫時應用變更以檢查是否會破壞其他技能的前置條件
+                currentSkillLevels[skillId] = newLevel;
+                let isChangeValid = true;
+                for (const skId in currentSkillLevels) {
+                    if (currentSkillLevels[skId] > 0) {
+                        const otherSkill = getSkillById(skId);
+                        const otherSkillJobStage = getJobStageKeyForSkill(skId);
+                        if (otherSkill && !checkOverallSkillConditions(otherSkill, otherSkillJobStage)) {
+                            isChangeValid = false;
+                            alert(`無法減少 ${skill.name} 的等級，因為技能 "${otherSkill.name}" 需要它作為前置條件。`);
+                            break;
+                        }
+                    }
+                }
+                // 在做決定前還原暫時的變更
+                currentSkillLevels[skillId] = oldLevel;
+
+                if (!isChangeValid) {
+                    inputElement.value = oldLevel;
+                    return;
+                }
+            }
+
+            // 3. 應用變更
+            currentSkillLevels[skillId] = newLevel;
+            spentSp += spChange;
+            remainingSp -= spChange;
+
+            // 4. 更新整個UI
+            updateUI();
+        }
+
         function maxSkill(skillId) {
             let skill = null;
             let jobStageKey = null;
@@ -10259,6 +10527,5 @@
         initializeSimulator();
     </script>
 </body>
-
 
 </html>
