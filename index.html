@@ -120,23 +120,27 @@
         }
 
         /* --- 新增：自訂滾動條樣式 --- */
-        #updateLog ul::-webkit-scrollbar {
+        #updateLog ul::-webkit-scrollbar,
+        #buildsList::-webkit-scrollbar {
             width: 8px;
         }
 
-        #updateLog ul::-webkit-scrollbar-track {
+        #updateLog ul::-webkit-scrollbar-track,
+        #buildsList::-webkit-scrollbar-track {
             background: rgba(215, 204, 200, 0.5);
             /* 軌道顏色，半透明 */
             border-radius: 4px;
         }
 
-        #updateLog ul::-webkit-scrollbar-thumb {
+        #updateLog ul::-webkit-scrollbar-thumb,
+        #buildsList::-webkit-scrollbar-thumb {
             background: #795548;
             /* 滾動條本身的顏色 */
             border-radius: 4px;
         }
 
-        #updateLog ul::-webkit-scrollbar-thumb:hover {
+        #updateLog ul::-webkit-scrollbar-thumb:hover,
+        #buildsList::-webkit-scrollbar-thumb:hover {
             background: #5d4037;
             /* 滑鼠懸停時的顏色 */
         }
@@ -242,6 +246,9 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            max-height: 600px; /* 設定最大高度 */
+            overflow-y: auto; /* 內容超出時顯示滾動條 */
+            padding-right: 15px; /* 為滾動條預留空間 */
         }
 
         .build-card {
@@ -395,6 +402,11 @@
 
             .profession-card span {
                 font-size: 1em;
+            }
+
+            .builds-list {
+                max-height: 50vh; /* 手機版使用相對高度 */
+                padding-right: 10px;
             }
 
             .build-card h3 {
