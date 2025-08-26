@@ -242,10 +242,35 @@
         }
 
         /* --- 推薦文列表 --- */
+        .builds-filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        #professionFilter {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #bcaaa4;
+            background-color: #fff;
+            font-size: 1em;
+            color: #5d4037;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        #professionFilter:focus {
+            outline: none;
+            border-color: #795548;
+            box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.2);
+        }
+
         #buildsSearchInput {
             width: 100%;
             padding: 10px 15px;
-            margin-bottom: 20px;
             border-radius: 6px;
             border: 1px solid #bcaaa4;
             background-color: #fff;
@@ -262,8 +287,8 @@
         }
 
         .builds-list {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             max-height: 600px; /* 設定最大高度 */
             overflow-y: auto; /* 內容超出時顯示滾動條 */
@@ -327,6 +352,15 @@
 
         .build-card .view-build-btn:hover {
             background-color: #1565c0;
+        }
+
+        /* 新增：查無結果的提示訊息樣式 */
+        .no-results-message {
+            text-align: center;
+            color: #6d4c41;
+            padding: 20px 0;
+            font-style: italic;
+            font-size: 1.1em;
         }
 
         /* --- 頁尾 --- */
@@ -423,8 +457,14 @@
                 font-size: 1em;
             }
 
+            .builds-filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
             .builds-list {
                 max-height: 50vh; /* 手機版使用相對高度 */
+                grid-template-columns: 1fr; /* 手機版維持單欄 */
                 padding-right: 10px;
             }
 
@@ -506,10 +546,14 @@
 
         <div id="recommendedBuilds" class="content-section">
             <h2>推薦文列表</h2>
-            <input type="text" id="buildsSearchInput" placeholder="搜尋標題或描述中的關鍵字...">
+            <div class="builds-filter-container">
+                <select id="professionFilter"></select>
+                <input type="text" id="buildsSearchInput" placeholder="搜尋標題或描述中的關鍵字...">
+            </div>
             <div id="buildsList" class="builds-list">
                 <!-- 推薦配點將由 JS 動態生成 -->
             </div>
+            <p id="noBuildsFound" class="no-results-message" style="display: none;">查無符合條件的推薦文</p>
         </div>
 
         <footer class="page-footer">
@@ -594,6 +638,7 @@
 
                     const card = document.createElement('div');
                     card.className = 'build-card';
+                    card.dataset.professionKey = englishKey; // 加上 data attribute 以便篩選
                     card.innerHTML = `
                         <div class="build-card-header">
                             <h3>[${professionNameMap[englishKey]}] ${build.name}</h3>
@@ -702,27 +747,63 @@
         }
 
         /**
-         * 設定推薦文列表的搜尋功能。
-         * 監聽搜尋框的輸入，並即時篩選顯示符合關鍵字的推薦文卡片。
+         * 填充職業篩選的下拉選單。
          */
-        function setupBuildsSearch() {
+        function populateProfessionFilter() {
+            const filterSelect = document.getElementById('professionFilter');
+            if (!filterSelect) return;
+
+            // 新增預設選項
+            filterSelect.innerHTML = '<option value="all">所有職業</option>';
+
+            // 依照定義好的順序，從 professionNameMap 新增各職業選項
+            for (const key of Object.keys(professionNameMap)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = professionNameMap[key];
+                filterSelect.appendChild(option);
+            }
+        }
+
+        /**
+         * 設定推薦文列表的篩選功能 (包含關鍵字搜尋與職業下拉選單)。
+         * 監聽兩個控制項的變動，並即時更新列表。
+         */
+        function setupBuildsFilter() {
             const searchInput = document.getElementById('buildsSearchInput');
+            const professionFilter = document.getElementById('professionFilter');
             const buildsList = document.getElementById('buildsList');
+            const noResultsMessage = document.getElementById('noBuildsFound'); // 新增：獲取提示訊息元素
 
-            if (!searchInput || !buildsList) return;
+            if (!searchInput || !professionFilter || !buildsList || !noResultsMessage) return; // 新增：檢查提示訊息元素
 
-            searchInput.addEventListener('input', () => {
+            const filterAction = () => {
                 const searchTerm = searchInput.value.toLowerCase().trim();
+                const selectedProfession = professionFilter.value;
                 const buildCards = buildsList.querySelectorAll('.build-card');
+                let visibleCount = 0; // 新增：用於計算可見卡片的計數器
 
                 buildCards.forEach(card => {
+                    const cardProfession = card.dataset.professionKey;
                     const title = card.querySelector('h3').textContent.toLowerCase();
                     const description = card.querySelector('.build-description').textContent.toLowerCase();
 
-                    const isVisible = title.includes(searchTerm) || description.includes(searchTerm);
-                    card.style.display = isVisible ? '' : 'none';
+                    const professionMatch = (selectedProfession === 'all') || (cardProfession === selectedProfession);
+                    const searchMatch = title.includes(searchTerm) || description.includes(searchTerm);
+
+                    if (professionMatch && searchMatch) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
-            });
+                // 新增：根據可見卡片數量，顯示或隱藏「查無結果」的訊息
+                noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+            };
+
+            searchInput.addEventListener('input', filterAction);
+            professionFilter.addEventListener('change', filterAction);
         }
 
         /**
@@ -768,9 +849,10 @@
                     buildKeyMaps(); // 優先建立對照表
                     generateProfessionGrid();
                     generateBuildsList();
+                    populateProfessionFilter(); // 填充職業篩選選單
                     setupUpdateLog(); // 初始化更新日誌顯示
                     setupBackToTopButton(); // 初始化回到頂部按鈕
-                    setupBuildsSearch(); // 初始化推薦文搜尋功能
+                    setupBuildsFilter(); // 初始化推薦文篩選功能
                 } catch (e) {
                     console.error("在生成頁面內容時發生錯誤:", e);
                     document.getElementById('professionGrid').innerHTML = `<p style="color: red; text-align: center;">頁面內容生成失敗，可能是 data.js 的資料格式有誤。<br>詳細錯誤請見瀏覽器開發者工具(F12)的 Console。</p>`;
