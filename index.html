@@ -242,6 +242,25 @@
         }
 
         /* --- 推薦文列表 --- */
+        #buildsSearchInput {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #bcaaa4;
+            background-color: #fff;
+            font-size: 1em;
+            box-sizing: border-box;
+            color: #5d4037;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #buildsSearchInput:focus {
+            outline: none;
+            border-color: #795548;
+            box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.2);
+        }
+
         .builds-list {
             display: flex;
             flex-direction: column;
@@ -487,6 +506,7 @@
 
         <div id="recommendedBuilds" class="content-section">
             <h2>推薦文列表</h2>
+            <input type="text" id="buildsSearchInput" placeholder="搜尋標題或描述中的關鍵字...">
             <div id="buildsList" class="builds-list">
                 <!-- 推薦配點將由 JS 動態生成 -->
             </div>
@@ -682,6 +702,30 @@
         }
 
         /**
+         * 設定推薦文列表的搜尋功能。
+         * 監聽搜尋框的輸入，並即時篩選顯示符合關鍵字的推薦文卡片。
+         */
+        function setupBuildsSearch() {
+            const searchInput = document.getElementById('buildsSearchInput');
+            const buildsList = document.getElementById('buildsList');
+
+            if (!searchInput || !buildsList) return;
+
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                const buildCards = buildsList.querySelectorAll('.build-card');
+
+                buildCards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const description = card.querySelector('.build-description').textContent.toLowerCase();
+
+                    const isVisible = title.includes(searchTerm) || description.includes(searchTerm);
+                    card.style.display = isVisible ? '' : 'none';
+                });
+            });
+        }
+
+        /**
          * 設定「回到頂部」按鈕的功能。
          * 按鈕會在使用者向下滾動一定距離後出現。
          */
@@ -726,6 +770,7 @@
                     generateBuildsList();
                     setupUpdateLog(); // 初始化更新日誌顯示
                     setupBackToTopButton(); // 初始化回到頂部按鈕
+                    setupBuildsSearch(); // 初始化推薦文搜尋功能
                 } catch (e) {
                     console.error("在生成頁面內容時發生錯誤:", e);
                     document.getElementById('professionGrid').innerHTML = `<p style="color: red; text-align: center;">頁面內容生成失敗，可能是 data.js 的資料格式有誤。<br>詳細錯誤請見瀏覽器開發者工具(F12)的 Console。</p>`;
