@@ -230,8 +230,8 @@
         }
 
         .profession-card img {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             margin-bottom: 10px;
         }
 
@@ -601,7 +601,7 @@
                 // 連結到 simulator.html 並帶上職業參數
                 card.href = `simulator.html?prof=${encodeURIComponent(key)}`;
                 card.innerHTML = `
-                    <img src="emblems/${key}.png" alt="${key}" onerror="this.onerror=null;this.src='images/default.png';">
+                    <img src="emblems/${key}_color.png" alt="${key}" onerror="this.onerror=null;this.src='images/default.png';">
                     <span>${professionNameMap[key]}</span>
                 `;
                 grid.appendChild(card);
