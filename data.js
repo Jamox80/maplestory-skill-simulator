@@ -977,20 +977,23 @@ const allProfessionsData = {
                     "description": "消耗自身的MP用來提高魔法攻擊力。",
                     "imageUrl": "images/magicBooster.png",
                     "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCostPercent, magicAttackPercent, duration;
                         if (i === 0) return null;
 
                         // 消耗MP 的精確數值
-                        const mpCostsRaw = [null, 105, 110, 119, 122, 125, 130, 135, 140, 145, 150, 160, 155, 165, 160, 170, 165, 175, 170, 180, 175, 180, 180, 190, 185, 195, 190, 205, 200, 195, 200];
-                        mpCostPercent = mpCostsRaw[i];
+                        const mpCostsRaw = [null, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 173, 176, 179, 182, 185, 188, 191, 194, 197, 200];
+                        const mpCostPercent = mpCostsRaw[i];
 
                         // 魔法攻擊力 的精確數值
-                        const magicAttacksRaw = [null, 102, 104, 113, 114, 109, 110, 111, 112, 113, 114, 116, 116, 118, 118, 120, 120, 122, 122, 124, 124, 126, 126, 128, 128, 130, 130, 132, 132, 132, 135];
-                        magicAttackPercent = magicAttacksRaw[i];
+                        const magicAttacksRaw = [null, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150];
+                        const magicAttackPercent = magicAttacksRaw[i];
 
                         // 持續時間 的規律：分段線性
-                        const durations = [null, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
-                        duration = durations[i];
+                        let duration;
+                        if (i <= 20) {
+                            duration = 100 + i * 5;
+                        } else if (i > 20) {
+                            duration = 200 + (i - 20) * 10;
+                        }
 
                         return {
                             effect: `消耗MP: ${mpCostPercent}%, 魔法攻擊力: ${magicAttackPercent}%, 持續時間: ${duration}秒`,
@@ -1679,20 +1682,23 @@ const allProfessionsData = {
                     "description": "消耗自身的MP用來提高魔法攻擊力。",
                     "imageUrl": "images/magicBooster.png",
                     "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCostPercent, magicAttackPercent, duration;
                         if (i === 0) return null;
 
                         // 消耗MP 的精確數值
-                        const mpCostsRaw = [null, 105, 110, 119, 122, 125, 130, 135, 140, 145, 150, 160, 155, 165, 160, 170, 165, 175, 170, 180, 175, 180, 180, 190, 185, 195, 190, 205, 200, 195, 200];
-                        mpCostPercent = mpCostsRaw[i];
+                        const mpCostsRaw = [null, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 173, 176, 179, 182, 185, 188, 191, 194, 197, 200];
+                        const mpCostPercent = mpCostsRaw[i];
 
                         // 魔法攻擊力 的精確數值
-                        const magicAttacksRaw = [null, 102, 104, 113, 114, 109, 110, 111, 112, 113, 114, 116, 116, 118, 118, 120, 120, 122, 122, 124, 124, 126, 126, 128, 128, 130, 130, 132, 132, 132, 135];
-                        magicAttackPercent = magicAttacksRaw[i];
+                        const magicAttacksRaw = [null, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150];
+                        const magicAttackPercent = magicAttacksRaw[i];
 
                         // 持續時間 的規律：分段線性
-                        const durations = [null, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300];
-                        duration = durations[i];
+                        let duration;
+                        if (i <= 20) {
+                            duration = 100 + i * 5;
+                        } else if (i > 20) {
+                            duration = 200 + (i - 20) * 10;
+                        }
 
                         return {
                             effect: `消耗MP: ${mpCostPercent}%, 魔法攻擊力: ${magicAttackPercent}%, 持續時間: ${duration}秒`,
