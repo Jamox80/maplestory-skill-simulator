@@ -54,7 +54,7 @@
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
-        hB {
+        .footer-heading { /* 新增一個 class */
             font-family: 'Cinzel Decorative', serif;
             /* 更具裝飾性的標題字體 */
             color: #4a2d1d;
@@ -502,6 +502,12 @@
             <h2>更新日誌</h2>
             <ul>
                 <li>
+                    <span class="date">2025-09-23</span>
+                    1.修正技能：妙手術、格擋技能係數。<br>
+                    2.增加技能等級減少需檢查前置的錯誤提示。<br>
+                
+                </li>
+                <li>
                     <span class="date">2025-08-26</span>
                     1.增加首頁、更新日誌。<br>
                     2.返回最上按鈕
@@ -557,7 +563,7 @@
         </div>
 
         <footer class="page-footer">
-            <HB>Made by Jamox</HB>
+            <h2 class="footer-heading">Made by Jamox</h2> <!-- 使用 h2 並應用 class -->
             <p>若有任何回饋或資訊調整建議，歡迎<a href="https://discord.gg/mU52qFwY" target="_blank" rel="noopener noreferrer">點擊加入
                     Discord 伺服器</a></p>
         </footer>

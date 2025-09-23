@@ -1334,17 +1334,57 @@
                 spentSp++;
                 remainingSp--;
                 updateUI();
+                saveDataToLocalStorage();
             }
         }
 
         // --- 減少技能點數 ---
         function decreaseSkill(skillId) {
-            if (currentSkillLevels[skillId] > 0) {
-                currentSkillLevels[skillId]--;
-                spentSp--;
-                remainingSp++;
-                updateUI();
+            const oldLevel = currentSkillLevels[skillId];
+            if (oldLevel <= 0) {
+                return; // 無法再減少
             }
+
+            const newLevel = oldLevel - 1;
+            const skill = getSkillById(skillId);
+
+            // 暫時應用變更以檢查是否會破壞其他技能的前置條件
+            currentSkillLevels[skillId] = newLevel;
+            let isChangeValid = true;
+            let breakingSkillName = '';
+
+            // 遍歷所有已點技能，檢查減少點數後它們的前置條件是否仍然滿足
+            for (const otherSkillId in currentSkillLevels) {
+                if (currentSkillLevels[otherSkillId] > 0) {
+                    const otherSkill = getSkillById(otherSkillId);
+                    const otherSkillJobStage = getJobStageKeyForSkill(otherSkillId);
+
+                    // 如果有任何一個已點技能的前置條件不再滿足
+                    if (otherSkill && !checkOverallSkillConditions(otherSkill, otherSkillJobStage)) {
+                        // 並且這個被破壞的前置條件確實是我們正在減少的技能
+                        if (otherSkill.preRequisite && otherSkill.preRequisite.hasOwnProperty(skillId)) {
+                            isChangeValid = false;
+                            breakingSkillName = otherSkill.name;
+                            break; // 找到一個被破壞的，即可停止檢查
+                        }
+                    }
+                }
+            }
+
+            // 無論檢查結果如何，都先將技能等級還原，再做最終決定
+            currentSkillLevels[skillId] = oldLevel;
+
+            if (!isChangeValid) {
+                alert(`無法減少 ${skill.name} 的等級，因為技能 "${breakingSkillName}" 需要它作為前置條件。`);
+                return; // 中斷減少操作
+            }
+
+            // 如果檢查通過，則正式應用變更
+            currentSkillLevels[skillId]--;
+            spentSp--;
+            remainingSp++;
+            updateUI();
+            saveDataToLocalStorage();
         }
 
         // --- 新增：從混合鍵中提取英文鍵的輔助函式 ---
@@ -1412,10 +1452,11 @@
                 spentSp += spNeeded;
                 remainingSp -= spNeeded;
                 updateUI(); // 更新UI
+                saveDataToLocalStorage();
             } else {
                 // 如果不能點滿，可以在這裡添加一些提示（例如：點數不足、等級不足、前置技能未滿等）
                 // 為了簡潔，這裡暫時不顯示具體提示
-                console.log(`無法點滿技能 ${skill.name}: 點數不足、等級不足或前置條件未滿足。`);
+                alert(`無法點滿技能 ${skill.name}：點數不足、等級不足或前置條件未滿足。`);
             }
         }
 
@@ -1615,7 +1656,7 @@
                         const otherSkill = getSkillById(skId);
                         const otherSkillJobStage = getJobStageKeyForSkill(skId);
                         if (otherSkill && !checkOverallSkillConditions(otherSkill, otherSkillJobStage)) {
-                            isChangeValid = false;
+                            isChangeValid = false; // 這裡的邏輯需要更精確，確保只在真正破壞前置時才阻止
                             alert(`無法減少 ${skill.name} 的等級，因為技能 "${otherSkill.name}" 需要它作為前置條件。`);
                             break;
                         }
@@ -1637,6 +1678,7 @@
 
             // 4. 更新整個UI
             updateUI();
+            saveDataToLocalStorage();
         }
 
         // --- 重置模擬器 (針對當前職業) ---
@@ -1644,10 +1686,11 @@
             if (confirm("您確定要重置所有技能點數嗎？")) {
                 loadProfessionData(currentProfessionKey); // 重新載入當前職業，達到重置效果
             }
+            saveDataToLocalStorage(); // 儲存重置後的狀態
         }
 
         // --- 玩家等級輸入處理 ---
-        function updateLevelFromInput() {
+        function updateLevelFromInput(shouldSave = true) {
             const inputElement = document.getElementById('levelInput');
             let newLevel = parseInt(inputElement.value);
 
@@ -1666,6 +1709,9 @@
                 if (remainingSp < 0) remainingSp = 0;
 
                 updateUI();
+                if (shouldSave) {
+                    saveDataToLocalStorage();
+                }
             }
         }
 
