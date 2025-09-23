@@ -925,45 +925,6 @@
         let spentSp = 0;
         let remainingSp = 0;
         let currentLevel = 200;
-        const LOCAL_STORAGE_KEY = 'artaleSimulatorSave'; // 定義一個儲存用的鍵值
-
-        // --- 新增：儲存當前數據到 localStorage ---
-        function saveDataToLocalStorage() {
-            const dataToSave = {
-                professionKey: currentProfessionKey,
-                level: currentLevel,
-                skills: currentSkillLevels
-                // 未來若有角色屬性輸入，也可以一併儲存
-            };
-
-            try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
-            } catch (e) {
-                console.error("無法儲存資料到 localStorage:", e);
-            }
-        }
-
-        // --- 新增：從 localStorage 載入數據 ---
-        function loadDataFromLocalStorage() {
-            try {
-                const savedDataJSON = localStorage.getItem(LOCAL_STORAGE_KEY);
-                if (!savedDataJSON) return false; // 沒有儲存的資料
-
-                const savedData = JSON.parse(savedDataJSON);
-
-                // 應用儲存的數據
-                document.getElementById('professionSelect').value = savedData.professionKey;
-                loadProfessionData(savedData.professionKey, false); // 傳入 false 避免重置技能
-                currentSkillLevels = savedData.skills;
-                document.getElementById('levelInput').value = savedData.level;
-                updateLevelFromInput(false); // 傳入 false 避免再次儲存
-                return true;
-            } catch (e) {
-                console.error("無法從 localStorage 載入資料:", e);
-                localStorage.removeItem(LOCAL_STORAGE_KEY); // 如果資料格式錯誤，清除它
-                return false;
-            }
-        }
 
         // --- 初始化模擬器 ---
         function initializeSimulator() {
@@ -975,15 +936,6 @@
             const skillsFromUrl = urlParams.get('skills');
             const buildIndexFromUrl = urlParams.get('buildIndex'); // 新增：獲取推薦配點索引
 
-            // 優先處理分享連結或推薦配點連結
-            const hasUrlParams = profFromUrl && (skillsFromUrl || buildIndexFromUrl !== null);
-
-            if (!hasUrlParams) {
-                // 如果沒有 URL 參數，則嘗試從本地儲存載入
-                if (loadDataFromLocalStorage()) {
-                    return; // 成功載入，結束初始化
-                }
-            }
             // --- 新增：根據 URL 中的英文 key 找到 data.js 中的混合 key ---
             let targetProfessionKey = null;
             if (profFromUrl) {
@@ -1033,7 +985,7 @@
         }
         // --- 填充職業下拉選單 ---
         function populateProfessionDropdown() {
-            const selectElement = document.getElementById('professionSelect'); selectElement.innerHTML = '';
+            const selectElement = document.getElementById('professionSelect');
             for (const key in allProfessionsData) {
                 const option = document.createElement('option');
                 option.value = key;
@@ -1044,7 +996,7 @@
         }
 
         // --- 載入指定職業數據 ---
-        function loadProfessionData(professionKey, shouldReset = true) {
+        function loadProfessionData(professionKey) {
             currentProfessionKey = professionKey;
             currentProfessionData = allProfessionsData[currentProfessionKey];
             skillsData = currentProfessionData.skills; // 更新技能數據參考
@@ -1055,26 +1007,22 @@
             // 使用CSS變數來動態設定偽元素的背景圖片
             document.documentElement.style.setProperty('--emblem-bg-url', `url('${emblemUrl}')`);
 
-            if (shouldReset) {
-                // 重置當前技能點數和SP
-                currentSkillLevels = {};
-                for (const jobStage in skillsData) {
-                    skillsData[jobStage].forEach(skill => {
-                        currentSkillLevels[skill.id] = 0;
-                    });
-                }
-                spentSp = 0;
-                currentLevel = 200; // 重置角色等級
-                document.getElementById('levelInput').value = 200; // 更新等級輸入框顯示
-                remainingSp = calculateMaxSp(currentLevel);
+
+            // 重置當前技能點數和SP
+            currentSkillLevels = {};
+            for (const jobStage in skillsData) {
+                skillsData[jobStage].forEach(skill => {
+                    currentSkillLevels[skill.id] = 0;
+                });
             }
+            spentSp = 0;
+            currentLevel = 200; // 重置角色等級
+            document.getElementById('levelInput').value = 200; // 更新等級輸入框顯示
+            remainingSp = calculateMaxSp(currentLevel);
 
             // 修正：先渲染技能樹的HTML結構，再更新UI內容
             renderSkillTree();
-            if (shouldReset) {
-                updateUI();
-                saveDataToLocalStorage(); // 切換職業時儲存新的預設狀態
-            }
+            updateUI();
             updateRecommendedBuildsDropdown(); // 更新推薦配點下拉選單
         }
 
