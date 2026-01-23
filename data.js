@@ -1359,25 +1359,41 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "在固定射程距離300範圍內向敵人丟出一顆火球彈，把敵人困在火牢裡，造成持續傷害。最多攻擊6名敵人。使BOSS弱點冰屬性傷害的效果。",
+                    description: "在固定射程距離300範圍內向敵人丟出一顆火球彈，把敵人困在火牢裡，造成持續傷害。最多攻擊6名敵人。使怪物弱點冰屬性傷害的效果。",
                     imageUrl: "images/fieryHell.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack, duration, mastery, numEnemies;
                         if (i === 0) return null;
-                        const mpCosts = [null, 15, 15, 15, 15, 15, 15, 18, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 21, 31, 31, 31, 31, 31, 31, 34, 34, 34, 34, 34, 34]; // 精確數值
-                        const attacks = [null, 107, 109, 111, 113, 115, 117, 119, 121, 123, 125, 127, 129, 131, 133, 135, 137, 139, 141, 143, 145, 147, 149, 151, 153, 155, 157, 159, 161, 163, 165]; // 精確數值
-                        const durations = [null, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]; // 精確數值
-                        const masterys = [null, 15, 15, 15, 20, 20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50, 50, 55, 55, 55, 60, 60, 60]; // 精確數值
-                        const numEnemiesArr = [null, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6]; // 精確數值
-                        mpCost = mpCosts[i];
-                        attack = attacks[i];
-                        duration = durations[i];
-                        mastery = masterys[i];
-                        numEnemies = numEnemiesArr[i];
+
+                        // 1. 消耗MP: 階梯式 (15 -> 18 -> 21 -> 31 -> 34)
+                        let mp;
+                        if (i <= 6) mp = 15;
+                        else if (i <= 12) mp = 18;
+                        else if (i <= 18) mp = 21;
+                        else if (i <= 24) mp = 31;
+                        else mp = 34;
+
+                        // 2. 攻擊力: 起始 105，每級 +2
+                        const attack = 105 + (i * 2);
+
+                        // 3. 持續時間: 18級前 10秒，18級起 15秒
+                        const duration = i < 18 ? 10 : 15;
+
+                        // 4. 熟練度: 每 3 級增加 5% (起始 15%)
+                        const mastery = 10 + Math.ceil(i / 3) * 5;
+
+                        // 5. 攻擊數目: 階梯式增加 (2 -> 3 -> 4 -> 5 -> 6)
+                        let count;
+                        if (i <= 6) count = 2;
+                        else if (i <= 12) count = 3;
+                        else if (i <= 18) count = 4;
+                        else if (i <= 24) count = 5;
+                        else count = 6;
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}, 持續時間: ${duration}秒, 熟練度: ${mastery}%, 攻擊數目: ${count}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}, 持續時間: ${duration}秒, 熟練度: ${mastery}%, 攻擊數目: ${numEnemies}`,
-                            fullDescription: `在固定射程距離300範圍內向敵人丟出一顆火球彈，把敵人困在火牢裡，造成持續傷害。最多攻擊6名敵人。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}，持續時間${duration}秒，熟練度${mastery}%，攻擊數目${numEnemies}。`
+                            effect: effect,
+                            fullDescription: `在固定射程距離300範圍內向敵人丟出一顆火球彈，把敵人困在火牢裡。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -1386,24 +1402,39 @@ const allProfessionsData = {
                     name: "召喚冰魔",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "fieryHell": 5 },
                     description: "召喚一隻冰屬性的魔物在一定時間內攻擊敵人。可以同時攻擊3個敵人。",
                     imageUrl: "images/summonIfritI.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, duration, attack, freezeDuration;
                         if (i === 0) return null;
-                        const mpCosts = [null, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97, 100]; // 精確數值
-                        const durations = [null, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160]; // 精確數值
-                        const attacks = [null, 153, 156, 159, 162, 165, 168, 171, 174, 177, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270]; // 精確數值
-                        const freezeDurations = [null, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]; // 精確數值
-                        mpCost = mpCosts[i];
-                        duration = durations[i];
-                        attack = attacks[i];
-                        freezeDuration = freezeDurations[i];
+
+                        // 1. 消耗MP: 從 13 開始，每級增加 3 (13, 16, 19...)
+                        const mp = 10 + (i * 3);
+
+                        // 2. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        // 3. 攻擊力規律:
+                        // 1-10級: 150 + (i * 3)
+                        // 11-20級: 140 + (i * 4) [11級=184, 20級=220]
+                        // 21-30級: 120 + (i * 5) [21級=225, 30級=270]
+                        let attack;
+                        if (i <= 10) {
+                            attack = 150 + (i * 3);
+                        } else if (i <= 20) {
+                            attack = 140 + (i * 4);
+                        } else {
+                            attack = 120 + (i * 5);
+                        }
+
+                        // 4. 凍結時間: 每 10 級增加 1 秒 (1-10=1s, 11-20=2s, 21-30=3s)
+                        const freezeTime = Math.ceil(i / 10);
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 攻擊力: ${attack}, 凍結時間: ${freezeTime}秒`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 攻擊力: ${attack}, 凍結時間: ${freezeDuration}秒`,
-                            fullDescription: `召喚一隻冰屬性的魔物在一定時間內攻擊敵人。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，攻擊力${attack}，凍結時間${freezeDuration}秒。`
+                            effect: effect,
+                            fullDescription: `召喚一隻冰屬性的魔物在一定時間內攻擊敵人。可以同時攻擊3個敵人。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -1413,23 +1444,38 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "對怪物進行毒屬性的攻擊，一定時間內怪物停止行動。（增加10%對BOSS的攻擊）",
+                    description: "對單一敵方進行毒屬性的攻擊，並使其麻痺一段時間，若劇毒麻痺等級高於火流星，則火流星會附加麻痺效果。（增加10%對BOSS的攻擊）",
                     imageUrl: "images/paralyze.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack, mastery, duration;
                         if (i === 0) return null;
-                        const mpCosts = [null, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 30, 30, 30, 30, 30, 29, 28, 27, 26, 25]; // 精確數值
-                        const attacks = [null, 203, 206, 209, 212, 215, 218, 221, 224, 227, 230, 233, 236, 239, 242, 245, 248, 251, 254, 257, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280]; // 精確數值
-                        const masteries = [null, 15, 15, 15, 20, 20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50, 50, 55, 55, 55, 60, 60, 60]; // 精確數值
-                        const durations = [null, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]; // 精確數值
-                        mpCost = mpCosts[i];
-                        attack = attacks[i];
-                        mastery = masteries[i];
-                        duration = durations[i];
+
+                        // 1. 消耗MP規律
+                        // 1-10級: 16
+                        // 11-20級: 24
+                        // 21-25級: 30
+                        // 26-30級: 遞減 (29, 28, 27, 26, 25)
+                        let mp;
+                        if (i <= 10) mp = 16;
+                        else if (i <= 20) mp = 24;
+                        else if (i <= 25) mp = 30;
+                        else mp = 30 - (i - 25);
+
+                        // 2. 攻擊力規律
+                        // 1-20級: 200 + (i * 3)
+                        // 21-30級: 220 + (i * 2) [21級=262, 30級=280]
+                        const attack = i <= 20 ? (200 + i * 3) : (220 + i * 2);
+
+                        // 3. 熟練度規律: 每 3 級增加 5% (起始 15%)
+                        const mastery = 10 + Math.ceil(i / 3) * 5;
+
+                        // 4. 持續時間規律: 1-10級=5s, 11-20級=10s, 21-30級=15s
+                        const duration = Math.ceil(i / 10) * 5;
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}, 熟練度: ${mastery}%, 持續時間: ${duration}秒`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}, 熟練度: ${mastery}%, 持續時間: ${duration}秒`,
-                            fullDescription: `對怪物進行毒屬性的攻擊，一定時間內怪物停止行動。（增加10%對BOSS的攻擊）等級${i}效果：消耗MP${mpCost}，攻擊力${attack}，熟練度${mastery}%，持續時間${duration}秒。`
+                            effect: effect,
+                            fullDescription: `對單一敵方進行毒屬性的攻擊，並使其麻痺一段時間。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -1439,19 +1485,36 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "火山爆發，畫面全體15名敵人使用炎屬性加以攻擊。如果火流星等級低於麻痺術等級，釋放火流星時會追加麻痺效果。",
+                    description: "召喚隕石從天而降，對畫面最多15名敵人使用炎屬性加以攻擊。如果火流星等級低於麻痺術等級，釋放火流星時會追加麻痺效果。",
                     imageUrl: "images/meteorShower.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack;
                         if (i === 0) return null;
-                        const mpCosts = [null, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000, 3950, 3900, 3850, 3800, 3750, 3700, 3650, 3600, 3550, 3500]; // 精確數值
-                        const attacks = [null, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 525, 530, 535, 540, 545, 550, 555, 560, 565, 570]; // 精確數值
-                        mpCost = mpCosts[i];
-                        attack = attacks[i];
+
+                        // 1. 消耗MP規律
+                        // 1-20級: 2000 + (i * 100)
+                        // 21-30級: 4000 - (i - 20) * 50 [21級=3950, 30級=3500]
+                        let mp;
+                        if (i <= 20) {
+                            mp = 2000 + (i * 100);
+                        } else {
+                            mp = 4000 - (i - 20) * 50;
+                        }
+
+                        // 2. 攻擊力規律
+                        // 1-20級: 320 + (i * 10)
+                        // 21-30級: 520 + (i - 20) * 5 [21級=525, 30級=570]
+                        let attack;
+                        if (i <= 20) {
+                            attack = 320 + (i * 10);
+                        } else {
+                            attack = 520 + (i - 20) * 5;
+                        }
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}`,
-                            fullDescription: `火山爆發，畫面全體15名敵人使用炎屬性加以攻擊。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}。如果火流星等級低於麻痺術等級，釋放火流星時會追加麻痺效果。`
+                            effect: effect,
+                            fullDescription: `召喚隕石從天而降，對畫面最多15名敵人使用炎屬性加以攻擊。等級${i}效果：${effect}。`
                         };
                     })
                 }
@@ -2072,24 +2135,41 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "向敵人丟出一顆冰球彈，把敵人困在冰的氣息裡，造成持續傷害。最多攻擊6名敵人。並使BOSS弱點火屬性傷害的效果",
+                    description: "向敵人丟出一顆冰球彈，把敵人困在冰的氣息裡，造成持續傷害。最多攻擊6名敵人。並使怪物弱點火屬性傷害的效果。",
                     imageUrl: "images/iceInferno.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack, duration, mastery, numEnemies;
                         if (i === 0) return null;
-                        const mpCosts = [null, 15, 15, 15, 15, 15, 15, 18, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 21, 31, 31, 31, 31, 31, 31, 34, 34, 34, 34, 34, 34]; // 精確數值
-                        const attacks = [null, 87, 89, 91, 93, 95, 97, 99, 101, 103, 105, 107, 109, 111, 113, 115, 117, 119, 121, 123, 125, 127, 129, 131, 133, 135, 137, 139, 141, 143, 145]; // 精確數值
-                        const durations = [null, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]; // 精確數值
-                        const masterys = [null, 15, 15, 15, 20, 20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50, 50, 55, 55, 55, 60, 60, 60]; // 精確數值
-                        const numEnemiesArr = [null, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6]; // 精確數值
-                        mpCost = mpCosts[i];
-                        attack = attacks[i];
-                        duration = durations[i];
-                        mastery = masterys[i];
-                        numEnemies = numEnemiesArr[i];
+
+                        // 1. 消耗MP: 階梯式 (15 -> 18 -> 21 -> 31 -> 34)
+                        let mp;
+                        if (i <= 6) mp = 15;
+                        else if (i <= 12) mp = 18;
+                        else if (i <= 18) mp = 21;
+                        else if (i <= 24) mp = 31;
+                        else mp = 34;
+
+                        // 2. 攻擊力: 起始 85，每級 +2
+                        const attack = 85 + (i * 2);
+
+                        // 3. 持續時間: 16級前 10秒，16級起 (含) 15秒
+                        const duration = i < 16 ? 10 : 15;
+
+                        // 4. 熟練度: 每 3 級增加 5% (起始 15%)
+                        const mastery = 10 + Math.ceil(i / 3) * 5;
+
+                        // 5. 攻擊數目: 階梯式增加 (2 -> 3 -> 4 -> 5 -> 6)
+                        let count;
+                        if (i <= 6) count = 2;
+                        else if (i <= 12) count = 3;
+                        else if (i <= 18) count = 4;
+                        else if (i <= 24) count = 5;
+                        else count = 6;
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}, 持續時間: ${duration}秒, 熟練度: ${mastery}%, 攻擊數目: ${count}`;
+
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}, 持續時間: ${duration}秒, 熟練度: ${mastery}%, 攻擊數目: ${numEnemies}`,
-                            fullDescription: `向敵人丟出一顆冰球彈，把敵人困在冰的氣息裡，造成持續傷害。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}，持續時間${duration}秒，熟練度${mastery}%，攻擊數目${numEnemies}。`
+                            effect: effect,
+                            fullDescription: `向敵人丟出一顆冰球彈，把敵人困在冰的氣息裡，造成持續傷害。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -2098,22 +2178,36 @@ const allProfessionsData = {
                     name: "召喚火炎神",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "iceInferno": 5 },
                     description: "召喚一隻火屬性的魔物在一定時間內攻擊敵人。可以同時攻擊3個敵人。",
                     imageUrl: "images/summonIfritF.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, duration, attack;
                         if (i === 0) return null;
-                        const mpCosts = [null, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 76, 79, 82, 85, 88, 91, 94, 97, 100]; // 精確數值
-                        const durations = [null, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160]; // 精確數值
-                        const attacks = [null, 183, 186, 189, 192, 195, 198, 201, 204, 207, 210, 214, 218, 222, 226, 230, 234, 238, 242, 246, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300]; // 精確數值
-                        mpCost = mpCosts[i];
-                        duration = durations[i];
-                        attack = attacks[i];
+
+                        // 1. 消耗MP: 從 13 開始，每級增加 3
+                        const mp = 10 + (i * 3);
+
+                        // 2. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        // 3. 攻擊力規律:
+                        // 1-10級: 180 + (i * 3)
+                        // 11-20級: 170 + (i * 4) [11級=214, 20級=250]
+                        // 21-30級: 150 + (i * 5) [21級=255, 30級=300]
+                        let attack;
+                        if (i <= 10) {
+                            attack = 180 + (i * 3);
+                        } else if (i <= 20) {
+                            attack = 170 + (i * 4);
+                        } else {
+                            attack = 150 + (i * 5);
+                        }
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 攻擊力: ${attack}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 攻擊力: ${attack}`,
-                            fullDescription: `召喚一隻火屬性的魔物在一定時間內攻擊敵人。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，攻擊力${attack}。`
+                            effect: effect,
+                            fullDescription: `召喚一隻火屬性的魔物在一定時間內攻擊敵人。可以同時攻擊3個敵人。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -2126,16 +2220,33 @@ const allProfessionsData = {
                     description: "召喚冰風暴，使用冰屬性攻擊畫面上所有的敵人，最多15名敵人。",
                     imageUrl: "images/blizzard.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack;
                         if (i === 0) return null;
-                        const mpCosts = [null, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000, 3950, 3900, 3850, 3800, 3750, 3700, 3650, 3600, 3550, 3500]; // 精確數值
-                        const attacks = [null, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 525, 530, 535, 540, 545, 550, 555, 560, 565, 570]; // 精確數值
-                        mpCost = mpCosts[i];
-                        attack = attacks[i];
+
+                        // 1. 消耗MP規律
+                        // 1-20級: 2000 + (i * 100)
+                        // 21-30級: 4000 - (i - 20) * 50 [21級=3950, 30級=3500]
+                        let mp;
+                        if (i <= 20) {
+                            mp = 2000 + (i * 100);
+                        } else {
+                            mp = 4000 - (i - 20) * 50;
+                        }
+
+                        // 2. 攻擊力規律
+                        // 1-20級: 320 + (i * 10)
+                        // 21-30級: 520 + (i - 20) * 5 [21級=525, 30級=570]
+                        let attack;
+                        if (i <= 20) {
+                            attack = 320 + (i * 10);
+                        } else {
+                            attack = 520 + (i - 20) * 5;
+                        }
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}`,
-                            fullDescription: `召喚冰風暴，使用冰屬性攻擊畫面上所有的敵人，最多15名敵人。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}。`
+                            effect: effect,
+                            fullDescription: `召喚冰風暴，使用冰屬性攻擊畫面上所有的敵人，最多15名敵人。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -2145,23 +2256,40 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "對單體怪物施加強力的攻擊，隨之對周圍目標導電，導電傷害減少13％，當第一個目標是Boss時會造成額外傷害。",
+                    description: "對單體怪物施加強力的攻擊，隨之對周圍目標導電，導電傷害減少13％。",
                     imageUrl: "images/chainLightning.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack, mastery, numChains;
                         if (i === 0) return null;
-                        const mpCosts = [null, 16, 16, 16, 16, 16, 16, 18, 18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 23, 23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25]; // 精確數值
-                        const attacks = [null, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190]; // 精確數值
-                        const masteries = [null, 15, 15, 15, 20, 20, 20, 25, 25, 25, 30, 30, 30, 35, 35, 35, 40, 40, 40, 45, 45, 45, 50, 50, 50, 55, 55, 55, 60, 60, 60]; // 精確數值
-                        const numChainsArr = [null, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6]; // 精確數值
-                        mpCost = mpCosts[i];
-                        attack = attacks[i];
-                        mastery = masteries[i];
-                        numChains = numChainsArr[i];
+
+                        // 1. 消耗MP: 階梯式 % (16% -> 18% -> 20% -> 23% -> 25%)
+                        let mp;
+                        if (i <= 6) mp = "16%";
+                        else if (i <= 12) mp = "18%";
+                        else if (i <= 18) mp = "20%";
+                        else if (i <= 24) mp = "23%";
+                        else mp = "25%";
+
+                        // 2. 攻擊力規律
+                        // 1-20級: 110 + (i * 3)
+                        // 21-30級: 150 + (i * 2) [21級=172, 30級=190]
+                        const attack = i <= 20 ? (110 + i * 3) : (150 + i * 2);
+
+                        // 3. 熟練度規律: 每 3 級增加 5% (起始 15%)
+                        const mastery = 10 + Math.ceil(i / 3) * 5;
+
+                        // 4. 連鎖數目: 階梯式增加 (2 -> 3 -> 4 -> 5 -> 6)
+                        let count;
+                        if (i <= 6) count = 2;
+                        else if (i <= 12) count = 3;
+                        else if (i <= 18) count = 4;
+                        else if (i <= 24) count = 5;
+                        else count = 6;
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}, 熟練度: ${mastery}%, 連鎖數目: ${count}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}%, 攻擊力: ${attack}, 熟練度: ${mastery}%, 連鎖數目: ${numChains}`,
-                            fullDescription: `對單體怪物施加強力的攻擊，隨之對周圍目標導電，導電傷害減少13％，當第一個目標是Boss時會造成額外傷害。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}，熟練度${mastery}%，連鎖數目${numChains}。`
+                            effect: effect,
+                            fullDescription: `對單體怪物施加強力的攻擊，隨之對周圍目標導電。等級${i}效果：${effect}。`
                         };
                     })
                 }],
@@ -2646,63 +2774,84 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "tigerOfFury",
-                    "name": "虎咆哮",
-                    "maxLevel": 30,
-                    "requiredLevel": 70,
-                    "preRequisite": {},
-                    "description": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。該技能一次最多僅能攻擊6隻怪物。",
-                    "imageUrl": "images/tigerOfFury.png",
-                    "levels": [
-                        null,
-                        { "effect": "消耗MP: 8, 昏迷機率: 52%, 攻擊力: 11%, 持續時間: 5秒, 攻擊範圍: 110%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級1效果：消耗MP8，昏迷機率52%，攻擊力11%，持續5秒，攻擊範圍110%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 54%, 攻擊力: 12%, 持續時間: 5秒, 攻擊範圍: 110%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級2效果：消耗MP8，昏迷機率54%，攻擊力12%，持續5秒，攻擊範圍110%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 56%, 攻擊力: 13%, 持續時間: 5秒, 攻擊範圍: 110%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級3效果：消耗MP8，昏迷機率56%，攻擊力13%，持續5秒，攻擊範圍110%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 58%, 攻擊力: 14%, 持續時間: 5秒, 攻擊範圍: 120%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級4效果：消耗MP8，昏迷機率58%，攻擊力14%，持續5秒，攻擊範圍120%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 60%, 攻擊力: 15%, 持續時間: 5秒, 攻擊範圍: 120%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級5效果：消耗MP8，昏迷機率60%，攻擊力15%，持續5秒，攻擊範圍120%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 62%, 攻擊力: 16%, 持續時間: 6秒, 攻擊範圍: 120%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級6效果：消耗MP8，昏迷機率62%，攻擊力16%，持續6秒，攻擊範圍120%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 64%, 攻擊力: 17%, 持續時間: 6秒, 攻擊範圍: 130%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級7效果：消耗MP8，昏迷機率64%，攻擊力17%，持續6秒，攻擊範圍130%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 66%, 攻擊力: 18%, 持續時間: 6秒, 攻擊範圍: 130%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級8效果：消耗MP8，昏迷機率66%，攻擊力18%，持續6秒，攻擊範圍130%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 68%, 攻擊力: 19%, 持續時間: 6秒, 攻擊範圍: 130%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級9效果：消耗MP8，昏迷機率68%，攻擊力19%，持續6秒，攻擊範圍130%。" },
-                        { "effect": "消耗MP: 8, 昏迷機率: 70%, 攻擊力: 20%, 持續時間: 6秒, 攻擊範圍: 140%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級10效果：消耗MP8，昏迷機率70%，攻擊力20%，持續6秒，攻擊範圍140%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 72%, 攻擊力: 20%, 持續時間: 7秒, 攻擊範圍: 140%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級11效果：消耗MP12，昏迷機率72%，攻擊力20%，持續7秒，攻擊範圍140%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 74%, 攻擊力: 21%, 持續時間: 7秒, 攻擊範圍: 140%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級12效果：消耗MP12，昏迷機率74%，攻擊力21%，持續7秒，攻擊範圍140%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 76%, 攻擊力: 21%, 持續時間: 7秒, 攻擊範圍: 150%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級13效果：消耗MP12，昏迷機率76%，攻擊力21%，持續7秒，攻擊範圍150%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 78%, 攻擊力: 22%, 持續時間: 7秒, 攻擊範圍: 150%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級14效果：消耗MP12，昏迷機率78%，攻擊力22%，持續7秒，攻擊範圍150%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 80%, 攻擊力: 22%, 持續時間: 7秒, 攻擊範圍: 150%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級15效果：消耗MP12，昏迷機率80%，攻擊力22%，持續7秒，攻擊範圍150%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 81%, 攻擊力: 23%, 持續時間: 8秒, 攻擊範圍: 160%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級16效果：消耗MP12，昏迷機率81%，攻擊力23%，持續8秒，攻擊範圍160%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 82%, 攻擊力: 23%, 持續時間: 8秒, 攻擊範圍: 160%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級17效果：消耗MP12，昏迷機率82%，攻擊力23%，持續8秒，攻擊範圍160%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 83%, 攻擊力: 24%, 持續時間: 8秒, 攻擊範圍: 160%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級18效果：消耗MP12，昏迷機率83%，攻擊力24%，持續8秒，攻擊範圍160%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 84%, 攻擊力: 24%, 持續時間: 8秒, 攻擊範圍: 170%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級19效果：消耗MP12，昏迷機率84%，攻擊力24%，持續8秒，攻擊範圍170%。" },
-                        { "effect": "消耗MP: 12, 昏迷機率: 85%, 攻擊力: 25%, 持續時間: 8秒, 攻擊範圍: 170%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級20效果：消耗MP12，昏迷機率85%，攻擊力25%，持續8秒，攻擊範圍170%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 86%, 攻擊力: 25%, 持續時間: 9秒, 攻擊範圍: 170%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級21效果：消耗MP16，昏迷機率86%，攻擊力25%，持續9秒，攻擊範圍170%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 87%, 攻擊力: 26%, 持續時間: 9秒, 攻擊範圍: 180%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級22效果：消耗MP16，昏迷機率87%，攻擊力26%，持續9秒，攻擊範圍180%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 88%, 攻擊力: 26%, 持續時間: 9秒, 攻擊範圍: 180%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級23效果：消耗MP16，昏迷機率88%，攻擊力26%，持續9秒，攻擊範圍180%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 89%, 攻擊力: 27%, 持續時間: 9秒, 攻擊範圍: 180%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級24效果：消耗MP16，昏迷機率89%，攻擊力27%，持續9秒，攻擊範圍180%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 90%, 攻擊力: 27%, 持續時間: 9秒, 攻擊範圍: 190%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級25效果：消耗MP16，昏迷機率90%，攻擊力27%，持續9秒，攻擊範圍190%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 91%, 攻擊力: 28%, 持續時間: 10秒, 攻擊範圍: 190%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級26效果：消耗MP16，昏迷機率91%，攻擊力28%，持續10秒，攻擊範圍190%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 92%, 攻擊力: 28%, 持續時間: 10秒, 攻擊範圍: 190%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級27效果：消耗MP16，昏迷機率92%，攻擊力28%，持續10秒，攻擊範圍190%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 93%, 攻擊力: 29%, 持續時間: 10秒, 攻擊範圍: 200%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級28效果：消耗MP16，昏迷機率93%，攻擊力29%，持續10秒，攻擊範圍200%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 94%, 攻擊力: 29%, 持續時間: 10秒, 攻擊範圍: 200%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級29效果：消耗MP16，昏迷機率94%，攻擊力29%，持續10秒，攻擊範圍200%。" },
-                        { "effect": "消耗MP: 16, 昏迷機率: 95%, 攻擊力: 30%, 持續時間: 10秒, 攻擊範圍: 200%", "fullDescription": "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。等級30效果：消耗MP16，昏迷機率95%，攻擊力30%，持續10秒，攻擊範圍200%。" }
-                    ]
+                    id: "tigerOfFury",
+                    name: "虎咆哮",
+                    maxLevel: 30,
+                    requiredLevel: 70, // 通常為三轉技能
+                    preRequisite: {},
+                    description: "對周邊怪物發出虎吼並加以給予傷害，同時並以一定機率使其昏迷。該技能一次最多僅能攻擊6隻怪物。",
+                    imageUrl: "images/tigerOfFury.png",
+                    levels: Array(31).fill(null).map((_, i) => {
+                        if (i === 0) return null;
+
+                        // 1. 消耗MP: 1-10級:8, 11-20級:12, 21-30級:16
+                        const mp = i <= 10 ? 8 : i <= 20 ? 12 : 16;
+
+                        // 2. 昏迷機率: 1-10級每級+2% (52%~70%), 11-30級每級+1% (72%~95% 但15級後微調)
+                        // 根據數據表精確邏輯：
+                        let stunChance;
+                        if (i <= 10) stunChance = 50 + (i * 2);
+                        else if (i <= 15) stunChance = 50 + (i * 2); // 11-15 延續 +2 邏輯到 80%
+                        else stunChance = 65 + i; // 16級(81%)到30級(95%)
+
+                        // 3. 攻擊力: 1-10級每級+1%, 11-30每2級+1%
+                        const attack = 10 + Math.ceil(i / 1.5); // 此公式近似數據跳動點
+                        // 為求精確，使用階梯判定：
+                        let atk;
+                        if (i <= 10) atk = 10 + i;
+                        else atk = 15 + Math.ceil(i / 2);
+
+                        // 4. 持續時間: 每 5 級增加 1 秒 (起始 5秒)
+                        const duration = 4 + Math.ceil(i / 5);
+
+                        // 5. 攻擊範圍: 起始 110%，每 3-4 級增加 10%
+                        const range = 100 + Math.floor((i + 2) / 3) * 10;
+
+                        const effect = `消耗MP: ${mp}, 昏迷機率: ${stunChance}%, 攻擊力: ${atk}%, 持續時間: ${duration}秒, 攻擊範圍: ${range}%`;
+
+                        return {
+                            effect: effect,
+                            fullDescription: `對周邊怪物發出虎吼並加以給予傷害。等級${i}效果：${effect}。`
+                        };
+                    })
                 },
                 {
                     id: "guardCancel",
                     name: "防禦消除",
                     maxLevel: 20,
                     requiredLevel: 70,
-                    preRequisite: {},
-                    description: "無視怪物防禦力。",
+                    preRequisite: { "shout": 3 },
+                    description: "無視怪物防禦力5%。",
                     imageUrl: "images/guardCancel.png",
                     levels: Array(21).fill(null).map((_, i) => {
-                        let mp, successRate;
                         if (i === 0) return null;
-                        mp = 35 - i * 2; // Simplified
-                        successRate = 20 + i * 4; // Simplified
+
+                        // 1. 消耗MP規律
+                        // 1-10級: 37 - (i * 2)
+                        // 11-19級: 27 - i
+                        // 20級: 35 (突然跳回)
+                        let mp;
+                        if (i === 20) {
+                            mp = 35;
+                        } else if (i <= 10) {
+                            mp = 37 - (i * 2);
+                        } else {
+                            mp = 27 - i;
+                        }
+
+                        // 2. 持續時間規律
+                        // 1-10級: i * 10
+                        // 11-20級: 100 + (i - 10) * 20
+                        const duration = i <= 10 ? (i * 10) : (100 + (i - 10) * 20);
+
+                        // 3. 無視怪物防禦力: 每 2 級增加 0.5%
+                        const ignoreDef = (Math.ceil(i / 2) * 0.5).toFixed(1);
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 無視怪物防禦力: ${ignoreDef}%`;
+
                         return {
-                            effect: `消耗MP: ${mp}, 成功率: ${successRate}%`,
-                            fullDescription: `無視怪物防禦力。等級${i}效果：消耗MP${mp}，成功率${successRate}%。`
+                            effect: effect,
+                            fullDescription: `無視怪物防禦力5%。等級${i}效果：${effect}。`
                         };
                     })
                 }
@@ -2815,7 +2964,7 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    id: "absolutecity", // 絕對引力
+                    id: "absolutecity",
                     name: "絕對引力",
                     maxLevel: 30,
                     requiredLevel: 120,
@@ -2823,18 +2972,30 @@ const allProfessionsData = {
                     description: "遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。",
                     imageUrl: "images/absolutecity.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, range, successRate;
                         if (i === 0) return null;
-                        const mpCosts = [null, 10, 10, 10, 10, 10, 13, 13, 13, 13, 13, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 26, 26, 26, 26, 26, 25, 24, 23, 22, 21];
-                        const ranges = [null, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
-                        const successRates = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 91, 92, 93, 94, 95];
-                        mpCost = mpCosts[i];
-                        range = ranges[i];
-                        successRate = successRates[i];
+
+                        // 1. 消耗MP規律: 階梯式 (10 -> 13 -> 18 -> 21 -> 25)
+                        let mp;
+                        if (i <= 5) mp = 10;
+                        else if (i <= 10) mp = 13;
+                        else if (i <= 15) mp = 18;
+                        else if (i <= 20) mp = 21;
+                        else mp = 25;
+
+                        // 2. 範圍規律: 階梯式 (100 -> 150 -> 250)
+                        let range;
+                        if (i <= 10) range = 100;
+                        else if (i <= 20) range = 150;
+                        else range = 250;
+
+                        // 3. 成功率: 起始 40%，每級增加 2%
+                        const successRate = 40 + (i * 2);
+
+                        const effect = `消耗MP: ${mp}, 範圍: ${range}, 成功率: ${successRate}%`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 範圍: ${range}, 成功率: ${successRate}%`,
-                            fullDescription: `遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。等級${i}效果：消耗MP${mpCost}，範圍${range}，成功率${successRate}%。`
+                            effect: effect,
+                            fullDescription: `遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -2886,21 +3047,27 @@ const allProfessionsData = {
                     name: "進階鬥氣",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
-                    description: "在鬥氣集中的狀態下，攻擊敵人，會有一定機率自動填充進階鬥氣的紫色氣球。",
+                    preRequisite: { "combatMastery": 30 },
+                    description: "最大鬥氣提升至10，並有一定機率一次累積兩個鬥氣，需先經通鬥氣集中才能學習此技能。",
                     imageUrl: "images/advancedCombatMastery.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let recoveryAmount, maxCombos, procChance;
                         if (i === 0) return null;
-                        const recoveryAmounts = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-                        const maxCombosArr = [null, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5];
-                        const procChances = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
-                        recoveryAmount = recoveryAmounts[i];
-                        maxCombos = maxCombosArr[i];
-                        procChance = procChances[i];
+
+                        // 1. 回復量: 與等級同步 (1級=1, 30級=30)
+                        const recovery = i;
+
+                        // 2. 鬥氣最大數: 階梯式增加 (1 -> 2 -> 3 -> 4 -> 5)
+                        // 規律：1-6級=1, 7-12級=2, 13-18級=3, 19-24級=4, 25-30級=5
+                        const maxComboExtra = Math.ceil(i / 6);
+
+                        // 3. 自動填充機率: 起始 30%，每級增加 1%
+                        const autoFillChance = 30 + i;
+
+                        const effect = `回復量: ${recovery}, 鬥氣最大數: ${maxComboExtra}, 自動填充機率: ${autoFillChance}%`;
+
                         return {
-                            effect: `回復量: ${recoveryAmount}, 鬥氣最大數: ${maxCombos}, 自動填充機率: ${procChance}%`,
-                            fullDescription: `在鬥氣集中的狀態下，攻擊敵人，會有一定機率自動填充進階鬥氣的紫色氣球。等級${i}效果：回復量${recoveryAmount}，鬥氣最大數${maxCombos}，自動填充機率${procChance}%。`
+                            effect: effect,
+                            fullDescription: `最大鬥氣提升至10，並有一定機率一次累積兩個鬥氣。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -2910,50 +3077,76 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "使用10個氣球，一定時間內使攻擊力上升，施放間隔時間為8分鐘。",
+                    description: "使用10個氣球，一定時間內使攻擊力上升，施放間隔時間為6分鐘。",
                     imageUrl: "images/berserk.png",
                     levels: Array(31).fill(null).map((_, i) => {
-                        let mpCost, duration, attackIncrease;
                         if (i === 0) return null;
-                        const mpCosts = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]; // 精確數值
-                        const durations = [null, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 240]; // 精確數值
-                        const attackIncreases = [null, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26]; // 精確數值
-                        mpCost = mpCosts[i];
-                        duration = durations[i];
-                        attackIncrease = attackIncreases[i];
+
+                        // 1. 消耗MP: 10 + i (1級=11, 30級=40)
+                        const mp = 10 + i;
+
+                        // 2. 持續時間規律:
+                        // 1-21級: i * 10
+                        // 22-27級: 210 + (i-21) * 5
+                        // 28-30級: 固定 240
+                        let duration;
+                        if (i <= 21) {
+                            duration = i * 10;
+                        } else if (i <= 27) {
+                            duration = 210 + (i - 21) * 5;
+                        } else {
+                            duration = 240;
+                        }
+
+                        // 3. 攻擊力規律: 起始 10, 每 2 級增加 1 (1級=11, 2級=12, 30級=26)
+                        const attack = 10 + Math.ceil(i / 2) + (i % 2 === 1 ? 0 : 0);
+                        // 簡單公式化：10 + Math.floor(i / 2) + 1
+                        const atkValue = 10 + Math.ceil(i / 2);
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 攻擊力: ${atkValue}`;
+
                         return {
-                            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒, 攻擊力: ${attackIncrease}`,
-                            fullDescription: `使用10個氣球，一定時間內使攻擊力上升。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒，攻擊力${attackIncrease}。施放間隔時間為8分鐘。`
+                            effect: effect,
+                            fullDescription: `使用10個氣球，一定時間內使攻擊力上升。等級${i}效果：${effect}。施放間隔時間為6分鐘。`
                         };
                     })
                 },
                 {
-                    "id": "monsterMagnet",
-                    "name": "無雙劍舞",
-                    "maxLevel": 30,
-                    "requiredLevel": 120,
-                    "preRequisite": {},
-                    "description": "在範圍內(150)瞬間攻擊敵人2下，最多3名敵人。",
-                    "imageUrl": "images/monsterMagnet.png",
-                    "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack, numEnemies;
+                    id: "monsterMagnet",
+                    name: "無雙劍舞",
+                    maxLevel: 30,
+                    requiredLevel: 120,
+                    preRequisite: {},
+                    description: "在範圍內(150)瞬間攻擊敵人2下，最多3名敵人。",
+                    imageUrl: "images/monsterMagnet.png",
+                    levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        const mpCosts = [null, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 30, 30, 30, 30, 30, 29, 28, 27, 26, 25];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP規律
+                        // 1-10級: 16
+                        // 11-20級: 24
+                        // 21-25級: 30
+                        // 26-30級: 每級遞減 1 (29, 28, 27, 26, 25)
+                        let mp;
+                        if (i <= 10) mp = 16;
+                        else if (i <= 20) mp = 24;
+                        else if (i <= 25) mp = 30;
+                        else mp = 30 - (i - 25);
 
-                        // 攻擊力 的規律 (精確數值)
-                        const attacks = [null, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 184, 188, 192, 196, 200, 204, 208, 212, 216, 220, 224, 228, 232, 236, 240, 244, 248, 252, 256, 300];
-                        attack = attacks[i];
+                        // 2. 攻擊力規律
+                        // 1-10級: 130 + (i * 5)
+                        // 11-20級: 140 + (i * 4) [11級=184, 20級=220]
+                        // 21-30級: 140 + (i * 4) [21級=224, 30級=260] (維持+4%成長)
+                        const attack = i <= 10 ? (130 + i * 5) : (140 + i * 4);
 
-                        // 敵人數量 的規律
-                        const numEnemiesArr = [null, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
-                        numEnemies = numEnemiesArr[i];
+                        // 3. 敵人數量: 每 10 級增加 1 (1-10=1, 11-20=2, 21-30=3)
+                        const targetCount = Math.ceil(i / 10);
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attack}%, 敵人數量: ${targetCount}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 敵人數量: ${numEnemies}`,
-                            fullDescription: `在範圍內(150)瞬間攻擊敵人2下，最多3名敵人。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，敵人數量${numEnemies}。`
+                            effect: effect,
+                            fullDescription: `在範圍內(150)瞬間攻擊敵人2下，最多3名敵人。等級${i}效果：${effect}。`
                         };
                     })
                 }
@@ -3667,12 +3860,29 @@ const allProfessionsData = {
                     imageUrl: "images/absolutecity.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 10, 10, 10, 10, 10, 13, 13, 13, 13, 13, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 26, 26, 26, 26, 26, 25, 24, 23, 22, 21];
-                        const ranges = [null, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
-                        const successRates = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 91, 92, 93, 94, 95];
+
+                        // 1. 消耗MP規律: 階梯式 (10 -> 13 -> 18 -> 21 -> 25)
+                        let mp;
+                        if (i <= 5) mp = 10;
+                        else if (i <= 10) mp = 13;
+                        else if (i <= 15) mp = 18;
+                        else if (i <= 20) mp = 21;
+                        else mp = 25;
+
+                        // 2. 範圍規律: 階梯式 (100 -> 150 -> 250)
+                        let range;
+                        if (i <= 10) range = 100;
+                        else if (i <= 20) range = 150;
+                        else range = 250;
+
+                        // 3. 成功率: 起始 40%，每級增加 2%
+                        const successRate = 40 + (i * 2);
+
+                        const effect = `消耗MP: ${mp}, 範圍: ${range}, 成功率: ${successRate}%`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 範圍: ${ranges[i]}, 成功率: ${successRates[i]}%`,
-                            fullDescription: `遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。等級${i}效果：消耗MP${mpCosts[i]}，範圍${ranges[i]}，成功率${successRates[i]}%。`
+                            effect: effect,
+                            fullDescription: `遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -3755,16 +3965,23 @@ const allProfessionsData = {
                     name: "屬性強化",
                     maxLevel: 10,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "elementalStrike": 30 },
                     description: "使用屬性攻擊時，威力上升且有一定機率造成暈眩。",
                     imageUrl: "images/elementalReinforcement.png",
                     levels: Array(11).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const attack = 250 + i * 10;
-                        const stunChance = i * 10;
+
+                        // 1. 攻擊力規律: 起始 250%，每級增加 10%
+                        const attack = 250 + (i * 10);
+
+                        // 2. 暈眩機率規律: 每級增加 10%，最高 90%
+                        const stunChance = Math.min(90, i * 10);
+
+                        const effect = `攻擊力: ${attack}%, 暈眩機率: ${stunChance}%`;
+
                         return {
-                            effect: `攻擊力: ${attack}%, 暈眩機率: ${stunChance}%`,
-                            fullDescription: `使用屬性攻擊時，威力上升且有一定機率造成暈眩。等級${i}效果：攻擊力${attack}%，暈眩機率${stunChance}%。`
+                            effect: effect,
+                            fullDescription: `使用屬性攻擊時，威力上升且有一定機率造成暈眩。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -3792,16 +4009,35 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "用巨槌打擊地面的攻擊，最多攻擊15名敵人，只可在使用聖劍/鎚的狀態下使用。在怪物剩餘生命超過30%時將其HP降至1，同時擊殺生命值低於傷害的怪物的秒殺效果。",
+                    description: "用巨槌打擊地面的攻擊，最多攻擊15名敵人，只可在使用聖劍/鎚的狀態下使用。若對怪物造成其體力一定比例時，將怪物HP降至1，但若造成100%傷害可直接擊殺怪物。",
                     imageUrl: "images/heavensHammer.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
-                        const attacks = [null, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 720, 740, 760, 780, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900];
-                        const cooldowns = [null, 320, 310, 300, 290, 280, 270, 260, 250, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110, 100, 90, 80, 70, 60, 50, 40, 30];
+
+                        // 1. 消耗MP: 30 + i (1級=31, 30級=60)
+                        const mp = 30 + i;
+
+                        // 2. 傷害比例: 全等級固定 30%
+                        const damageRate = "30%";
+
+                        // 3. 攻擊力規律:
+                        // 1-20級: 400% + (i * 20%) [1級=420%, 20級=800%]
+                        // 21-30級: 800% + (i - 20) * 10% [21級=810%, 30級=900%]
+                        let power;
+                        if (i <= 20) {
+                            power = 400 + (i * 20);
+                        } else {
+                            power = 800 + (i - 20) * 10;
+                        }
+
+                        // 4. 冷卻時間: 330 - (i * 10) [1級=320秒, 30級=30秒]
+                        const cooldown = 330 - (i * 10);
+
+                        const effect = `消耗MP: ${mp}, 傷害比例: ${damageRate}, 攻擊力: ${power}%, 冷卻時間: ${cooldown}秒`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 攻擊力: ${attacks[i]}%, 冷卻時間: ${cooldowns[i]}秒`,
-                            fullDescription: `用巨槌打擊地面的攻擊，最多攻擊15名敵人，只可在使用聖劍/鎚的狀態下使用。等級${i}效果：消耗MP${mpCosts[i]}，攻擊力${attacks[i]}%，冷卻時間${cooldowns[i]}秒。`
+                            effect: effect,
+                            fullDescription: `用巨槌打擊地面的攻擊，最多攻擊15名敵人。等級${i}效果：${effect}。`
                         };
                     })
                 }
@@ -4279,28 +4515,27 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "powerCrash",
-                    "name": "力量消除",
-                    "maxLevel": 20,
-                    "requiredLevel": 70,
-                    "preRequisite": { "dragonSpirit": 3 },
-                    "description": "一定時間內，使隊員獲得依照施法者HP比例計算的傷害減免效果。以HP1,000為基准為1%，最高20%",
-                    "imageUrl": "images/powerCrash.png",
-                    "levels": Array(21).fill(null).map((_, i) => {
-                        let mpCost, duration;
+                    id: "powerCrash",
+                    name: "力量消除",
+                    maxLevel: 20,
+                    requiredLevel: 70,
+                    preRequisite: { "dragonSpirit": 3 },
+                    description: "一定時間內，使隊員獲得依照施法者HP比例計算的傷害減免效果。以HP1,000為基准為1%，最高20%",
+                    imageUrl: "images/powerCrash.png",
+                    levels: Array(21).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的精確數值
-                        const mpCosts = [null, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP: 全等級固定 35
+                        const mp = 35;
 
-                        // 持續時間 的精確數值
-                        const durations = [null, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300];
-                        duration = durations[i];
+                        // 2. 持續時間規律: 每級增加 15 秒
+                        const duration = i * 15;
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 持續時間: ${duration}秒`,
-                            fullDescription: `一定時間內，使隊員獲得依照施法者HP比例計算的傷害減免效果。等級${i}效果：消耗MP${mpCost}，持續時間${duration}秒。`
+                            effect: effect,
+                            fullDescription: `一定時間內，使隊員獲得依照施法者HP比例計算的傷害減免效果。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -4431,12 +4666,29 @@ const allProfessionsData = {
                     imageUrl: "images/absolutecity.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 10, 10, 10, 10, 10, 13, 13, 13, 13, 13, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 26, 26, 26, 26, 26, 25, 24, 23, 22, 21];
-                        const ranges = [null, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
-                        const successRates = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 91, 92, 93, 94, 95];
+
+                        // 1. 消耗MP規律: 階梯式 (10 -> 13 -> 18 -> 21 -> 25)
+                        let mp;
+                        if (i <= 5) mp = 10;
+                        else if (i <= 10) mp = 13;
+                        else if (i <= 15) mp = 18;
+                        else if (i <= 20) mp = 21;
+                        else mp = 25;
+
+                        // 2. 範圍規律: 階梯式 (100 -> 150 -> 250)
+                        let range;
+                        if (i <= 10) range = 100;
+                        else if (i <= 20) range = 150;
+                        else range = 250;
+
+                        // 3. 成功率: 起始 40%，每級增加 2%
+                        const successRate = 40 + (i * 2);
+
+                        const effect = `消耗MP: ${mp}, 範圍: ${range}, 成功率: ${successRate}%`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 範圍: ${ranges[i]}, 成功率: ${successRates[i]}%`,
-                            fullDescription: `遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。等級${i}效果：消耗MP${mpCosts[i]}，範圍${ranges[i]}，成功率${successRates[i]}%。`
+                            effect: effect,
+                            fullDescription: `遠距離的怪物在一定的範圍內，會受到磁鐵的吸力而吸引過來。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -4500,17 +4752,29 @@ const allProfessionsData = {
                     maxLevel: 10,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "召喚暗黑之魂，使自身的武器熟練度上升，並減少隊友受到的傷害。",
+                    description: "召喚暗黑之魂(持續15分鐘)，永久提升武器熟練度，若因神聖之火技能造成隊友HP超過MAX值(3萬)，每超出1500點HP將獲得1%傷害減免效果。",
                     imageUrl: "images/darkSoul.png",
                     levels: Array(11).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 114, 108, 102, 96, 90, 84, 78, 72, 66, 60];
-                        const durations = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-                        const masteries = [null, 5, 5, 5, 10, 10, 10, 15, 15, 15, 20];
-                        const damageReductions = [null, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12];
+
+                        // 1. 消耗MP規律: 從 120 開始每級減少 6 (1級=114, 10級=60)
+                        const mp = 120 - (i * 6);
+
+                        // 2. 持續時間: 固定 15 分鐘
+                        const duration = "15分";
+
+                        // 3. 熟練度規律: 每 3 級增加 5%
+                        // 1-3級: 5%, 4-6級: 10%, 7-9級: 15%, 10級: 20%
+                        const mastery = Math.ceil(i / 3) * 5;
+
+                        // 4. 減少傷害: 固定機制描述
+                        const dmgReduction = "每超過1500額外增加1%";
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}, 熟練度: ${mastery}%, 減少傷害: ${dmgReduction}`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}分, 熟練度: ${masteries[i]}%, 減少傷害: ${damageReductions[i]}%`,
-                            fullDescription: `召喚暗黑之魂，使自身的武器熟練度上升，並減少隊友受到的傷害。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}分，熟練度${masteries[i]}%，減少傷害${damageReductions[i]}%。`
+                            effect: effect,
+                            fullDescription: `召喚暗黑之魂。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -4519,16 +4783,37 @@ const allProfessionsData = {
                     name: "闇靈治癒",
                     maxLevel: 25,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "darkSoul": 1 }, // 邏輯上需先有暗之靈魂
                     description: "暗黑之魂存在的一定時間之內補充黑騎士的HP，隨技能等級提高，補充量也上升。",
                     imageUrl: "images/darkSpiritHeal.png",
                     levels: Array(26).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const intervals = [null, 10, 10, 10, 10, 9, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 6, 6, 6, 6, 5, 5, 5, 5, 4];
-                        const hpRecoveries = [null, 40, 55, 70, 85, 100, 160, 170, 180, 190, 200, 260, 270, 280, 290, 300, 360, 370, 380, 390, 400, 460, 470, 480, 490, 500];
+
+                        // 1. 間隔時間: 全等級固定 4 秒
+                        const interval = "4秒";
+
+                        // 2. HP回復量規律分析：
+                        // 1-5級: 每級+15 (40, 55, 70, 85, 100)
+                        // 6-10級: 160開始，每級+10 (160, 170... 200)
+                        // 11-15級: 260開始，每級+10
+                        // 16-20級: 360開始，每級+10
+                        // 21-25級: 460開始，每級+10
+                        let hpRecovery;
+                        if (i <= 5) {
+                            hpRecovery = 25 + (i * 15);
+                        } else {
+                            // 計算屬於哪個 5 級大階段
+                            const stage = Math.floor((i - 1) / 5); // 6-10級為 stage 1, 11-15級為 stage 2...
+                            const stageStartValue = stage * 100 + 160;
+                            const offset = (i - 1) % 5; // 在該階段中的第幾級 (0-4)
+                            hpRecovery = stageStartValue + (offset * 10);
+                        }
+
+                        const effect = `間隔時間: ${interval}, HP回復量: ${hpRecovery}`;
+
                         return {
-                            effect: `間隔時間: ${intervals[i]}秒, HP回復量: ${hpRecoveries[i]}`,
-                            fullDescription: `暗黑之魂存在的一定時間之內補充黑騎士的HP，隨技能等級提高，補充量也上升。等級${i}效果：間隔時間${intervals[i]}秒，HP回復量${hpRecoveries[i]}。`
+                            effect: effect,
+                            fullDescription: `暗黑之魂存在的一定時間之內補充黑騎士的HP。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -4537,24 +4822,42 @@ const allProfessionsData = {
                     name: "黑暗守護",
                     maxLevel: 25,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "darkSoul": 1 },
                     description: "暗黑之魂存在的時間之內幫角色賦予狀態，隨技能等級提高，物理防禦力、魔法防禦力、物理攻擊力、攻擊速度、無視防禦上升。",
                     imageUrl: "images/darkGuardian.png",
                     levels: Array(26).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const intervals = [null, 58, 56, 54, 52, 50, 48, 46, 44, 42, 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10];
-                        const durations = [null, 20, 20, 20, 20, 20, 40, 40, 40, 40, 40, 60, 60, 60, 60, 60, 80, 80, 80, 80, 80, 100, 100, 100, 100, 100];
-                        const pDefs = [null, 20, 20, 20, 20, 20, 40, 40, 40, 40, 40, 60, 60, 60, 60, 60, 80, 80, 80, 80, 80, 100, 100, 100, 100, 100];
-                        const mDefs = [null, null, null, null, null, null, 25, 25, 25, 25, 25, 50, 50, 50, 50, 50, 75, 75, 75, 75, 75, 100, 100, 100, 100, 100];
-                        const attackSpeeds = [null, null, null, null, null, null, null, null, null, null, null, "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段", "提升1階段"];
-                        const attacks = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-                        const ignoreDefs = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "30%", "30%", "30%", "30%", "30%"];
 
-                        let effect = `間隔時間: ${intervals[i]}秒, 持續時間: ${durations[i]}秒, 物防: ${pDefs[i]}`;
-                        if (mDefs[i]) effect += `, 魔防: ${mDefs[i]}`;
-                        if (attackSpeeds[i]) effect += `, 攻擊速度: ${attackSpeeds[i]}`;
-                        if (attacks[i]) effect += `, 攻擊力: ${attacks[i]}`;
-                        if (ignoreDefs[i]) effect += `, 無視防禦力: ${ignoreDefs[i]}`;
+                        // 1. 固定屬性
+                        const interval = "4秒";
+                        const duration = "240秒";
+
+                        // 2. 階梯解鎖邏輯
+                        // 物防：1-5級成長(20*i)，6級後封頂100
+                        const pDef = i <= 5 ? i * 20 : 100;
+
+                        // 魔防：6-10級成長(20*(i-5))，11級後封頂100
+                        let mDef = "-";
+                        if (i >= 6) {
+                            mDef = i <= 10 ? (i - 5) * 20 : 100;
+                        }
+
+                        // 攻擊速度：11級解鎖，固定提升1階段
+                        const atkSpeed = i >= 11 ? "提升1階段" : "-";
+
+                        // 攻擊力：16-20級成長(1*(i-15))，21級後封頂5
+                        let atk = "-";
+                        if (i >= 16) {
+                            atk = i <= 20 ? (i - 15) : 5;
+                        }
+
+                        // 無視防禦：21-25級成長(6%*(i-20))
+                        let ignoreDef = "-";
+                        if (i >= 21) {
+                            ignoreDef = `${(i - 20) * 6}%`;
+                        }
+
+                        const effect = `間隔: ${interval}, 持續: ${duration}, 物防: ${pDef}, 魔防: ${mDef}, 攻速: ${atkSpeed}, 攻擊: ${atk}, 無視防禦: ${ignoreDef}`;
 
                         return {
                             effect: effect,
@@ -4904,36 +5207,51 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "puppet",
-                    "name": "替身術",
-                    "maxLevel": 20,
-                    "requiredLevel": 70,
-                    "preRequisite": {},
-                    "description": "在一定時間內製造出自己的分身。 怪物攻擊時傀儡代替承受25%傷害的效果。",
-                    "imageUrl": "images/puppet.png",
-                    "levels": Array(21).fill(null).map((_, i) => {
-                        let mpCost, damageReduction, duration, puppetHP;
+                    id: "puppet",
+                    name: "替身術",
+                    maxLevel: 20,
+                    requiredLevel: 70, // 通常為三轉技能
+                    preRequisite: {},
+                    description: "在一定時間內製造出自己的分身。 怪物攻擊時傀儡代替承受傷害的效果。",
+                    imageUrl: "images/puppet.png",
+                    levels: Array(21).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的精確數值
-                        const mpCosts = [null, 23, 23, 23, 23, 23, 26, 26, 26, 26, 26, 29, 29, 29, 29, 29, 32, 32, 32, 32, 32];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP與抵擋傷害: 每 5 級跳轉一次
+                        // MP: 23 -> 26 -> 29 -> 32
+                        // 抵擋: 10% -> 15% -> 20% -> 25%
+                        const stage = Math.floor((i - 1) / 5);
+                        const mp = 23 + (stage * 3);
+                        const damageResist = 10 + (stage * 5);
 
-                        // 抵擋傷害 的精確數值
-                        const damageReductions = [null, 10, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
-                        damageReduction = damageReductions[i];
+                        // 2. 持續時間規律:
+                        // 1-2級: 5s, 3-5級: 10s, 6-8級: 20s, 9-11級: 30s... 略有交錯
+                        // 直接依據數據表設定階梯：
+                        let duration;
+                        if (i <= 2) duration = 5;
+                        else if (i <= 5) duration = 10;
+                        else if (i <= 8) duration = 20;
+                        else if (i <= 11) duration = 30;
+                        else if (i <= 14) duration = 40;
+                        else if (i <= 17) duration = 50;
+                        else duration = 60;
 
-                        // 持續時間 的精確數值
-                        const durations = [null, 5, 5, 10, 10, 10, 20, 20, 20, 30, 30, 30, 40, 40, 40, 50, 50, 50, 60, 60, 60];
-                        duration = durations[i];
+                        // 3. 替身 HP 規律:
+                        // 1-5級: 500 + (i-1)*100
+                        // 6-10級: 1000 + (i-6)*200
+                        // 11-15級: 2000 + (i-11)*400
+                        // 16-20級: 4000 + (i-16)*500
+                        let hp;
+                        if (i <= 5) hp = 400 + (i * 100);
+                        else if (i <= 10) hp = 1000 + (i - 6) * 200;
+                        else if (i <= 15) hp = 2000 + (i - 11) * 400;
+                        else hp = 4000 + (i - 16) * 500;
 
-                        // 替身HP 的精確數值
-                        const puppetHPs = [null, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2400, 2800, 3200, 3600, 4000, 4500, 5000, 5500, 6000];
-                        puppetHP = puppetHPs[i];
+                        const effect = `消耗MP: ${mp}, 抵擋傷害: ${damageResist}%, 持續時間: ${duration}秒, 替身HP: ${hp}`;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 抵擋傷害: ${damageReduction}%, 持續時間: ${duration}秒, 替身HP: ${puppetHP}`,
-                            fullDescription: `在一定時間內製造出自己的分身。怪物攻擊時傀儡代替承受25%傷害的效果。等級${i}效果：消耗MP${mpCost}，抵擋傷害${damageReduction}%，持續${duration}秒，替身HP${puppetHP}。`
+                            effect: effect,
+                            fullDescription: `在一定時間內製造出自己的分身。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -5107,7 +5425,7 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "一定時間內，增加本身和組隊的攻擊力及一擊必殺的機率。",
+                    description: "鎖定敵方弱點，一定時間內，增加本身和組隊的爆擊率跟爆擊傷害。",
                     imageUrl: "images/sharpEyes.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
@@ -5117,7 +5435,7 @@ const allProfessionsData = {
                         const critChances = [null, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15];
                         return {
                             effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒, 攻擊力: ${attacks[i]}%, 必殺機率: ${critChances[i]}%`,
-                            fullDescription: `一定時間內，增加本身和組隊的攻擊力及一擊必殺的機率。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，攻擊力${attacks[i]}%，必殺機率${critChances[i]}%。`
+                            fullDescription: `鎖定敵方弱點，一定時間內，增加本身和組隊的爆擊率跟爆擊傷害。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，攻擊力${attacks[i]}%，必殺機率${critChances[i]}%。`
                         };
                     })
                 },
@@ -5168,15 +5486,28 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "寄宿在箭上的風神，造成超快速的箭連射，射出速度為每秒10隻箭矢，每支箭消耗定量的MP，按住按鈕就會連射。且50%的幾率向另一隻怪物發射額外箭矢，並增加10%對BOSS的傷害。",
+                    description: "寄宿在箭上的風神，造成超快速的箭連射，射出速度為每秒10隻箭矢，每支箭消耗定量的MP，按住按鈕就會連射。且有一定的機率向另一隻怪物發射額外箭矢，並增加10%對BOSS的傷害。",
                     imageUrl: "images/hurricane.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 6, 6, 6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10];
-                        const attacks = [null, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
+
+                        // 1. 消耗MP規律: 1-9級:6, 10-20級:8, 21-30級:9
+                        let mp;
+                        if (i <= 9) mp = 6;
+                        else if (i <= 20) mp = 8;
+                        else mp = 9;
+
+                        // 2. 攻擊威力: 起始 80%，每級增加 1%
+                        const power = 80 + i;
+
+                        // 3. 追加攻擊機率: 起始 20%，每級增加 1%
+                        const extraAttackChance = 20 + i;
+
+                        const effect = `消耗MP: ${mp}, 攻擊威力: ${power}%, 追加攻擊機率: ${extraAttackChance}%`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 攻擊威力: ${attacks[i]}%`,
-                            fullDescription: `寄宿在箭上的風神，造成超快速的箭連射。等級${i}效果：消耗MP${mpCosts[i]}，攻擊威力${attacks[i]}%。`
+                            effect: effect,
+                            fullDescription: `寄宿在箭上的風神，造成超快速的箭連射。等級${i}效果：${effect}。增加10%對BOSS的傷害。`
                         };
                     })
                 },
@@ -5185,17 +5516,32 @@ const allProfessionsData = {
                     name: "召喚鳳凰",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "summonSilverHawk": 15 },
                     description: "召喚一隻火屬性的鳳凰出來幫助玩家攻擊，最多攻擊4名敵人。",
                     imageUrl: "images/phoenix.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 30, 30, 30, 30, 30, 29, 28, 27, 26, 25];
-                        const durations = [null, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 173, 176, 179, 182, 185, 188, 191, 194, 197, 200];
-                        const attacks = [null, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 405, 410, 415, 420, 425, 430, 435, 440, 445, 450, 505, 510, 515, 520, 525, 530, 535, 540, 545, 550];
+
+                        // 1. 消耗MP: 從 40 開始，每級增加 2 (1級=42, 30級=100)
+                        const mp = 40 + (i * 2);
+
+                        // 2. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        // 3. 攻擊力規律分析：
+                        // 1-10級: 300 + (i * 5) [1級=305, 10級=350]
+                        // 11-20級: 350 + (i-10)*5 + 50 = 295 + (i * 5) + 50 = 345 + (i * 5) [11級=405, 20級=450]
+                        // 21-30級: 450 + (i-20)*5 + 50 = 390 + (i * 5) + 100 = 490 + (i * 5) [21級=505, 30級=550]
+
+                        // 簡化逻辑：基礎值隨每10級增加 50
+                        const stageBonus = Math.floor((i - 1) / 10) * 50;
+                        const attack = 300 + (i * 5) + stageBonus;
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 攻擊力: ${attack}`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒, 攻擊力: ${attacks[i]}`,
-                            fullDescription: `召喚一隻火屬性的鳳凰出來幫助玩家攻擊，最多攻擊4名敵人。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，攻擊力${attacks[i]}。`
+                            effect: effect,
+                            fullDescription: `召喚一隻火屬性的鳳凰出來幫助玩家攻擊。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -5209,14 +5555,35 @@ const allProfessionsData = {
                     imageUrl: "images/hamstringShot.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 36, 36, 36, 36, 35, 34, 33, 32, 31, 30];
-                        const durations = [null, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180];
-                        const accuracies = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
-                        const speedReductions = [null, -2, -4, -6, -8, -10, -12, -14, -16, -18, -20, -22, -24, -26, -28, -30, -32, -34, -36, -38, -40, -42, -44, -46, -48, -50, -52, -54, -56, -58, -60];
-                        const bindTimes = [null, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15];
+
+                        // 1. 消耗MP規律
+                        // 1-10級: 12
+                        // 11-20級: 24
+                        // 21-24級: 36
+                        // 25-30級: 從 35 開始每級遞減 1 (35, 34, 33, 32, 31, 30)
+                        let mp;
+                        if (i <= 10) mp = 12;
+                        else if (i <= 20) mp = 24;
+                        else if (i <= 24) mp = 36;
+                        else mp = 35 - (i - 25);
+
+                        // 2. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        // 3. 準確率: 起始 10%，每級增加 1%
+                        const accuracy = 10 + i;
+
+                        // 4. 怪物速度: 每級減少 2
+                        const mobSpeed = -(i * 2);
+
+                        // 5. 綁腿時間: 每 10 級增加 5 秒 (1-10=5s, 11-20=10s, 21-30=15s)
+                        const hamstringTime = Math.ceil(i / 10) * 5;
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 準確率: ${accuracy}%, 怪物速度: ${mobSpeed}, 綁腿時間: ${hamstringTime}秒`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒, 準確率: ${accuracies[i]}%, 怪物速度: ${speedReductions[i]}, 綁腿時間: ${bindTimes[i]}秒`,
-                            fullDescription: `一定機率向怪物的腿部一擊，使怪物的移動速度下降。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，準確率${accuracies[i]}%，怪物速度${speedReductions[i]}，綁腿時間${bindTimes[i]}秒。`
+                            effect: effect,
+                            fullDescription: `一定機率使怪物的移動速度下降。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -5230,13 +5597,31 @@ const allProfessionsData = {
                     imageUrl: "images/concentrate.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
-                        const attacks = [null, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26];
-                        const mpReductions = [null, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
-                        const durations = [null, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 120, 120, 120, 120, 120, 120, 120, 120, 120, 120, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180];
+
+                        // 1. 消耗MP: 從 10 開始每級增加 1
+                        const mp = 10 + i;
+
+                        // 2. 攻擊力規律: 每 2 級增加 1 點 (1級=11, 2級=12, 3級=12, 30級=26)
+                        const attack = 10 + Math.ceil(i / 2);
+
+                        // 3. MP 減少量規律:
+                        // 1-20級: 每級增加 2%
+                        // 21-30級: 40% 開始每級增加 1%
+                        let mpReduction;
+                        if (i <= 20) {
+                            mpReduction = i * 2;
+                        } else {
+                            mpReduction = 40 + (i - 20);
+                        }
+
+                        // 4. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: +${attack}, MP減少量: ${mpReduction}%, 持續時間: ${duration}秒`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 攻擊力: +${attacks[i]}, MP減少量: ${mpReductions}%, 持續時間: ${durations[i]}秒`,
-                            fullDescription: `一定時間內攻擊力上升，技能施放的時間內MP的使用量減少。等級${i}效果：消耗MP${mpCosts[i]}，攻擊力+${attacks[i]}，MP減少量${mpReductions}%，持續時間${durations[i]}秒。`
+                            effect: effect,
+                            fullDescription: `一定時間內攻擊力上升，技能施放的時間內MP的使用量減少。等級${i}效果：${effect}。`
                         };
                     })
                 }
@@ -5780,7 +6165,7 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "一定時間內，增加本身和組隊的攻擊力及一擊必殺的機率。",
+                    description: "鎖定敵方弱點，一定時間內，增加本身和組隊的爆擊率跟爆擊傷害。",
                     imageUrl: "images/sharpEyes.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
@@ -5790,7 +6175,7 @@ const allProfessionsData = {
                         const critChances = [null, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15];
                         return {
                             effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒, 攻擊力: ${attacks[i]}%, 必殺機率: ${critChances[i]}%`,
-                            fullDescription: `一定時間內，增加本身和組隊的攻擊力及一擊必殺的機率。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，攻擊力${attacks[i]}%，必殺機率${critChances[i]}%。`
+                            fullDescription: `鎖定敵方弱點，一定時間內，增加本身和組隊的爆擊率跟爆擊傷害。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，攻擊力${attacks[i]}%，必殺機率${critChances[i]}%。`
                         };
                     })
                 },
@@ -5858,17 +6243,32 @@ const allProfessionsData = {
                     name: "召喚銀隼",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: { "summonGoldenEagle": 15 },
                     description: "召喚一隻冰屬性的鳳凰出來幫助玩家攻擊，最多攻擊4名敵人。",
                     imageUrl: "images/frostprey.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100];
-                        const durations = [null, 113, 116, 119, 122, 125, 128, 131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167, 170, 173, 176, 179, 182, 185, 188, 191, 194, 197, 200];
-                        const attacks = [null, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 455, 460, 465, 470, 475, 480, 485, 490, 495, 500];
+
+                        // 1. 消耗MP: 從 40 開始，每級增加 2
+                        const mp = 40 + (i * 2);
+
+                        // 2. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        // 3. 攻擊力規律分析：
+                        // 1-10級: 250 + (i * 5) [1級=255, 10級=300]
+                        // 11-20級: 300 + (i-10)*5 + 50 = 355 [11級=355, 20級=400]
+                        // 21-30級: 400 + (i-20)*5 + 50 = 455 [21級=455, 30級=500]
+
+                        // 階梯邏輯：每10級基礎值額外跳 50
+                        const stageBonus = Math.floor((i - 1) / 10) * 50;
+                        const attack = 250 + (i * 5) + stageBonus;
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 攻擊力: ${attack}`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒, 攻擊力: ${attacks[i]}`,
-                            fullDescription: `召喚一隻冰屬性的鳳凰出來幫助玩家攻擊，最多攻擊4名敵人。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，攻擊力${attacks[i]}。`
+                            effect: effect,
+                            fullDescription: `召喚一隻冰屬性的鳳凰出來幫助玩家攻擊。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -5882,14 +6282,27 @@ const allProfessionsData = {
                     imageUrl: "images/blind.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26];
-                        const durations = [null, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180];
-                        const accuracies = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
-                        const monsterHitRates = [null, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -17, -18, -19, -20, -21, -22, -23, -24, -25, -26, -27, -28, -29, -30];
-                        const blindTimes = [null, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15];
+
+                        // 1. 消耗MP規律: 1-10級:12, 11-20級:19, 21-30級:30
+                        const mp = i <= 10 ? 12 : i <= 20 ? 19 : 30;
+
+                        // 2. 持續時間: 每級增加 10 秒
+                        const duration = i * 10;
+
+                        // 3. 準確率: 起始 10%，每級增加 1%
+                        const accuracy = 10 + i;
+
+                        // 4. 怪物命中率: 每級減少 1%
+                        const mobHitRate = -i;
+
+                        // 5. 失明時間: 每 10 級增加 5 秒 (1-10=5s, 11-20=10s, 21-30=15s)
+                        const blindTime = Math.ceil(i / 10) * 5;
+
+                        const effect = `消耗MP: ${mp}, 持續時間: ${duration}秒, 準確率: ${accuracy}%, 怪物命中率: ${mobHitRate}%, 失明時間: ${blindTime}秒`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒, 準確率%: ${accuracies[i]}%, 怪物命中率: ${monsterHitRates[i]}, 失明時間: ${blindTimes[i]}秒`,
-                            fullDescription: `一定時間遮斷怪物的視野，使其命中率下降，適用所有攻擊型態。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒，準確率${accuracies[i]}%，怪物命中率${monsterHitRates[i]}，失明時間${blindTimes[i]}秒。`
+                            effect: effect,
+                            fullDescription: `一定時間遮斷怪物的視野，使其命中率下降。等級${i}效果：${effect}。`
                         };
                     })
                 },
@@ -5899,16 +6312,28 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "瞄準怪物的弱點，給予其劇烈傷害，每疊加一層增加69%傷害，最多可疊加10層，當角色受到傷害時，所有疊層都會被重製。",
+                    description: "瞄準怪物的弱點，給予其劇烈傷害，傷害隨疊層逐漸累積，最多可疊加10層，當角色受到傷害時，所有疊層都會被重製。",
                     imageUrl: "images/snipe.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11];
-                        const minDamages = [null, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770];
-                        const maxDamages = [null, 1170, 1180, 1190, 1200, 1210, 1220, 1230, 1240, 1250, 1260, 1270, 1280, 1290, 1300, 1310, 1320, 1330, 1340, 1350, 1360, 1370, 1380, 1390, 1400, 1410, 1420, 1430, 1440, 1450, 1460];
+
+                        // 1. 消耗MP規律: 從 41 開始每級減少 1 (1級=40, 30級=11)
+                        const mp = 41 - i;
+
+                        // 2. 最低傷害: 從 470% 開始每級增加 10%
+                        const minDmg = 470 + (i * 10);
+
+                        // 3. 最高傷害: 從 1160% 開始每級增加 10%
+                        const maxDmg = 1160 + (i * 10);
+
+                        // 4. 每疊加一層增加傷害: 全等級固定 69%
+                        const bonusPerStack = 69;
+
+                        const effect = `消耗MP: ${mp}, 最低傷害: ${minDmg}%, 最高傷害: ${maxDmg}%, 每疊加一層增加傷害: ${bonusPerStack}%`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 最低傷害: ${minDamages[i]}%, 最高傷害: ${maxDamages[i]}%`,
-                            fullDescription: `瞄準怪物的弱點，給予其劇烈傷害，每疊加一層增加69%傷害，最多可疊加10層，當角色受到傷害時，所有疊層都會被重製。等級${i}效果：消耗MP${mpCosts[i]}，最低傷害${minDamages[i]}%，最高傷害${maxDamages[i]}%。`
+                            effect: effect,
+                            fullDescription: `瞄準怪物的弱點，最多可疊加10層。等級${i}效果：${effect}。`
                         };
                     })
                 }
@@ -6435,13 +6860,24 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "提升本身的迴避能力，一定的機率完全迴避敵人攻擊。若系統判定完全閃避時，會自動施放微笑的表情。",
+                    description: "提升本身的迴避能力，一定的機率完全迴避敵人攻擊。若系統判定完全閃避時，會出現木人特效。",
                     imageUrl: "images/shadowerInstinct.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
+
+                        // 使用陣列方式列出機率，確保未來若有版本平衡微調時容易修改
+                        const evasionChances = [
+                            null,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                            21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+                        ];
+
+                        const chance = evasionChances[i];
+
                         return {
-                            effect: `機率: ${10 + i}%`,
-                            fullDescription: `提升本身的迴避能力，一定的機率完全迴避敵人攻擊。等級${i}效果：機率${10 + i}%。`
+                            effect: `完全迴避機率: ${chance}%`,
+                            fullDescription: `提升本身的迴避能力，一定的機率完全迴避敵人攻擊。等級${i}效果：完全迴避機率${chance}%。`
                         };
                     })
                 },
@@ -6451,15 +6887,31 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "敵人如果被挑戰，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。該技能不受攻擊速度影響，當挑釁與神聖祈禱一起使用時，額外經驗值是相加。",
+                    description: "最多可挑釁6名敵方，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。該技能不受攻擊速度影響，當挑釁與神聖祈禱一起使用時，額外經驗值是相加。",
                     imageUrl: "images/taunt.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
-                        const rates = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
+
+                        // 1. 消耗MP規律：
+                        // 1-20級: 20 + i
+                        // 21-30級: 固定 40
+                        const mpCosts = [
+                            null,
+                            21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+                            31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                            40, 40, 40, 40, 40, 40, 40, 40, 40, 40
+                        ];
+
+                        // 2. 機率提升規律：10 + i (1級=11%, 30級=40%)
+                        // 這裡示範混用公式，讓程式碼簡潔一點
+                        const bonusChance = 10 + i;
+
+                        const mp = mpCosts[i];
+                        const duration = 120; // 固定 120 秒
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 機率提升: ${rates[i]}%`,
-                            fullDescription: `敵人如果被挑戰，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。等級${i}效果：消耗MP${mpCosts[i]}，機率提升${rates[i]}%。`
+                            effect: `消耗MP: ${mp}, 經驗/掉寶/防禦提升: ${bonusChance}%, 持續時間: ${duration}秒`,
+                            fullDescription: `最多可挑釁6名敵方。等級${i}效果：經驗值與掉寶率提升${bonusChance}%，持續${duration}秒。`
                         };
                     })
                 },
@@ -6469,16 +6921,36 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "把短劍塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害，同一個敵人最多有3次可以重覆中毒的可能性。",
+                    description: "把短劍塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害，最多有3次可以重覆中毒的可能性，且不會使敵方HP降到1以下。",
                     imageUrl: "images/venom.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const attacks = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
-                        const procChances = [null, 22, 22, 22, 24, 24, 24, 26, 26, 26, 28, 28, 28, 30, 30, 30, 32, 32, 32, 34, 34, 34, 36, 36, 36, 38, 38, 38, 40, 40, 40];
-                        const durations = [null, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
+
+                        // 1. 攻擊力: 30 + i (線性成長，1級=31%, 30級=60%)
+                        const power = 30 + i;
+
+                        // 2. 中毒機率: 不規則跳動，使用陣列查表
+                        const poisonChances = [
+                            null,
+                            22, 22, 22, 24, 24, 24, 26, 26, 26, 28, // 1-10
+                            28, 28, 30, 30, 30, 32, 32, 32, 34, 34, // 11-20
+                            34, 36, 36, 36, 38, 38, 38, 40, 40, 40  // 21-30
+                        ];
+
+                        // 3. 持續時間: 階梯式成長
+                        const durations = [
+                            null,
+                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, // 1-10
+                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, // 11-20
+                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4  // 21-30
+                        ];
+
+                        const chance = poisonChances[i];
+                        const time = durations[i];
+
                         return {
-                            effect: `攻擊力: ${attacks[i]}%, 中毒機率: ${procChances[i]}%, 持續時間: ${durations[i]}秒`,
-                            fullDescription: `把短劍塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害。等級${i}效果：攻擊力${attacks[i]}%，中毒機率${procChances[i]}%，持續時間${durations[i]}秒。`
+                            effect: `中毒傷害: ${power}%, 中毒機率: ${chance}%, 持續時間: ${time}秒`,
+                            fullDescription: `攻擊時有${chance}%機率使敵人中毒。等級${i}效果：每秒造成${power}%持續傷害，持續${time}秒，最高可堆疊3次。`
                         };
                     })
                 },
@@ -6487,18 +6959,45 @@ const allProfessionsData = {
                     name: "忍影瞬殺",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
-                    description: "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人。",
+                    preRequisite: { "shadowerInstinct": 5 },
+                    description: "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人，且不會使敵方HP下降到1以下。",
                     imageUrl: "images/ninjaAmbush.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 48, 48, 48, 48, 48, 48, 48, 48, 48, 43];
-                        const attacks = [null, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
-                        const durations = [null, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12];
-                        const ranges = [null, 110, 110, 110, 120, 120, 120, 130, 130, 130, 140, 140, 140, 150, 150, 150, 160, 160, 160, 170, 170, 170, 170, 180, 180, 190, 190, 190, 200, 200, 200];
+
+                        // 1. 消耗MP: 1-10級:16, 11-20級:32, 21-29級:48, 30級:43
+                        const mpCosts = [
+                            null,
+                            16, 16, 16, 16, 16, 16, 16, 16, 16, 16, // 1-10
+                            32, 32, 32, 32, 32, 32, 32, 32, 32, 32, // 11-20
+                            48, 48, 48, 48, 48, 48, 48, 48, 48, 43  // 21-30
+                        ];
+
+                        // 2. 攻擊力: 1-10級每級+2% (60+i*2), 11-30級每級+1% (70+i)
+                        let attack;
+                        if (i <= 10) {
+                            attack = 60 + (i * 2);
+                        } else {
+                            attack = 70 + i;
+                        }
+
+                        // 3. 持續時間: 每10級增加 4秒 (1-10=4s, 11-20=8s, 21-30=12s)
+                        const duration = Math.ceil(i / 10) * 4;
+
+                        // 4. 距離: 不規則階梯，使用陣列查表
+                        const distances = [
+                            null,
+                            110, 110, 110, 120, 120, 120, 130, 130, 130, 140, // 1-10
+                            140, 140, 150, 150, 150, 160, 160, 160, 170, 170, // 11-20
+                            170, 170, 180, 180, 190, 190, 190, 200, 200, 200  // 21-30
+                        ];
+
+                        const mp = mpCosts[i];
+                        const dist = distances[i];
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 攻擊力: ${attacks[i]}%, 持續時間: ${durations[i]}秒, 距離: ${ranges[i]}`,
-                            fullDescription: `呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害。等級${i}效果：消耗MP${mpCosts[i]}，攻擊力${attacks[i]}%，持續時間${durations[i]}秒，距離${ranges[i]}。`
+                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 持續時間: ${duration}秒, 距離: ${dist}`,
+                            fullDescription: `呼喚影分身躲起來偷襲最多6名敵人。等級${i}效果：給予${attack}%持續傷害，持續${duration}秒，攻擊距離${dist}。`
                         };
                     })
                 },
@@ -6548,17 +7047,36 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "瞬間攻擊怪物2次，一定機率使怪物昏迷，攻擊該隻物怪掉寶率改為90%。(攻擊範圍300)",
+                    description: "瞬間攻擊怪物2次，一定機率使怪物昏迷。(攻擊範圍300)",
                     imageUrl: "images/boomerangStep.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 16, 16, 16, 16, 16, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 25, 25, 25, 25, 25, 28, 28, 28, 28, 28, 26, 26, 26, 26, 26];
-                        const numEnemies = [null, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
-                        const attacks = [null, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400];
-                        const stunChances = [null, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60];
+
+                        // 1. 消耗MP規律：
+                        // 1-5級: 16, 6-10級: 19, 11-15級: 22, 16-20級: 25, 21-25級: 28
+                        // 26-30級: 回降至 26
+                        let mp;
+                        if (i <= 25) {
+                            const stage = Math.floor((i - 1) / 5);
+                            mp = 16 + (stage * 3);
+                        } else {
+                            mp = 26;
+                        }
+
+                        // 2. 敵人數量：1-10級:2, 11-20級:3, 21-30級:4
+                        const targetCount = i <= 10 ? 2 : i <= 20 ? 3 : 4;
+
+                        // 3. 攻擊威力：250 + (i * 5) [1級=255%, 30級=400%]
+                        const power = 250 + (i * 5);
+
+                        // 4. 昏迷機率：i * 2 [1級=2% , 30級=60%]
+                        const stunChance = i * 2;
+
+                        const effect = `消耗MP: ${mp}, 敵人數量: ${targetCount}, 攻擊威力: ${power}%, 昏迷機率: ${stunChance}%`;
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 敵人數量: ${numEnemies[i]}, 攻擊威力: ${attacks[i]}%, 昏迷機率: ${stunChances[i]}%`,
-                            fullDescription: `瞬間攻擊怪物2次，一定機率使怪物昏迷，攻擊該隻物怪掉寶率改為90%。等級${i}效果：消耗MP${mpCosts[i]}，敵人數量${numEnemies[i]}，攻擊威力${attacks[i]}%，昏迷機率${stunChances[i]}%。`
+                            effect: effect,
+                            fullDescription: `瞬間攻擊怪物2次。等級${i}效果：消耗MP${mp}，最多攻擊${targetCount}名敵人，威力${power}%，${stunChance}%機率使怪物昏迷。`
                         };
                     })
                 }
@@ -7095,18 +7613,29 @@ const allProfessionsData = {
                     ]
                 },
                 {
-                    id: "shadowerInstinctNL",
+                    id: "shadowerInstinct",
                     name: "瞬身迴避",
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "提升本身的迴避能力，一定的機率完全迴避敵人攻擊。若系統判定完全閃避時，會自動施放微笑的表情。",
+                    description: "提升本身的迴避能力，一定的機率完全迴避敵人攻擊。若系統判定完全閃避時，會出現木人特效。",
                     imageUrl: "images/shadowerInstinct.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
+
+                        // 使用陣列方式列出機率，確保未來若有版本平衡微調時容易修改
+                        const evasionChances = [
+                            null,
+                            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                            21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+                        ];
+
+                        const chance = evasionChances[i];
+
                         return {
-                            effect: `機率: ${10 + i}%`,
-                            fullDescription: `提升本身的迴避能力，一定的機率完全迴避敵人攻擊。等級${i}效果：機率${10 + i}%。`
+                            effect: `完全迴避機率: ${chance}%`,
+                            fullDescription: `提升本身的迴避能力，一定的機率完全迴避敵人攻擊。等級${i}效果：完全迴避機率${chance}%。`
                         };
                     })
                 },
@@ -7116,15 +7645,28 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "敵人如果被挑戰，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。該技能不受攻擊速度影響，當挑釁與神聖祈禱一起使用時，額外經驗值是相加。",
-                    imageUrl: "images/taunt.png",
+                    description: "最多可挑釁6名敵方，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。該技能不受攻擊速度影響，當挑釁與神聖祈禱一起使用時，額外經驗值是相加。",
+                    imageUrl: "images/tauntNL.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
-                        const rates = [null, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40];
+
+                        // 1. 消耗MP規律：1-20級為 20+i，21級起固定為 40
+                        const mpCosts = [
+                            null,
+                            21, 22, 23, 24, 25, 26, 27, 28, 29, 30, // 1-10
+                            31, 32, 33, 34, 35, 36, 37, 38, 39, 40, // 11-20
+                            40, 40, 40, 40, 40, 40, 40, 40, 40, 40  // 21-30
+                        ];
+
+                        // 2. 機率提升規律：起始 10%，每級增加 1% (1級=11%, 30級=40%)
+                        const bonusChance = 10 + i;
+
+                        const mp = mpCosts[i];
+                        const duration = 120; // 固定 120 秒
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 機率提升: ${rates[i]}%`,
-                            fullDescription: `敵人如果被挑戰，持續120秒敵人防禦、經驗值、掉寶率上升一定%數。等級${i}效果：消耗MP${mpCosts[i]}，機率提升${rates[i]}%。`
+                            effect: `消耗MP: ${mp}, 經驗/掉寶/防禦提升: ${bonusChance}%, 持續時間: ${duration}秒`,
+                            fullDescription: `最多可挑釁6名敵方。等級${i}效果：經驗值、掉寶率與怪物防禦提升${bonusChance}%，持續${duration}秒。`
                         };
                     })
                 },
@@ -7134,16 +7676,36 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "把短劍塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害，同一個敵人最多有3次可以重覆中毒的可能性。",
-                    imageUrl: "images/venom.png",
+                    description: "把飛鏢塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害，最多有3次可以重覆中毒的可能性，且不會使敵方HP降到1以下。",
+                    imageUrl: "images/toxicVenom.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const attacks = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
-                        const procChances = [null, 22, 22, 22, 24, 24, 24, 26, 26, 26, 28, 28, 28, 30, 30, 30, 32, 32, 32, 34, 34, 34, 36, 36, 36, 38, 38, 38, 40, 40, 40];
-                        const durations = [null, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4];
+
+                        // 1. 攻擊力：線性成長，1級=31, 30級=60
+                        const power = 30 + i;
+
+                        // 2. 中毒機率：不規則跳動，採陣列查表
+                        const poisonChances = [
+                            null,
+                            22, 22, 22, 24, 24, 24, 26, 26, 26, 28, // 1-10
+                            28, 28, 30, 30, 30, 32, 32, 32, 34, 34, // 11-20
+                            34, 36, 36, 36, 38, 38, 38, 40, 40, 40  // 21-30
+                        ];
+
+                        // 3. 持續時間：每10級增加1秒
+                        const durations = [
+                            null,
+                            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, // 1-10
+                            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, // 11-20
+                            4, 4, 4, 4, 4, 4, 4, 4, 4, 4  // 21-30
+                        ];
+
+                        const chance = poisonChances[i];
+                        const time = durations[i];
+
                         return {
-                            effect: `攻擊力: ${attacks[i]}%, 中毒機率: ${procChances[i]}%, 持續時間: ${durations[i]}秒`,
-                            fullDescription: `把短劍塗上毒後再攻擊敵人，一定機率會讓敵人中毒造成持續的傷害。等級${i}效果：攻擊力${attacks[i]}%，中毒機率${procChances[i]}%，持續時間${durations[i]}秒。`
+                            effect: `中毒傷害: ${power}%, 中毒機率: ${chance}%, 持續時間: ${time}秒`,
+                            fullDescription: `攻擊時有${chance}%機率使敵人中毒。等級${i}效果：每秒造成${power}%持續傷害，持續${time}秒，最高可堆疊3次。`
                         };
                     })
                 },
@@ -7153,7 +7715,7 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人。",
+                    description: "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人，且不會使敵方HP下降到1以下。",
                     imageUrl: "images/ninjaAmbush.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
@@ -7163,7 +7725,7 @@ const allProfessionsData = {
                         const ranges = [null, 110, 110, 110, 120, 120, 120, 130, 130, 130, 140, 140, 140, 150, 150, 150, 160, 160, 160, 170, 170, 170, 170, 180, 180, 190, 190, 190, 200, 200, 200];
                         return {
                             effect: `消耗MP: ${mpCosts[i]}, 攻擊力: ${attacks[i]}%, 持續時間: ${durations[i]}秒, 距離: ${ranges[i]}`,
-                            fullDescription: `呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害。等級${i}效果：消耗MP${mpCosts[i]}，攻擊力${attacks[i]}%，持續時間${durations[i]}秒，距離${ranges[i]}。`
+                            fullDescription: `呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人，且不會使敵方HP下降到1以下。等級${i}效果：消耗MP${mpCosts[i]}，攻擊力${attacks[i]}%，持續時間${durations[i]}秒，距離${ranges[i]}。`
                         };
                     })
                 },
@@ -7173,15 +7735,36 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "增加10%的對BOSS傷害。",
+                    description: "增加對BOSS傷害。",
                     imageUrl: "images/expertThrowingStarHandling.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25];
-                        const durations = [null, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120];
+
+                        // 1. 消耗MP: 1-10級:15, 11-20級:20, 21-30級:25
+                        const mpCosts = [
+                            null,
+                            15, 15, 15, 15, 15, 15, 15, 15, 15, 15, // 1-10
+                            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 11-20
+                            25, 25, 25, 25, 25, 25, 25, 25, 25, 25  // 21-30
+                        ];
+
+                        // 2. 持續時間: 每級增加 10 秒 (i * 10)
+                        const duration = i * 10;
+
+                        // 3. 傷害增加: 規律的三級一跳
+                        const damageIncreases = [
+                            null,
+                            1, 1, 1, 2, 2, 2, 3, 3, 3, 4, // 1-10
+                            4, 4, 5, 5, 5, 6, 6, 6, 7, 7, // 11-20
+                            7, 8, 8, 8, 9, 9, 9, 10, 10, 10 // 21-30
+                        ];
+
+                        const mp = mpCosts[i];
+                        const bossDmg = damageIncreases[i];
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 持續時間: ${durations[i]}秒`,
-                            fullDescription: `增加10%的對BOSS傷害。等級${i}效果：消耗MP${mpCosts[i]}，持續時間${durations[i]}秒。`
+                            effect: `消耗MP: ${mp}, 持續時間: ${duration}秒, 對BOSS傷害增加: ${bossDmg}%`,
+                            fullDescription: `凝聚無形的氣勁於鏢中。等級${i}效果：持續${duration}秒，對BOSS傷害增加${bossDmg}%。`
                         };
                     })
                 },
@@ -7191,18 +7774,46 @@ const allProfessionsData = {
                     maxLevel: 30,
                     requiredLevel: 120,
                     preRequisite: {},
-                    description: "一定機率把怪物擊退。",
+                    description: "將周圍怪物擊退，技能等級越高推的數量越多。",
                     imageUrl: "images/ninjaStorm.png",
                     levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 30, 30, 30, 30, 30, 29, 28, 27, 26, 25];
-                        const attacks = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80];
-                        const ranges = [null, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 130, 130, 130, 130, 130, 130, 130, 130, 130, 130];
-                        const knockbackChances = [null, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100];
-                        const knockbackDistances = [null, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200];
+
+                        // 1. 消耗MP: 1-10級:16, 11-20級:24, 21-30級:30
+                        const mpCosts = [
+                            null,
+                            16, 16, 16, 16, 16, 16, 16, 16, 16, 16, // 1-10
+                            24, 24, 24, 24, 24, 24, 24, 24, 24, 24, // 11-20
+                            30, 30, 30, 30, 30, 30, 30, 30, 30, 30  // 21-30
+                        ];
+
+                        // 2. 擊退數量: 每5級跳一次 (1, 2, 3, 4, 5, 6)
+                        const mobCounts = [
+                            null,
+                            1, 1, 1, 1, 1, // 1-5
+                            2, 2, 2, 2, 2, // 6-10
+                            3, 3, 3, 3, 3, // 11-15
+                            4, 4, 4, 4, 4, // 16-20
+                            5, 5, 5, 5, 5, // 21-25
+                            6, 6, 6, 6, 6  // 26-30
+                        ];
+
+                        // 3. 攻擊力規律:
+                        // 1-10級: 40 + (i * 2) [1級=42%, 10級=60%]
+                        // 11-30級: 50 + i [11級=61%, 30級=80%]
+                        let attack;
+                        if (i <= 10) {
+                            attack = 40 + (i * 2);
+                        } else {
+                            attack = 50 + i;
+                        }
+
+                        const mp = mpCosts[i];
+                        const mobCount = mobCounts[i];
+
                         return {
-                            effect: `消耗MP: ${mpCosts[i]}, 攻擊力: ${attacks[i]}%, 攻擊範圍: ${ranges[i]}, 擊退機率: ${knockbackChances[i]}%, 擊退距離: ${knockbackDistances[i]}`,
-                            fullDescription: `一定機率把怪物擊退。等級${i}效果：消耗MP${mpCosts[i]}，攻擊力${attacks[i]}%，攻擊範圍${ranges[i]}，擊退機率${knockbackChances[i]}%，擊退距離${knockbackDistances[i]}。`
+                            effect: `消耗MP: ${mp}, 攻擊力: ${attack}%, 擊退數量: ${mobCount}`,
+                            fullDescription: `將周圍怪物擊退。等級${i}效果：消耗MP ${mp}，造成${attack}%傷害，最多擊退${mobCount}名怪物。`
                         };
                     })
                 },
@@ -7550,77 +8161,51 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "energyCharge",
-                    "name": "蓄能激發",
-                    "maxLevel": 40,
-                    "requiredLevel": 70,
-                    "preRequisite": {},
-                    "description": "每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。",
-                    "imageUrl": "images/energyCharge.png",
-                    "levels": Array(41).fill(null).map((_, i) => {
-                        let attack, hitRate, avoidRate, duration;
+                    id: "energyCharge",
+                    name: "蓄能激發",
+                    maxLevel: 40,
+                    requiredLevel: 70, // 通常為海盜三轉技能
+                    preRequisite: {},
+                    description: "每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。",
+                    imageUrl: "images/energyCharge.png",
+                    levels: Array(41).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 攻擊力 的規律
-                        if (i >= 1 && i <= 3) { attack = 0; }
-                        else if (i >= 4 && i <= 7) { attack = 11; }
-                        else if (i >= 8 && i <= 11) { attack = 12; }
-                        else if (i >= 12 && i <= 15) { attack = 13; }
-                        else if (i >= 16 && i <= 19) { attack = 14; }
-                        else if (i >= 20 && i <= 23) { attack = 15; }
-                        else if (i >= 24 && i <= 27) { attack = 16; }
-                        else if (i >= 28 && i <= 31) { attack = 17; }
-                        else if (i >= 32 && i <= 35) { attack = 18; }
-                        else if (i >= 36 && i <= 39) { attack = 19; }
-                        else { attack = 20; }
+                        // 1. 攻擊力：階梯式成長
+                        const attackValues = [
+                            null,
+                            10, 10, 10, 11, 11, 11, 11, 12, 12, 12, // 1-10
+                            12, 13, 13, 13, 13, 14, 14, 14, 14, 15, // 11-20
+                            15, 15, 15, 16, 16, 16, 16, 17, 17, 17, // 21-30
+                            17, 18, 18, 18, 18, 19, 19, 19, 19, 20  // 31-40
+                        ];
 
-                        // 命中率和迴避率 的規律
-                        if (i >= 1 && i <= 2) { hitRate = 1; avoidRate = 1; }
-                        else if (i >= 3 && i <= 4) { hitRate = 2; avoidRate = 2; }
-                        else if (i >= 5 && i <= 6) { hitRate = 3; avoidRate = 3; }
-                        else if (i >= 7 && i <= 8) { hitRate = 4; avoidRate = 4; }
-                        else if (i >= 9 && i <= 10) { hitRate = 5; avoidRate = 5; }
-                        else if (i >= 11 && i <= 12) { hitRate = 6; avoidRate = 6; }
-                        else if (i >= 13 && i <= 14) { hitRate = 7; avoidRate = 7; }
-                        else if (i >= 15 && i <= 16) { hitRate = 8; avoidRate = 8; }
-                        else if (i >= 17 && i <= 18) { hitRate = 9; avoidRate = 9; }
-                        else if (i >= 19 && i <= 20) { hitRate = 10; avoidRate = 10; }
-                        else if (i >= 21 && i <= 22) { hitRate = 11; avoidRate = 11; }
-                        else if (i >= 23 && i <= 24) { hitRate = 12; avoidRate = 12; }
-                        else if (i >= 25 && i <= 26) { hitRate = 13; avoidRate = 13; }
-                        else if (i >= 27 && i <= 28) { hitRate = 14; avoidRate = 14; }
-                        else if (i >= 29 && i <= 30) { hitRate = 15; avoidRate = 15; }
-                        else if (i >= 31 && i <= 32) { hitRate = 16; avoidRate = 16; }
-                        else if (i >= 33 && i <= 34) { hitRate = 17; avoidRate = 17; }
-                        else if (i >= 35 && i <= 36) { hitRate = 18; avoidRate = 18; }
-                        else if (i >= 37 && i <= 38) { hitRate = 19; avoidRate = 19; }
-                        else { hitRate = 20; avoidRate = 20; }
+                        // 2. 命中率與迴避率：數據相同，三級跳或二級跳交替
+                        const accEvaValues = [
+                            null,
+                            1, 1, 2, 2, 3, 3, 4, 4, 5, 5,   // 1-10
+                            6, 6, 7, 7, 8, 8, 9, 9, 10, 10, // 11-20
+                            11, 11, 12, 12, 13, 13, 14, 14, 15, 15, // 21-30
+                            16, 16, 17, 17, 18, 18, 19, 19, 20, 20  // 31-40
+                        ];
 
-                        // 持續時間 的規律
-                        if (i >= 1 && i <= 2) { duration = 31; }
-                        else if (i >= 3 && i <= 4) { duration = 32; }
-                        else if (i >= 5 && i <= 6) { duration = 33; }
-                        else if (i >= 7 && i <= 8) { duration = 34; }
-                        else if (i >= 9 && i <= 10) { duration = 35; }
-                        else if (i >= 11 && i <= 12) { duration = 36; }
-                        else if (i >= 13 && i <= 14) { duration = 37; }
-                        else if (i >= 15 && i <= 16) { duration = 38; }
-                        else if (i >= 17 && i <= 18) { duration = 39; }
-                        else if (i >= 19 && i <= 20) { duration = 40; }
-                        else if (i >= 21 && i <= 22) { duration = 41; }
-                        else if (i >= 23 && i <= 24) { duration = 42; }
-                        else if (i >= 25 && i <= 26) { duration = 43; }
-                        else if (i >= 27 && i <= 28) { duration = 44; }
-                        else if (i >= 29 && i <= 30) { duration = 45; }
-                        else if (i >= 31 && i <= 32) { duration = 46; }
-                        else if (i >= 33 && i <= 34) { duration = 47; }
-                        else if (i >= 35 && i <= 36) { duration = 48; }
-                        else if (i >= 37 && i <= 38) { duration = 49; }
-                        else { duration = 50; }
+                        // 3. 持續時間：30 + ceil(i/2) 規律 (1級=31, 40級=50)
+                        // 為了保持風格統一，這裡也直接列出
+                        const durationValues = [
+                            null,
+                            31, 31, 32, 32, 33, 33, 34, 34, 35, 35, // 1-10
+                            36, 36, 37, 37, 38, 38, 39, 39, 40, 40, // 11-20
+                            41, 41, 42, 42, 43, 43, 44, 44, 45, 45, // 21-30
+                            46, 46, 47, 47, 48, 48, 49, 49, 50, 50  // 31-40
+                        ];
+
+                        const atk = attackValues[i];
+                        const accEva = accEvaValues[i];
+                        const duration = durationValues[i];
 
                         return {
-                            effect: `攻擊力: ${attack}, 命中率: ${hitRate}, 回避率: ${avoidRate}, 持續時間: ${duration}秒`,
-                            fullDescription: `每次攻擊就會儲存一定的能量，當能量補滿就會自動發動物理攻擊與狀態的特效，並可使用消耗能量的技能。等級${i}效果：攻擊力${attack}，命中率${hitRate}，迴避率${avoidRate}，持續時間${duration}秒。`
+                            effect: `物理攻擊力: +${atk}, 命中率: +${accEva}, 迴避率: +${accEva}, 持續時間: ${duration}秒`,
+                            fullDescription: `能量補滿時自動發動特效。等級${i}效果：攻擊力+${atk}，命中與迴避+${accEva}，持續${duration}秒。`
                         };
                     })
                 },
@@ -7825,102 +8410,111 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "energyBlast+",
-                    "name": "元氣彈",
-                    "maxLevel": 30,
-                    "requiredLevel": 70,
-                    "preRequisite": { "energyCharge": 1 },
-                    "description": "將能量投擲對前方多數敵人來發動攻擊。最多攻擊3隻怪物。",
-                    "imageUrl": "images/energyBlast+.png",
-                    "levels": Array(31).fill(null).map((_, i) => {
-                        let numEnemies, attack;
+                    id: "energyBlastPlus", // 原 ID 含有特殊字元，建議改為 camelCase
+                    name: "元氣彈",
+                    maxLevel: 30,
+                    requiredLevel: 120,
+                    preRequisite: { "energyCharge": 1 },
+                    description: "將能量投擲對前方多數敵人來發動攻擊。最多攻擊3隻怪物。",
+                    imageUrl: "images/energyBlast.png",
+                    levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 攻擊敵人個數 的規律：分段
-                        if (i >= 1 && i <= 6) {
-                            numEnemies = 2;
-                        } else if (i >= 7 && i <= 12) {
-                            numEnemies = 3;
-                        } else if (i >= 13 && i <= 18) {
-                            numEnemies = 4;
-                        } else if (i >= 19 && i <= 24) {
-                            numEnemies = 5;
-                        } else {
-                            numEnemies = 6;
-                        }
+                        // 1. 攻擊力規律分析：
+                        // 1-10級: 280 + (i * 20) [1級=300, 10級=480]
+                        // 11-20級: 10級(480) + 30 + (i-10)*20 [11級=510, 20級=690]
+                        // 21-30級: 20級(690) + 30 + (i-20)*20 [21級=720, 30級=900]
 
-                        // 攻擊力 的規律：分段線性
-                        if (i >= 1 && i <= 6) {
-                            attack = 294 + i * 6; // Level 1 is 300%
-                        } else if (i >= 7 && i <= 12) {
-                            attack = 384 + (i - 6) * 20;
-                        } else if (i >= 13 && i <= 18) {
-                            attack = 528 + (i - 12) * 20;
-                        } else if (i >= 19 && i <= 24) {
-                            attack = 640 + (i - 18) * 20;
-                        } else {
-                            attack = 710 + (i - 24) * 20;
-                        }
+                        const attackPowers = [
+                            null,
+                            300, 320, 340, 360, 380, 400, 420, 440, 460, 480, // 1-10
+                            510, 530, 550, 570, 590, 610, 630, 650, 670, 690, // 11-20
+                            720, 740, 760, 780, 800, 820, 840, 860, 880, 900  // 21-30
+                        ];
+
+                        const power = attackPowers[i];
+                        const targetCount = 3; // 固定攻擊3隻
 
                         return {
-                            effect: `攻擊敵人個數: ${numEnemies}, 攻擊力: ${attack}%`,
-                            fullDescription: `將能量投擲對前方多數敵人來發動攻擊。最多攻擊3隻怪物。等級${i}效果：攻擊敵人個數${numEnemies}，攻擊力${attack}%。`
+                            effect: `攻擊力: ${power}%, 攻擊數量: ${targetCount}`,
+                            fullDescription: `將能量投擲對前方多數敵人來發動攻擊。等級${i}效果：造成${power}%傷害，最多攻擊${targetCount}隻怪物。`
                         };
                     })
                 },
                 {
-                    "id": "finalAttack",
-                    "name": "鬥神降世",
-                    "maxLevel": 20,
-                    "requiredLevel": 70,
-                    "preRequisite": { "transformation": 20 },
-                    "description": "240秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。",
-                    "imageUrl": "images/finalAttack.png",
-                    "levels": Array(21).fill(null).map((_, i) => {
-                        let mpCost, pDef, mDef, cooldown;
+                    id: "finalAttack",
+                    name: "鬥神降世",
+                    maxLevel: 20,
+                    requiredLevel: 120,
+                    preRequisite: { "transformation": 20 }, // 前置：鬥神附體 20級
+                    description: "240秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。",
+                    imageUrl: "images/finalAttack.png",
+                    levels: Array(21).fill(null).map((_, i) => {
                         if (i === 0) return null;
-                        const mpCosts = [null, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60];
-                        const defs = [null, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60];
-                        const cooldowns = [null, 740, 720, 700, 680, 660, 640, 620, 600, 580, 560, 540, 520, 500, 480, 460, 440, 420, 400, 380, 360];
-                        mpCost = mpCosts[i];
-                        pDef = defs[i];
-                        mDef = defs[i];
-                        cooldown = cooldowns[i];
+
+                        // 1. 消耗MP: 20 + (i * 2) [1級=22, 20級=60]
+                        const mp = 20 + (i * 2);
+
+                        // 2. 防禦力: 40 + i [1級=41, 20級=60]
+                        const def = 40 + i;
+
+                        // 3. 冷卻時間: 640 - (i * 20) [1級=620, 20級=240]
+                        const cooldown = 640 - (i * 20);
+
+                        // 4. 持續時間: 固定 240 秒
+                        const duration = 240;
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 物理防禦力: ${pDef}, 魔法防禦力: ${mDef}, 冷卻時間(CD): ${cooldown}秒`,
-                            fullDescription: `240秒內可轉變為鬥神狀態。可使用技能：衝擊波、閃．爆破、閃．索命、極限再起、能量衝擊、損人利己、楓葉祝福、堅忍意志、最終極速、時間置換、魔龍降臨、狂暴衝擊、迴旋肘擊。等級${i}效果：消耗MP${mpCost}，物理防禦力${pDef}，魔法防禦力${mDef}，冷卻時間(CD)${cooldown}秒。`
+                            effect: `消耗MP: ${mp}, 物理/魔法防禦: +${def}, 冷卻時間: ${cooldown}秒`,
+                            fullDescription: `${duration}秒內轉變為鬥神狀態。等級${i}效果：物理與魔法防禦力增加${def}，冷卻時間${cooldown}秒。`
                         };
                     })
                 },
                 {
-                    "id": "flashBlast",
-                    "name": "閃．爆破",
-                    "maxLevel": 30,
-                    "requiredLevel": 120,
-                    "preRequisite": { "finalAttack": 1 },
-                    "description": "以迅雷不及掩耳的快速攻擊，向單一敵人造成極大的傷害。只限鬥神降世狀態下才能使用。",
-                    "imageUrl": "images/flashBlast.png",
-                    "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack;
+                    id: "flashBlast",
+                    name: "閃．爆破",
+                    maxLevel: 30,
+                    requiredLevel: 120,
+                    preRequisite: { "finalAttack": 1 },
+                    description: "以迅雷不及掩耳的快速攻擊，向單一敵人造成極大的傷害。只限鬥神降世狀態下才能使用。",
+                    imageUrl: "images/flashBlast.png",
+                    levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        const mpCosts = [null, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP: 1-10級:20, 11-20級:35, 21-30級:50
+                        const mpCosts = [
+                            null,
+                            20, 20, 20, 20, 20, 20, 20, 20, 20, 20, // 1-10
+                            35, 35, 35, 35, 35, 35, 35, 35, 35, 35, // 11-20
+                            50, 50, 50, 50, 50, 50, 50, 50, 50, 50  // 21-30
+                        ];
 
-                        // 攻擊力 的規律：分段線性
-                        if (i >= 1 && i <= 10) {
-                            attack = 80 + i * 10;
-                        } else if (i >= 11 && i <= 20) {
-                            attack = 190 + (i - 10) * 10;
-                        } else { // i >= 21 && i <= 30
-                            attack = 300 + (i - 20) * 10;
-                        }
+                        // 2. 攻擊威力: 捕捉每10級額外跳20%的特徵
+                        const attackPowers = [
+                            null,
+                            90, 100, 110, 120, 130, 140, 150, 160, 170, 180, // 1-10
+                            200, 210, 220, 230, 240, 250, 260, 270, 280, 290, // 11-20
+                            310, 320, 330, 340, 350, 360, 370, 380, 390, 400  // 21-30
+                        ];
+
+                        // 3. 攻擊次數: 每 5 級增加 1 次 (3, 4, 5, 6, 7, 8)
+                        const hitCounts = [
+                            null,
+                            3, 3, 3, 3, 3, // 1-5
+                            4, 4, 4, 4, 4, // 6-10
+                            5, 5, 5, 5, 5, // 11-15
+                            6, 6, 6, 6, 6, // 16-20
+                            7, 7, 7, 7, 7, // 21-25
+                            8, 8, 8, 8, 8  // 26-30
+                        ];
+
+                        const mp = mpCosts[i];
+                        const power = attackPowers[i];
+                        const hits = hitCounts[i];
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%`,
-                            fullDescription: `以迅雷不及掩耳的快速攻擊，向單一敵人造成極大的傷害。只限鬥神降世狀態下才能使用。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%。`
+                            effect: `消耗MP: ${mp}, 攻擊力: ${power}%, 攻擊次數: ${hits}次`,
+                            fullDescription: `以迅雷不及掩耳的快速攻擊單一敵人。等級${i}效果：造成${hits}次${power}%的傷害。`
                         };
                     })
                 },
@@ -8620,131 +9214,139 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "octopusKing",
-                    "name": "砲台章魚王",
-                    "maxLevel": 20,
-                    "requiredLevel": 120,
-                    "preRequisite": { "summonOctopus": 30 },
-                    "description": "可額外召喚出一隻章魚炮台，並且提升連射速度與殺傷力。",
-                    "imageUrl": "images/octopusKing.png",
-                    "levels": Array(21).fill(null).map((_, i) => {
-                        let mpCost, attack, duration;
+                    id: "octopusKing",
+                    name: "砲台章魚王",
+                    maxLevel: 20,
+                    requiredLevel: 120,
+                    preRequisite: { "summonOctopus": 30 }, // 章魚砲台 30級
+                    description: "可額外召喚出一隻章魚炮台，並且提升連射速度與殺傷力。",
+                    imageUrl: "images/octopusKing.png",
+                    levels: Array(21).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        const mpCosts = [null, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39, 39, 40, 40];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP: 1-10級緩慢成長，11級後固定為 35
+                        const mpCosts = [
+                            null,
+                            31, 31, 32, 32, 33, 33, 34, 34, 35, 35, // 1-10
+                            35, 35, 35, 35, 35, 35, 35, 35, 35, 35  // 11-20
+                        ];
 
-                        // 攻擊力 的規律
-                        const attacks = [null, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
-                        attack = attacks[i];
+                        // 2. 物理攻擊力: 
+                        // 1-10級: 200 + (i * 10) [1級=210, 10級=300]
+                        // 11-20級: 300 + (i - 10) * 20 [11級=320, 20級=500]
+                        let attack;
+                        if (i <= 10) {
+                            attack = 200 + (i * 10);
+                        } else {
+                            attack = 300 + (i - 10) * 20;
+                        }
 
-                        // 持續時間 的規律
-                        const durations = [null, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
-                        duration = durations[i];
+                        // 3. 持續時間: 1-10級 35秒, 11-20級 40秒
+                        const duration = i <= 10 ? 35 : 40;
+
+                        // 4. 冷卻時間: 固定 10秒
+                        const cooldown = 10;
+
+                        const mp = mpCosts[i];
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 物理攻擊力: ${attack}, 持續時間: ${duration}%`,
-                            fullDescription: `可額外召喚出一隻章魚炮台，並且提升連射速度與殺傷力。等級${i}效果：消耗MP${mpCost}，物理攻擊力${attack}，持續時間${duration}%。`
+                            effect: `消耗MP: ${mp}, 物理攻擊力: ${attack}, 持續時間: ${duration}秒, 冷卻時間: ${cooldown}秒`,
+                            fullDescription: `召喚砲台章魚王協助攻擊。等級${i}效果：物理攻擊力${attack}，持續${duration}秒，冷卻${cooldown}秒。`
                         };
                     })
                 },
                 {
-                    "id": "specialForce",
-                    "name": "海鷗特戰隊",
-                    "maxLevel": 30,
-                    "requiredLevel": 120,
-                    "preRequisite": { "gaviota": 15 },
-                    "description": "利用海鷗突擊隊的炸彈攻擊，向6個以下的敵人發動攻擊。",
-                    "imageUrl": "images/specialForce.png",
-                    "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack;
+                    id: "specialForce",
+                    name: "海鷗特戰隊",
+                    maxLevel: 30,
+                    requiredLevel: 120,
+                    preRequisite: { "gaviota": 15 }, // 海鷗突擊隊 15級
+                    description: "利用海鷗突擊隊的炸彈攻擊，向6個以下的敵人發動攻擊。",
+                    imageUrl: "images/specialForce.png",
+                    levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        if (i >= 1 && i <= 10) {
-                            mpCost = 30 + i;
-                        } else if (i >= 11 && i <= 20) {
-                            mpCost = 40 + i;
-                        } else { // i >= 21
-                            mpCost = 50 + i;
-                        }
+                        // 1. 消耗MP: 30 + i (線性成長，1級=31, 30級=60)
+                        const mp = 30 + i;
 
-                        // 攻擊力 的規律：分段線性
-                        if (i >= 1 && i <= 10) {
-                            attack = 510 + i * 20;
-                        } else if (i >= 11 && i <= 20) {
-                            attack = 760 + (i - 10) * 20;
-                        } else { // i >= 21
-                            attack = 970 + (i - 20) * 20;
-                        }
+                        // 2. 攻擊力規律分析：
+                        // 基礎每級增加 20%，但在 11級與 21級額外跳 50%
+                        // 1-10級: 500 + (i * 20) [1級=520, 10級=700]
+                        // 11-20級: 700 + 50 + (i-10)*20 [11級=770, 20級=950]
+                        // 21-30級: 950 + 50 + (i-20)*20 [21級=1020, 30級=1200]
+                        const stageBonus = Math.floor((i - 1) / 10) * 50;
+                        const attackPower = 500 + (i * 20) + stageBonus;
 
-                        const mpCosts = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]; // 根據提供的數據硬編碼
-                        mpCost = mpCosts[i];
+                        // 3. 冷卻時間: 固定 5秒
+                        const cooldown = 5;
 
-                        const attacks = [null, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700, 770, 790, 810, 830, 850, 870, 890, 910, 930, 950, 1020, 1040, 1060, 1080, 1100, 1120, 1140, 1160, 1180, 1200]; // 根據提供的數據硬編碼
-                        attack = attacks[i];
+                        // 4. 敵人數量: 固定 6名
+                        const mobCount = 6;
+
+                        const effect = `消耗MP: ${mp}, 攻擊力: ${attackPower}%, 冷卻時間: ${cooldown}秒`;
 
                         return {
-                            "effect": "消耗MP: " + mpCost + ", 攻擊力: " + attack + "%",
-                            "fullDescription": "利用海鷗突擊隊的炸彈攻擊，向6個以下的敵人發動攻擊。等級" + i + "效果：消耗MP" + mpCost + "，攻擊力" + attack + "%。"
+                            effect: effect,
+                            fullDescription: `利用海鷗炸彈攻擊最多${mobCount}個敵人。等級${i}效果：造成${attackPower}%傷害，冷卻時間${cooldown}秒。`
                         };
                     })
                 },
                 {
-                    "id": "instantFlash",
-                    "name": "瞬‧迅雷",
-                    "maxLevel": 30,
-                    "requiredLevel": 120,
-                    "preRequisite": { "tripleFire": 20 },
-                    "description": "以極快的速度發射子彈，按住技能鍵，便會持續發射子彈。",
-                    "imageUrl": "images/instantFlash.png",
-                    "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack;
+                    id: "instantFlash",
+                    name: "瞬‧迅雷",
+                    maxLevel: 30,
+                    requiredLevel: 120,
+                    preRequisite: { "tripleFire": 20 }, // 3連發 20級
+                    description: "以極快的速度發射子彈，按住技能鍵，便會持續發射子彈。",
+                    imageUrl: "images/instantFlash.png",
+                    levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        if (i >= 1 && i <= 10) {
-                            mpCost = 6;
-                        } else if (i >= 11 && i <= 20) {
-                            mpCost = 8;
-                        } else { // i >= 21
-                            mpCost = 10;
-                        }
+                        // 1. 消耗MP: 1-10級:6, 11-20級:8, 21-30級:9
+                        const mpCosts = [
+                            null,
+                            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, // 1-10
+                            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, // 11-20
+                            9, 9, 9, 9, 9, 9, 9, 9, 9, 9  // 21-30
+                        ];
 
-                        // 攻擊力 的規律：分段線性
-                        if (i >= 1 && i <= 10) {
-                            attack = 130 + i * 2;
-                        } else if (i >= 11 && i <= 20) {
-                            attack = 150 + (i - 10) * 2;
-                        } else { // i >= 21
-                            attack = 170 + (i - 20) * 2;
-                        }
+                        // 2. 攻擊力規律分析：
+                        // 1-20級: 130 + (i * 2) [1級=132, 20級=170]
+                        // 21-30級: 140 + (i * 2) [21級=182, 30級=200] (21級額外跳了10%)
+                        const stageBonus = i >= 21 ? 10 : 0;
+                        const power = 130 + (i * 2) + stageBonus;
+
+                        const mp = mpCosts[i];
 
                         return {
-                            "effect": "消耗MP: " + mpCost + ", 攻擊力: " + attack + "%",
-                            "fullDescription": "以極快的速度發射子彈，按住技能鍵，便會持續發射子彈。等級" + i + "效果：消耗MP" + mpCost + "，攻擊力" + attack + "%。"
+                            effect: `消耗MP: ${mp}, 攻擊力: ${power}%`,
+                            fullDescription: `以極快的速度持續發射子彈。等級${i}效果：每一發子彈造成${power}%傷害。`
                         };
                     })
                 },
                 {
-                    "id": "pirateShip",
-                    "name": "海盜船",
-                    "maxLevel": 10,
-                    "requiredLevel": 120,
-                    "preRequisite": {},
-                    "description": "搭乘海盜船。每當角色受到傷害，耐久度會下降，而當達到0時，便無法再搭乘海盜船。\n耐久度：80,000+（等級-100）×3000，且可在乘船中跳躍。\n可使用技能：海盜船、炸彈投擲、迅雷再起、火焰噴射、寒霜噴射、海鷗突擊隊、章魚砲台、楓葉祝福、堅忍意志。",
-                    "imageUrl": "images/pirateShip.png",
-                    "levels": Array(11).fill(null).map((_, i) => {
-                        let mpCost, defenseIncrease;
+                    id: "pirateShip",
+                    name: "海盜船",
+                    maxLevel: 10,
+                    requiredLevel: 120,
+                    preRequisite: {},
+                    description: "搭乘海盜船。每當角色受到傷害，耐久度會下降，而當達到0時，便無法再搭乘海盜船。可在乘船中跳躍。可使用技能：砲轟、散彈射擊、火焰噴射、寒霜噴射。",
+                    imageUrl: "images/pirateShip.png",
+                    levels: Array(11).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        mpCost = 20 + i * 2;
-                        defenseIncrease = i * 10;
+                        // 1. 消耗MP: 20 + (i * 2) [1級=22, 10級=40]
+                        const mp = 20 + (i * 2);
+
+                        // 2. 物理與魔法防禦上升: i * 10 [1級=10, 10級=100]
+                        const def = i * 10;
+
+                        // 3. 耐久度公式說明 (假設以角色等級為變數，這裡提供字串描述)
+                        const durabilityNote = "80,000 + (等級 - 100) * 3,000";
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 物理和魔法防禦上升: ${defenseIncrease}`,
-                            fullDescription: `搭乘海盜船。每當角色受到傷害，耐久度會下降，而當達到0時，便無法再搭乘海盜船。等級${i}效果：消耗MP${mpCost}，物理和魔法防禦上升${defenseIncrease}。`
+                            effect: `消耗MP: ${mp}, 物理/魔法防禦: +${def}`,
+                            fullDescription: `搭乘海盜船，防禦力增加${def}。耐久度公式為：${durabilityNote}。`
                         };
                     })
                 },
@@ -8778,98 +9380,89 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    "id": "pirateTorpedo",
-                    "name": "海盜魚雷",
-                    "maxLevel": 30,
-                    "requiredLevel": 120,
-                    "preRequisite": { "pirateShip": 1 },
-                    "description": "發射可貫穿敵人的堅固炸彈。只限在搭乘海盜船的狀態下使用。",
-                    "imageUrl": "images/pirateTorpedo.png",
-                    "levels": Array(31).fill(null).map((_, i) => {
-                        let mpCost, attack, numEnemies;
+                    id: "pirateTorpedo",
+                    name: "海盜魚雷",
+                    maxLevel: 30,
+                    requiredLevel: 120,
+                    preRequisite: { "pirateShip": 1 },
+                    description: "發射可貫穿敵人的堅固炸彈。只限在搭乘海盜船的狀態下使用。",
+                    imageUrl: "images/pirateTorpedo.png",
+                    levels: Array(31).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        const mpCosts = [null, 22, 22, 22, 24, 24, 24, 26, 26, 26, 28, 28, 28, 30, 30, 30, 32, 32, 32, 34, 34, 34, 36, 36, 36, 38, 38, 38, 40, 40, 40];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP: 不規則跳動，採陣列定義
+                        const mpCosts = [
+                            null,
+                            22, 22, 22, 24, 24, 24, 26, 26, 26, 28, // 1-10
+                            28, 28, 30, 30, 30, 32, 32, 32, 34, 34, // 11-20
+                            34, 36, 36, 36, 38, 38, 38, 40, 40, 40  // 21-30
+                        ];
 
-                        // 攻擊力 的規律 (精確數值)
-                        const attacks = [null, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380];
-                        attack = attacks[i];
+                        // 2. 攻擊力: 630 + (i * 5) [1級=635%, 30級=780%]
+                        const power = 630 + (i * 5);
 
-                        // 攻擊敵人次數 的規律：分段
-                        if (i >= 1 && i <= 10) {
-                            numEnemies = 4;
-                        } else if (i >= 11 && i <= 20) {
-                            numEnemies = 5;
-                        } else { // i >= 21
-                            numEnemies = 6;
-                        }
+                        // 3. 攻擊敵人個數: 1-10級:4, 11-20級:5, 21-30級:6
+                        const targetCount = i <= 10 ? 4 : i <= 20 ? 5 : 6;
+
+                        const mp = mpCosts[i];
 
                         return {
-                            effect: `消耗MP: ${mpCost}, 攻擊力: ${attack}%, 攻擊敵人個數: ${numEnemies}`,
-                            fullDescription: `發射可貫穿敵人的堅固炸彈。只限在搭乘海盜船的狀態下使用。等級${i}效果：消耗MP${mpCost}，攻擊力${attack}%，攻擊敵人個數${numEnemies}。`
+                            effect: `消耗MP: ${mp}, 攻擊力: ${power}%, 攻擊敵人數量: ${targetCount}`,
+                            fullDescription: `發射貫穿敵人的炸彈。等級${i}效果：造成${power}%傷害，最多攻擊${targetCount}名敵人。`
                         };
                     })
                 },
                 {
-                    "id": "mindControl",
-                    "name": "心靈控制",
-                    "maxLevel": 20,
-                    "requiredLevel": 70,
-                    "preRequisite": {},
-                    "description": "操控怪物的心志。使其提升目標怪物的掉落率20%的效果（不適用於BOSS）",
-                    "imageUrl": "images/mindControl.png",
-                    "levels": Array(21).fill(null).map((_, i) => {
-                        let mpCost, successRate, controlDuration;
+                    id: "mindControl",
+                    name: "心靈控制",
+                    maxLevel: 20,
+                    requiredLevel: 120,
+                    preRequisite: {},
+                    description: "操控怪物的心志。使其提升目標怪物掉落率的效果（不適用於BOSS）。",
+                    imageUrl: "images/mindControl.png",
+                    levels: Array(21).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律：
-                        // 1-19級: 31 -> 49 (每級加1)
-                        // 20級: 30
-                        const mpCosts = [null, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 30];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP: 30 + i [1級=31, 20級=50]
+                        const mp = 30 + i;
 
-                        // 成功率 的規律：線性
-                        successRate = 40 + i * 3;
+                        // 2. 道具掉落率提升: 每級增加 1%
+                        const dropRate = i;
 
-                        // 控制時間 的規律
-                        // 1-19級: 21 -> 39 (每級加1)
-                        // 20級: 30
-                        const controlDurations = [null, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 30];
-                        controlDuration = controlDurations[i];
+                        // 3. 控制時間規律:
+                        // 1-19級: 20 + i [1級=21秒, 19級=39秒]
+                        // 20級: 數據顯示回歸 30秒
+                        const duration = i === 20 ? 30 : 20 + i;
 
                         return {
-                            "effect": "消耗MP: " + mpCost + ", 成功率: " + successRate + "%, 控制時間: " + controlDuration + "秒",
-                            "fullDescription": "操控怪物的心志。使其提升目標怪物的掉落率20%的效果（不適用於BOSS）。等級" + i + "效果：消耗MP" + mpCost + "，成功率" + successRate + "%，控制時間" + controlDuration + "秒。"
+                            effect: `消耗MP: ${mp}, 道具掉落率: +${dropRate}%, 控制時間: ${duration}秒`,
+                            fullDescription: `操控怪物心志。等級${i}效果：道具掉落率提升${dropRate}%，持續${duration}秒（不適用於BOSS）。`
                         };
                     })
                 },
                 {
-                    "id": "preciseCannon",
-                    "name": "精準砲擊",
-                    "maxLevel": 20,
-                    "requiredLevel": 120,
-                    "preRequisite": { "targeting": 30 },
-                    "description": "對已受到指定攻擊的怪物，造成更大的傷害持續30秒。",
-                    "imageUrl": "images/preciseCannon.png",
-                    "levels": Array(21).fill(null).map((_, i) => {
-                        let mpCost, attack, extraDamage;
+                    id: "preciseCannon",
+                    name: "精準砲擊",
+                    maxLevel: 20,
+                    requiredLevel: 120,
+                    preRequisite: { "targeting": 30 }, // 指定攻擊 30級
+                    description: "對已受到指定攻擊的怪物，造成更大的傷害。",
+                    imageUrl: "images/preciseCannon.png",
+                    levels: Array(21).fill(null).map((_, i) => {
                         if (i === 0) return null;
 
-                        // 消耗MP 的規律
-                        const mpCosts = [null, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40];
-                        mpCost = mpCosts[i];
+                        // 1. 消耗MP: 1-10級: 35, 11-20級: 40
+                        const mp = i <= 10 ? 35 : 40;
 
-                        // 攻擊力 的規律：線性
-                        attack = 380 + i * 10;
+                        // 2. 額外傷害力: 每級增加 1%
+                        const extraDamage = i;
 
-                        // 額外傷害力 的規律：線性
-                        extraDamage = i;
+                        // 3. 持續時間: 10 + i [1級=11秒, 20級=30秒]
+                        const duration = 10 + i;
 
                         return {
-                            "effect": "消耗MP: " + mpCost + ", 攻擊力: " + attack + "%, 額外傷害力: " + extraDamage + "%",
-                            "fullDescription": "對已受到指定攻擊的怪物，造成更大的傷害持續30秒。等級" + i + "效果：消耗MP" + mpCost + "，攻擊力" + attack + "%，額外傷害力" + extraDamage + "%。"
+                            effect: `消耗MP: ${mp}, 額外傷害力: +${extraDamage}%, 持續時間: ${duration}秒`,
+                            fullDescription: `對指定攻擊目標造成更大傷害。等級${i}效果：額外傷害力+${extraDamage}%，持續${duration}秒。`
                         };
                     })
                 }
