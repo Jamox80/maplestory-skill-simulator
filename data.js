@@ -7714,7 +7714,7 @@ const allProfessionsData = {
                     name: "忍影瞬殺",
                     maxLevel: 30,
                     requiredLevel: 120,
-                    preRequisite: {},
+                    preRequisite: {"shadowerInstinct":5},
                     description: "呼喚影分身出來躲起來偷襲範圍內的敵人，給予持續傷害，最多6名敵人，且不會使敵方HP下降到1以下。",
                     imageUrl: "images/ninjaAmbush.png",
                     levels: Array(31).fill(null).map((_, i) => {
