@@ -5629,43 +5629,49 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    id: "concentrate",
-                    name: "念力集中",
-                    maxLevel: 30,
-                    requiredLevel: 120,
-                    preRequisite: {},
-                    description: "一定時間內攻擊力上升，技能施放的時間內MP的使用量減少。(下次施放待機時間6分鐘)",
-                    imageUrl: "images/concentrate.png",
-                    levels: Array(31).fill(null).map((_, i) => {
-                        if (i === 0) return null;
+    id: "concentrate",
+    name: "念力集中",
+    maxLevel: 30,
+    requiredLevel: 120,
+    preRequisite: {},
+    description: "一定時間內攻擊力上升，技能施放的時間內MP的使用量減少。(下次施放待機時間6分鐘)",
+    imageUrl: "images/concentrate.png",
+    levels: Array(31).fill(null).map((_, i) => {
+        if (i === 0) return null;
 
-                        // 1. 消耗MP: 從 10 開始每級增加 1
-                        const mp = 10 + i;
+        // 1. 消耗MP: 10 + i (線性成長，1級=11, 30級=40)
+        const mpCost = 10 + i;
 
-                        // 2. 攻擊力規律: 每 2 級增加 1 點 (1級=11, 2級=12, 3級=12, 30級=26)
-                        const attack = 10 + Math.ceil(i / 2);
+        // 2. 攻擊力: 使用陣列確保精準 (數據中攻擊力每2級才提升一點，有些則是連跳)
+        const attackValues = [
+            null,
+            11, 12, 12, 13, 13, 14, 14, 15, 15, 16, // 1-10
+            16, 17, 17, 18, 18, 19, 19, 20, 20, 21, // 11-20
+            21, 22, 22, 23, 23, 24, 24, 25, 25, 26  // 21-30
+        ];
 
-                        // 3. MP 減少量規律:
-                        // 1-20級: 每級增加 2%
-                        // 21-30級: 40% 開始每級增加 1%
-                        let mpReduction;
-                        if (i <= 20) {
-                            mpReduction = i * 2;
-                        } else {
-                            mpReduction = 40 + (i - 20);
-                        }
+        // 3. MP減少量: 1-20級每級+2%, 21-30級每級+1%
+        const mpReduction = i <= 20 ? i * 2 : 40 + (i - 20);
 
-                        // 4. 持續時間: 每級增加 10 秒
-                        const duration = i * 10;
+        // 4. 持續時間: 數據前幾級不規律，之後為每級+8秒，使用陣列最安全
+        const durations = [
+            null,
+            72, 78, 84, 92, 100, 108, 116, 124, 132, 140, // 1-10
+            148, 156, 164, 172, 180, 188, 196, 204, 212, 220, // 11-20
+            228, 236, 244, 252, 260, 268, 276, 284, 292, 300  // 21-30
+        ];
 
-                        const effect = `消耗MP: ${mp}, 攻擊力: +${attack}, MP減少量: ${mpReduction}%, 持續時間: ${duration}秒`;
+        const atk = attackValues[i];
+        const red = mpReduction;
+        const time = durations[i];
+        const cooldown = 360; // 固定6分鐘待機
 
-                        return {
-                            effect: effect,
-                            fullDescription: `一定時間內攻擊力上升，技能施放的時間內MP的使用量減少。等級${i}效果：${effect}。`
-                        };
-                    })
-                }
+        return {
+            effect: `消耗MP: ${mpCost}, 攻擊力: +${atk}, MP減少量: ${red}%, 持續時間: ${time}秒`,
+            fullDescription: `一定時間內增加攻擊力並減少MP消耗。等級${i}效果：攻擊力+${atk}，MP消耗減少${red}%，持續${time}秒，冷卻時間${cooldown}秒。`
+        };
+    })
+}
             ],
             "超技能": [],
             "5轉技能": [],
