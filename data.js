@@ -4820,43 +4820,36 @@ const allProfessionsData = {
                     })
                 },
                 {
-                    id: "darkSpiritHeal",
-                    name: "闇靈治癒",
-                    maxLevel: 25,
-                    requiredLevel: 120,
-                    preRequisite: { "darkSoul": 1 }, // 邏輯上需先有暗之靈魂
-                    description: "暗黑之魂存在的一定時間之內補充黑騎士的HP，隨技能等級提高，補充量也上升。",
-                    imageUrl: "images/darkSpiritHeal.png",
-                    levels: Array(26).fill(null).map((_, i) => {
-                        if (i === 0) return null;
+                   id: "darkSpiritHeal",
+    name: "闇靈治癒",
+    maxLevel: 25,
+    requiredLevel: 120,
+    preRequisite: { "darkSpirit": 1 }, // 需召喚暗黑之魂
+    description: "暗黑之魂存在的一定時間之內補充黑騎士的HP，隨技能等級提高，補充量也上升。",
+    imageUrl: "images/darkSpiritHeal.png",
+    levels: Array(26).fill(null).map((_, i) => {
+        if (i === 0) return null;
 
-                        // 1. 間隔時間: 全等級固定 4 秒
-                        const interval = "4秒";
+        // 1. 間隔時間: 全等級固定 4 秒
+        const interval = 4;
 
-                        // 2. HP回復量規律分析：
-                        // 1-5級: 每級+15 (40, 55, 70, 85, 100)
-                        // 6-10級: 160開始，每級+10 (160, 170... 200)
-                        // 11-15級: 260開始，每級+10
-                        // 16-20級: 360開始，每級+10
-                        // 21-25級: 460開始，每級+10
-                        let hpRecovery;
-                        if (i <= 5) {
-                            hpRecovery = 25 + (i * 15);
-                        } else {
-                            // 計算屬於哪個 5 級大階段
-                            const stage = Math.floor((i - 1) / 5); // 6-10級為 stage 1, 11-15級為 stage 2...
-                            const stageStartValue = stage * 100 + 160;
-                            const offset = (i - 1) % 5; // 在該階段中的第幾級 (0-4)
-                            hpRecovery = stageStartValue + (offset * 10);
-                        }
+        // 2. HP回復量: 捕捉每 5 級產生的 +60 跳躍點
+        const hpValues = [
+            null,
+            110, 120, 130, 140, 150, // 1-5
+            160, 170, 180, 190, 200, // 6-10
+            260, 270, 280, 290, 300, // 11-15 (11級跳躍)
+            360, 370, 380, 390, 400, // 16-20 (16級跳躍)
+            460, 470, 480, 490, 500  // 21-25 (21級跳躍)
+        ];
 
-                        const effect = `間隔時間: ${interval}, HP回復量: ${hpRecovery}`;
+        const hpRecover = hpValues[i];
 
-                        return {
-                            effect: effect,
-                            fullDescription: `暗黑之魂存在的一定時間之內補充黑騎士的HP。等級${i}效果：${effect}。`
-                        };
-                    })
+        return {
+            effect: `每 ${interval} 秒回復 HP: ${hpRecover}`,
+            fullDescription: `暗黑之魂附身期間，每 ${interval} 秒自動回復 HP ${hpRecover}。`
+        };
+    })
                 },
                 {
                     id: "darkGuardian",
