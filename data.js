@@ -4824,7 +4824,7 @@ const allProfessionsData = {
     name: "闇靈治癒",
     maxLevel: 25,
     requiredLevel: 120,
-    preRequisite: { "darkSpirit": 1 }, // 需召喚暗黑之魂
+    preRequisite: { "darkSoul": 1 }, // 需召喚暗黑之魂
     description: "暗黑之魂存在的一定時間之內補充黑騎士的HP，隨技能等級提高，補充量也上升。",
     imageUrl: "images/darkSpiritHeal.png",
     levels: Array(26).fill(null).map((_, i) => {
@@ -4836,7 +4836,7 @@ const allProfessionsData = {
         // 2. HP回復量: 捕捉每 5 級產生的 +60 跳躍點
         const hpValues = [
             null,
-            110, 120, 130, 140, 150, // 1-5
+            40, 55, 70, 85, 100, // 1-5
             160, 170, 180, 190, 200, // 6-10
             260, 270, 280, 290, 300, // 11-15 (11級跳躍)
             360, 370, 380, 390, 400, // 16-20 (16級跳躍)
