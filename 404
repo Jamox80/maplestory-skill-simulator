@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artale 技能模擬器｜正在前往新版網站...</title>
+  <link rel="canonical" href="https://artale-skill-simulator.ai.studio/" />
+  <meta http-equiv="refresh" content="2; url=https://artale-skill-simulator.ai.studio/" />
+  <script>
+    (function () {
+      var targetBase = 'https://artale-skill-simulator.ai.studio/';
+      var query = window.location.search || '';
+      var hash = window.location.hash || '';
+      window.location.replace(targetBase + query + hash);
+    })();
+  </script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #132e38;
+      color: #2a180d;
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+      padding: 16px;
+    }
+    .card {
+      max-width: 420px;
+      width: 100%;
+      background: #f6ebd6;
+      border: 1px solid #6f472b;
+      border-radius: 8px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    h1 { margin: 0 0 10px; font-size: 20px; }
+    p { margin: 0 0 18px; font-size: 14px; color: #5c3a23; line-height: 1.6; }
+    a {
+      display: inline-block;
+      background: #1e5b54;
+      color: #f6ebd6;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Artale 技能模擬器已搬遷至新版</h1>
+    <p>正在自動為您導向新網站（原本的配點分享連結也會自動保留）…</p>
+    <a id="fallback-link" href="https://artale-skill-simulator.ai.studio/">立即前往新版網站</a>
+  </div>
+  <script>
+    var link = document.getElementById('fallback-link');
+    if (link) {
+      link.href = 'https://artale-skill-simulator.ai.studio/' + (window.location.search || '') + (window.location.hash || '');
+    }
+  </script>
+</body>
+</html>
